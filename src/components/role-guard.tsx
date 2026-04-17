@@ -7,7 +7,7 @@ import { Lock, User, Building2, Globe, Camera, Package } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 
-type UserRole = "influencer" | "company" | "public" | "admin" | "gear_owner" | "renter";
+type UserRole = "influencer" | "company" | "admin";
 
 interface RoleGuardProps {
   children: React.ReactNode;
@@ -71,18 +71,7 @@ export function RoleGuard({ children, allowedRoles, fallbackUrl = "/auth" }: Rol
         roleName = "Company";
         description = "This page is for other user types. View your company dashboard instead.";
         break;
-      case "gear_owner":
-        redirectUrl = "/analytics/gear-owner";
-        icon = Camera;
-        roleName = "Gear Owner";
-        description = "This page is for other user types. View your gear management dashboard instead.";
-        break;
-      case "renter":
-        redirectUrl = "/analytics/renter";
-        icon = Package;
-        roleName = "Renter";
-        description = "This page is for other user types. View your rental dashboard instead.";
-        break;
+
       case "admin":
         redirectUrl = "/admin";
         icon = User;
@@ -127,15 +116,7 @@ export function CompanyGuard({ children }: { children: React.ReactNode }) {
   return <RoleGuard allowedRoles={["company", "admin"]}>{children}</RoleGuard>;
 }
 
-export function GearOwnerGuard({ children }: { children: React.ReactNode }) {
-  return <RoleGuard allowedRoles={["gear_owner", "admin"]}>{children}</RoleGuard>;
-}
-
-export function RenterGuard({ children }: { children: React.ReactNode }) {
-  return <RoleGuard allowedRoles={["renter", "admin"]}>{children}</RoleGuard>;
-}
-
 export function PublicView({ children }: { children: React.ReactNode }) {
   // Public view is accessible to all authenticated users
-  return <RoleGuard allowedRoles={["influencer", "company", "gear_owner", "renter", "admin"]}>{children}</RoleGuard>;
+  return <RoleGuard allowedRoles={["influencer", "company", "admin"]}>{children}</RoleGuard>;
 }

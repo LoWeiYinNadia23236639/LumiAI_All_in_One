@@ -37,7 +37,7 @@ const navItems = [
     ]
   },
   { href: "/equipment", label: "Rent Gear", icon: Camera },
-  { href: "/dashboard/influencer", label: "My Dashboard", icon: BarChart3 },
+  { href: "/analytics", label: "My Dashboard", icon: BarChart3 },
 ];
 
 export function Navigation() {

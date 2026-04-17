@@ -1,6 +1,6 @@
 // Demo accounts for testing the platform
 
-export type UserRole = "influencer" | "company" | "admin" | "gear_owner" | "renter";
+export type UserRole = "influencer" | "company" | "admin";
 
 export interface DemoUser {
   id: string;
@@ -66,48 +66,6 @@ export const demoAccounts: DemoUser[] = [
     avatarColor: "from-violet-400 to-purple-500",
     bio: "Premium tech accessories"
   },
-  // Gear Owners
-  {
-    id: "owner-1",
-    email: "alex@demo.com",
-    password: "demo123",
-    role: "gear_owner",
-    name: "Alex's Camera Rentals",
-    avatar: "AC",
-    avatarColor: "from-orange-400 to-amber-500",
-    bio: "Professional camera rental service with 5+ years experience"
-  },
-  {
-    id: "owner-2",
-    email: "studio@demo.com",
-    password: "demo123",
-    role: "gear_owner",
-    name: "LA Studio Rentals",
-    avatar: "LA",
-    avatarColor: "from-red-400 to-rose-500",
-    bio: "Full-service production equipment rental"
-  },
-  // Renters (Public)
-  {
-    id: "renter-1",
-    email: "jordan@demo.com",
-    password: "demo123",
-    role: "renter",
-    name: "Jordan Smith",
-    avatar: "JS",
-    avatarColor: "from-teal-400 to-cyan-500",
-    bio: "Aspiring filmmaker and content creator"
-  },
-  {
-    id: "renter-2",
-    email: "taylor@demo.com",
-    password: "demo123",
-    role: "renter",
-    name: "Taylor Wilson",
-    avatar: "TW",
-    avatarColor: "from-indigo-400 to-blue-500",
-    bio: "Photography enthusiast learning the craft"
-  },
   // Admin
   {
     id: "admin-1",
@@ -162,17 +120,17 @@ export const auth = {
     return user?.role === "company";
   },
 
-  isGearOwner: (): boolean => {
-    const user = auth.getCurrentUser();
-    return user?.role === "gear_owner";
-  },
-
-  isRenter: (): boolean => {
-    const user = auth.getCurrentUser();
-    return user?.role === "renter";
-  },
-
   isAuthenticated: (): boolean => {
     return auth.getCurrentUser() !== null;
+  },
+
+  isCreator: (): boolean => {
+    const user = auth.getCurrentUser();
+    return user?.role === "influencer";
+  },
+
+  isBrand: (): boolean => {
+    const user = auth.getCurrentUser();
+    return user?.role === "company";
   }
 };

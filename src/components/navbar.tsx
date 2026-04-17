@@ -3,44 +3,59 @@
 import Link from "next/link";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Menu, X, ChevronDown } from "lucide-react";
+import { Sparkles, Menu, X, ChevronDown, Globe, Bell } from "lucide-react";
 import { Button } from "./ui/button";
-
-const navLinks = [
-  { 
-    label: "AI Hub", 
-    href: "/ai-hub",
-    description: "AI-powered creator tools"
-  },
-  { 
-    label: "Marketplace", 
-    href: "/marketplace",
-    description: "Find brand deals & creators",
-    dropdown: [
-      { label: "Find Campaigns", href: "/marketplace/campaigns", description: "Browse brand opportunities" },
-      { label: "Find Creators", href: "/marketplace/talent", description: "Discover influencers" },
-    ]
-  },
-  { 
-    label: "Rent Gear", 
-    href: "/equipment",
-    description: "Equipment rental marketplace"
-  },
-  { 
-    label: "Analytics", 
-    href: "/analytics",
-    description: "Track your growth"
-  },
-  { 
-    label: "Help", 
-    href: "/help",
-    description: "Tutorials and support"
-  },
-];
+import { useTranslations, useLocale } from "next-intl";
+import { useNotifications } from "@/contexts/notifications-context";
 
 export function Navbar() {
+  const t = useTranslations("nav");
+  const locale = useLocale();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [langOpen, setLangOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+
+  const navLinks = [
+    { 
+      label: t("aiHub"), 
+      href: "/ai-hub",
+      description: t("aiHubDescription")
+    },
+    { 
+      label: t("marketplace"), 
+      href: "/marketplace",
+      description: t("marketplaceDescription"),
+      dropdown: [
+        { label: t("findCampaigns"), href: "/marketplace/campaigns", description: t("findCampaignsDescription") },
+        { label: t("findCreators"), href: "/marketplace/talent", description: t("findCreatorsDescription") },
+      ]
+    },
+    { 
+      label: t("rentGear"), 
+      href: "/equipment",
+      description: t("rentGearDescription")
+    },
+    { 
+      label: t("analytics"), 
+      href: "/analytics",
+      description: t("analyticsDescription")
+    },
+    { 
+      label: t("help"), 
+      href: "/help",
+      description: t("helpDescription")
+    },
+  ];
+
+  const languages = [
+    { code: "en", label: "English" },
+    { code: "zh-hk", label: "繁體中文" },
+    { code: "zh-cn", label: "简体中文" },
+  ];
+
+  const currentLang = languages.find(l => l.code === locale) || languages[0];
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/20">
@@ -99,16 +114,103 @@ export function Navbar() {
             ))}
           </div>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons + Language */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/help">
-              <Button variant="ghost" size="sm">Help</Button>
+            {/* Language Switcher */}
+            <div className="relative">
+              <button
+                onClick={() => setLangOpen(!langOpen)}
+                className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 hover:text-violet-600 rounded-lg hover:bg-violet-50 transition-colors"
+              >
+                <Globe className="w-4 h-4" />
+                {currentLang.label}
+                <ChevronDown className="w-4 h-4" />
+              </button>
+              <AnimatePresence>
+                {langOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute top-full right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border p-1"
+                  >
+                    {languages.map((lang) => (
+                      <Link
+                        key={lang.code}
+                        href={`/${lang.code}`}
+                        className={`block px-4 py-2 rounded-lg text-sm transition-colors ${
+                          lang.code === locale ? "bg-violet-50 text-violet-700 font-medium" : "hover:bg-gray-50 text-gray-700"
+                        }`}
+                        onClick={() => setLangOpen(false)}
+                      >
+                        {lang.label}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Notifications */}
+            <div className="relative">
+              <button
+                onClick={() => setNotifOpen(!notifOpen)}
+                className="relative p-2 text-gray-700 hover:text-violet-600 rounded-lg hover:bg-violet-50 transition-colors"
+              >
+                <Bell className="w-5 h-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              <AnimatePresence>
+                {notifOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border p-3"
+                  >
+                    <div className="flex items-center justify-between px-2 py-1 mb-2">
+                      <span className="font-semibold text-sm">{t("notifications")}</span>
+                      {unreadCount > 0 && (
+                        <button onClick={markAllAsRead} className="text-xs text-violet-600 hover:underline">
+                          {t("markAllRead")}
+                        </button>
+                      )}
+                    </div>
+                    <div className="max-h-72 overflow-y-auto space-y-1">
+                      {notifications.length === 0 && (
+                        <p className="text-sm text-neutral-500 px-2 py-4 text-center">{t("noNotifications")}</p>
+                      )}
+                      {notifications.map((n) => (
+                        <button
+                          key={n.id}
+                          onClick={() => { markAsRead(n.id); setNotifOpen(false); }}
+                          className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${n.read ? "bg-white" : "bg-violet-50"}`}
+                        >
+                          <div className="flex items-start gap-2">
+                            <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.read ? "bg-gray-300" : "bg-violet-500"}`} />
+                            <div className="flex-1">
+                              <p className={`text-sm ${n.read ? "font-medium text-neutral-700" : "font-semibold text-neutral-900"}`}>{n.title}</p>
+                              <p className="text-xs text-neutral-500">{n.message}</p>
+                              <p className="text-[10px] text-neutral-400 mt-0.5">{n.createdAt}</p>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <Link href="/auth">
+              <Button variant="ghost" size="sm">{t("login")}</Button>
             </Link>
             <Link href="/auth">
-              <Button variant="ghost" size="sm">Log In</Button>
-            </Link>
-            <Link href="/auth">
-              <Button size="sm">Get Started</Button>
+              <Button size="sm">{t("getStarted")}</Button>
             </Link>
           </div>
 
@@ -158,11 +260,25 @@ export function Navbar() {
                 </div>
               ))}
               <div className="pt-4 border-t mt-4 space-y-2">
+                <div className="flex gap-2 px-4">
+                  {languages.map((lang) => (
+                    <Link
+                      key={lang.code}
+                      href={`/${lang.code}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`px-3 py-1.5 rounded-lg text-sm ${
+                        lang.code === locale ? "bg-violet-100 text-violet-700 font-medium" : "bg-gray-100 text-gray-700"
+                      }`}
+                    >
+                      {lang.label}
+                    </Link>
+                  ))}
+                </div>
                 <Link href="/auth" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">Log In</Button>
+                  <Button variant="outline" className="w-full">{t("login")}</Button>
                 </Link>
                 <Link href="/auth" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full">Get Started</Button>
+                  <Button className="w-full">{t("getStarted")}</Button>
                 </Link>
               </div>
             </div>
