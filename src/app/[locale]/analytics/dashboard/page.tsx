@@ -27,129 +27,23 @@ import {
   Trash2,
   ToggleLeft,
   ToggleRight,
-  Package
+  Package,
+  ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InfluencerGuard } from "@/components/role-guard";
 import { useAuth } from "@/contexts/auth-context";
 import { useSavedLists } from "@/contexts/saved-lists-context";
-import { useTranslations } from "next-intl";
+import { getSupabaseClient } from "@/lib/supabase/client";
+import { formatDate } from "@/lib/format";
+import { useTranslations, useLocale } from "next-intl";
 
-const mockData = {
-  overview: {
-    followers: { value: "125.4K", change: "+2.3%", trend: "up" },
-    engagement: { value: "4.8%", change: "+0.5%", trend: "up" },
-    views: { value: "2.1M", change: "+12%", trend: "up" },
-    revenue: { value: "$8,450", change: "+23%", trend: "up" },
-  },
-  contentPerformance: [
-    { title: "Morning Routine 2026", views: "145K", engagement: "6.2%", date: "2 days ago", type: "Video" },
-    { title: "Get Ready With Me", views: "98K", engagement: "5.8%", date: "5 days ago", type: "Video" },
-    { title: "Product Review", views: "76K", engagement: "4.1%", date: "1 week ago", type: "Carousel" },
-    { title: "Outfit of the Day", views: "62K", engagement: "5.5%", date: "1 week ago", type: "Photo" },
-  ],
-  brandDeals: [
-    { brand: "Glow Skincare", amount: "$2,500", status: "Completed", date: "Mar 1" },
-    { brand: "Fashion Nova", amount: "$1,800", status: "In Progress", date: "Mar 15" },
-    { brand: "TechMaster", amount: "$3,200", status: "Pending", date: "Apr 1" },
-  ],
-  audienceInsights: {
-    demographics: [
-      { label: "Female", value: 68 },
-      { label: "Male", value: 30 },
-      { label: "Other", value: 2 },
-    ],
-    ageGroups: [
-      { label: "18-24", value: 35 },
-      { label: "25-34", value: 42 },
-      { label: "35-44", value: 18 },
-      { label: "45+", value: 5 },
-    ],
-    topLocations: ["United States (45%)", "Canada (12%)", "UK (10%)", "Australia (8%)"],
-  },
-};
-
-const aiSuggestions = [
-  "Post Reels between 7-9 PM EST for 23% more engagement",
-  "Your audience loves GRWM content - create more!",
-  "Beauty brand 'Rare Beauty' is actively looking for creators like you",
-  "Your engagement rate is in top 10% of creators in your niche",
-];
-
-const demoGear: UserGearItem[] = [
-  {
-    id: "demo-gear-1",
-    name: "Canon EOS R5",
-    category: "Cameras",
-    image: "📷",
-    brand: "Canon",
-    location: "Los Angeles, CA",
-    dailyRate: 95,
-    weeklyRate: 475,
-    monthlyRate: 1900,
-    rating: 4.9,
-    reviews: 12,
-    availability: ["Apr 16", "Apr 17", "Apr 18", "Apr 19", "Apr 20"],
-    condition: "Excellent",
-    includes: ["Body", "RF 24-105mm Lens", "Battery x2", "Charger", "128GB CFexpress"],
-    owner: "Sarah Chen",
-    ownerVerified: true,
-    responseTime: "< 1 hour",
-    description: "My go-to camera for portrait shoots. Shoots stunning 8K video and 45MP stills.",
-    ownerId: "inf-1",
-    available: true,
-  },
-  {
-    id: "demo-gear-2",
-    name: "DJI Ronin-S Gimbal",
-    category: "Accessories",
-    image: "🎯",
-    brand: "DJI",
-    location: "Los Angeles, CA",
-    dailyRate: 35,
-    weeklyRate: 175,
-    monthlyRate: 700,
-    rating: 4.8,
-    reviews: 8,
-    availability: ["Apr 16", "Apr 17", "Apr 18", "Apr 19", "Apr 20"],
-    condition: "Like New",
-    includes: ["Gimbal", "Focus Wheel", "Tripod", "Carrying Case"],
-    owner: "Sarah Chen",
-    ownerVerified: true,
-    responseTime: "< 1 hour",
-    description: "Perfect for smooth cinematic shots. Supports most mirrorless setups.",
-    ownerId: "inf-1",
-    available: true,
-  },
-  {
-    id: "demo-gear-3",
-    name: "Rode Wireless GO II",
-    category: "Audio",
-    image: "🎤",
-    brand: "Rode",
-    location: "Los Angeles, CA",
-    dailyRate: 18,
-    weeklyRate: 90,
-    monthlyRate: 360,
-    rating: 5.0,
-    reviews: 5,
-    availability: ["Apr 16", "Apr 17", "Apr 18", "Apr 19", "Apr 20"],
-    condition: "Excellent",
-    includes: ["2x Transmitters", "Receiver", "Lav Mics", "USB-C Cables"],
-    owner: "Sarah Chen",
-    ownerVerified: true,
-    responseTime: "< 1 hour",
-    description: "Compact wireless audio kit. Great for interviews and vlogging.",
-    ownerId: "inf-1",
-    available: false,
-  },
-];
-
-const myRentals = [
-  { id: "rnt-101", gear: "Sony A7IV", owner: "Alex's Camera Rentals", dates: "Apr 10 - Apr 15", status: "Active", total: "$475" },
-  { id: "rnt-102", gear: "Aputure 120D II", owner: "LA Studio Rentals", dates: "Mar 22 - Mar 24", status: "Completed", total: "$135" },
-  { id: "rnt-103", gear: "DJI Mavic 3 Pro", owner: "Denver Drone Co", dates: "Mar 5 - Mar 7", status: "Completed", total: "$285" },
-];
+interface MyApplication {
+  id: string;
+  status: string;
+  created_at: string;
+  campaigns: { id: string; title: string; profiles: { name: string } | null } | null;
+}
 
 interface UserGearItem {
   id: string;
@@ -177,6 +71,7 @@ interface UserGearItem {
 function InfluencerAnalytics() {
   const t = useTranslations("analytics");
   const tc = useTranslations("common");
+  const locale = useLocale();
   const [activeTab, setActiveTab] = useState("analytics");
   const [timeRange, setTimeRange] = useState("7d");
   const { user, logout } = useAuth();
@@ -184,20 +79,33 @@ function InfluencerAnalytics() {
   const [userGear, setUserGear] = useState<UserGearItem[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newGear, setNewGear] = useState({ name: "", dailyRate: "", condition: "Excellent", description: "" });
+  const [myApplications, setMyApplications] = useState<MyApplication[]>([]);
+  const [myAppsLoaded, setMyAppsLoaded] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem("lumiai_user_gear");
     if (stored) {
       try { setUserGear(JSON.parse(stored)); } catch {}
-    } else {
-      // Pre-fill demo gear for creators
-      setUserGear(demoGear);
     }
   }, []);
 
   useEffect(() => {
     localStorage.setItem("lumiai_user_gear", JSON.stringify(userGear));
   }, [userGear]);
+
+  useEffect(() => {
+    if (!user) return;
+    const supabase = getSupabaseClient();
+    supabase
+      .from("applications")
+      .select("id, status, created_at, campaigns(id, title, profiles(name))")
+      .eq("creator_id", user.id)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        setMyApplications((data ?? []) as unknown as MyApplication[]);
+        setMyAppsLoaded(true);
+      });
+  }, [user]);
 
   const handleAddGear = () => {
     if (!newGear.name || !newGear.dailyRate || !user) return;
@@ -332,7 +240,6 @@ function InfluencerAnalytics() {
             { label: t("totalViews"), key: "views", icon: Eye, color: "text-violet-500", bg: "bg-violet-50" },
             { label: t("revenue"), key: "revenue", icon: DollarSign, color: "text-green-500", bg: "bg-green-50" },
           ].map((stat) => {
-            const data = mockData.overview[stat.key as keyof typeof mockData.overview];
             return (
               <motion.div
                 key={stat.key}
@@ -346,30 +253,83 @@ function InfluencerAnalytics() {
                   </div>
                   <p className="text-sm text-neutral-500">{stat.label}</p>
                 </div>
-                <p className="text-2xl font-bold text-neutral-900">{data.value}</p>
-                <p className={`text-sm font-medium ${data.trend === "up" ? "text-green-600" : "text-red-600"}`}>
-                  {data.change} this period
+                <p className="text-2xl font-bold text-neutral-400">—</p>
+                <p className="text-sm font-medium text-neutral-400">
+                  {t("noDataYet")}
                 </p>
               </motion.div>
             );
           })}
         </div>
 
-        {/* AI Insights Banner */}
+        {/* AI Insights Banner — empty state CTA */}
         <div className="bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 rounded-2xl p-6 text-white mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Zap className="w-5 h-5" />
-            <h3 className="font-bold">{t("aiInsights")}</h3>
-          </div>
-          <div className="grid md:grid-cols-2 gap-3">
-            {aiSuggestions.map((suggestion, i) => (
-              <div key={i} className="flex items-start gap-2 bg-white/10 rounded-xl p-3">
-                <Star className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                <p className="text-sm">{suggestion}</p>
+          <div className="flex flex-col md:flex-row md:items-center gap-4">
+            <div className="flex items-center gap-2 flex-1">
+              <Zap className="w-5 h-5 flex-shrink-0" />
+              <div>
+                <h3 className="font-bold">{t("creatorEmptyTitle")}</h3>
+                <p className="text-sm text-white/80">{t("creatorEmptyDesc")}</p>
               </div>
-            ))}
+            </div>
+            <Link href="/ai-hub" className="flex-shrink-0">
+              <Button className="bg-white text-violet-600 hover:bg-gray-100">
+                {t("creatorEmptyCta")}
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
           </div>
         </div>
+
+        {/* My Applications */}
+        {activeTab === "analytics" && (
+          <div className="bg-white rounded-2xl p-6 border shadow-sm mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <ClipboardList className="w-5 h-5 text-violet-600" />
+              <h3 className="font-bold text-lg">{t("myAppsTitle")}</h3>
+            </div>
+            {!myAppsLoaded ? (
+              <div className="py-6 text-center">
+                <div className="animate-spin w-6 h-6 border-4 border-violet-500 border-t-transparent rounded-full mx-auto" />
+              </div>
+            ) : myApplications.length === 0 ? (
+              <p className="text-sm text-neutral-500">{t("myAppsEmpty")}</p>
+            ) : (
+              <div className="space-y-3">
+                {myApplications.map((app) => (
+                  <div
+                    key={app.id}
+                    className="flex flex-wrap items-center gap-3 p-3 rounded-xl border border-gray-100"
+                  >
+                    <div className="flex-1 min-w-[200px]">
+                      <Link
+                        href={`/marketplace/campaigns/${app.campaigns?.id}`}
+                        className="font-medium text-neutral-900 hover:text-violet-600 transition-colors"
+                      >
+                        {app.campaigns?.title ?? "—"}
+                      </Link>
+                      <p className="text-xs text-neutral-500">
+                        {app.campaigns?.profiles?.name ?? "—"} •{" "}
+                        {formatDate(app.created_at, locale)}
+                      </p>
+                    </div>
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        app.status === "accepted"
+                          ? "bg-green-100 text-green-700"
+                          : app.status === "rejected"
+                            ? "bg-neutral-200 text-neutral-500"
+                            : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {t(`appStatus.${app.status}`)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Content Performance */}
@@ -381,22 +341,16 @@ function InfluencerAnalytics() {
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </div>
-            <div className="space-y-4">
-              {mockData.contentPerformance.map((content, i) => (
-                <div key={i} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                  <div className="w-16 h-16 bg-gradient-to-br from-violet-200 to-pink-200 rounded-lg flex items-center justify-center text-2xl">
-                    {content.type === "Video" ? "🎥" : content.type === "Carousel" ? "🖼" : "📸"}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-medium">{content.title}</h4>
-                    <p className="text-sm text-neutral-500">{content.type} • {content.date}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-bold">{content.views}</p>
-                    <p className="text-sm text-green-600">{content.engagement} engagement</p>
-                  </div>
-                </div>
-              ))}
+            <div className="py-12 text-center">
+              <BarChart3 className="w-14 h-14 text-neutral-300 mx-auto mb-4" />
+              <p className="font-medium text-neutral-700 mb-1">{t("noDataYet")}</p>
+              <p className="text-sm text-neutral-500 mb-6">{t("creatorEmptyDesc")}</p>
+              <Link href="/ai-hub">
+                <Button className="bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 text-white">
+                  {t("creatorEmptyCta")}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -427,21 +381,9 @@ function InfluencerAnalytics() {
                   <Package className="w-5 h-5 text-orange-500" />
                   <h3 className="font-bold text-lg">{t("myRentals")}</h3>
                 </div>
-                <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full">{myRentals.filter(r => r.status === "Active").length} {t("active")}</span>
               </div>
               <div className="space-y-3">
-                {myRentals.map((rental) => (
-                  <div key={rental.id} className="p-3 bg-gray-50 rounded-xl">
-                    <div className="flex items-center justify-between">
-                      <p className="font-medium text-sm">{rental.gear}</p>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                        rental.status === "Active" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"
-                      }`}>{rental.status}</span>
-                    </div>
-                    <p className="text-xs text-neutral-500">{rental.owner} • {rental.dates}</p>
-                    <p className="text-xs font-medium text-neutral-700 mt-1">{rental.total}</p>
-                  </div>
-                ))}
+                <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
               </div>
               <Link href="/equipment">
                 <Button variant="outline" size="sm" className="w-full mt-3">
@@ -480,53 +422,13 @@ function InfluencerAnalytics() {
             {/* Brand Deals */}
             <div className="bg-white rounded-2xl p-6 border shadow-sm">
               <h3 className="font-bold text-lg mb-4">{t("recentBrandDeals")}</h3>
-              <div className="space-y-3">
-                {mockData.brandDeals.map((deal, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                    <div>
-                      <p className="font-medium">{deal.brand}</p>
-                      <p className="text-xs text-neutral-500">{deal.date}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold">{deal.amount}</p>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${
-                        deal.status === "Completed" ? "bg-green-100 text-green-700" :
-                        deal.status === "In Progress" ? "bg-blue-100 text-blue-700" :
-                        "bg-yellow-100 text-yellow-700"
-                      }`}>
-                        {deal.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
             </div>
 
             {/* Audience Insights */}
             <div className="bg-white rounded-2xl p-6 border shadow-sm">
               <h3 className="font-bold text-lg mb-4">{t("audienceInsights")}</h3>
-              
-              <div className="mb-4">
-                <p className="text-sm text-neutral-500 mb-2">{t("genderSplit")}</p>
-                <div className="flex h-4 rounded-full overflow-hidden">
-                  <div className="w-[68%] bg-pink-400" />
-                  <div className="w-[30%] bg-blue-400" />
-                  <div className="w-[2%] bg-purple-400" />
-                </div>
-                <div className="flex gap-3 mt-2 text-xs">
-                  <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-pink-400" /> Female 68%</span>
-                  <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" /> Male 30%</span>
-                </div>
-              </div>
-
-              <div>
-                <p className="text-sm text-neutral-500 mb-2">{t("topLocations")}</p>
-                <div className="space-y-1">
-                  {mockData.audienceInsights.topLocations.map((loc, i) => (
-                    <p key={i} className="text-sm">{loc}</p>
-                  ))}
-                </div>
-              </div>
+              <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
             </div>
 
             {/* {t("creatorScore")} */}
@@ -536,11 +438,11 @@ function InfluencerAnalytics() {
                 <h3 className="font-bold">{t("creatorScore")}</h3>
               </div>
               <div className="flex items-end gap-2">
-                <p className="text-5xl font-bold">87</p>
+                <p className="text-5xl font-bold">—</p>
                 <p className="text-white/80 mb-2">/100</p>
               </div>
               <p className="text-sm text-white/90 mt-2">
-                Top 15% of creators in your niche. Keep it up!
+                {t("noDataYet")}
               </p>
             </div>
           </div>
@@ -568,7 +470,7 @@ function InfluencerAnalytics() {
                 <p className="text-sm text-neutral-500">{t("available")}</p>
               </div>
               <div className="bg-white rounded-2xl p-5 border shadow-sm text-center">
-                <p className="text-3xl font-bold text-orange-600">$1,247</p>
+                <p className="text-3xl font-bold text-neutral-400">—</p>
                 <p className="text-sm text-neutral-500">{t("lifetimeEarnings")}</p>
               </div>
             </div>
@@ -636,19 +538,9 @@ function InfluencerAnalytics() {
                 </Link>
               </div>
               <div className="grid md:grid-cols-3 gap-4">
-                {myRentals.map((rental) => (
-                  <div key={rental.id} className="p-4 bg-gray-50 rounded-xl">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="font-bold text-neutral-900">{rental.gear}</p>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                        rental.status === "Active" ? "bg-blue-100 text-blue-700" : "bg-green-100 text-green-700"
-                      }`}>{rental.status}</span>
-                    </div>
-                    <p className="text-sm text-neutral-500">{rental.owner}</p>
-                    <p className="text-xs text-neutral-400">{rental.dates}</p>
-                    <p className="text-sm font-semibold text-orange-600 mt-2">{rental.total}</p>
-                  </div>
-                ))}
+                <div className="md:col-span-3 p-4 bg-gray-50 rounded-xl text-sm text-neutral-500 text-center">
+                  {t("noDataYet")}
+                </div>
               </div>
             </div>
           </div>

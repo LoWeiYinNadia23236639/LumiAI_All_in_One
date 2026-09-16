@@ -4,9 +4,11 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { Loader2 } from "lucide-react";
+import { useLocale } from "next-intl";
 
 export default function AnalyticsRouterPage() {
   const router = useRouter();
+  const locale = useLocale();
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
@@ -21,15 +23,15 @@ export default function AnalyticsRouterPage() {
           break;
 
         case "admin":
-          router.push("/admin");
+          router.push("/admin/overview");
           break;
         default:
           router.push("/");
       }
     } else if (!isLoading && !user) {
-      router.push("/auth");
+      router.push(`/${locale}/login`);
     }
-  }, [user, isLoading, router]);
+  }, [user, isLoading, router, locale]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

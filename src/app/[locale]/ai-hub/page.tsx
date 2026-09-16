@@ -33,6 +33,7 @@ import {
   Palette
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AuthGuard } from "@/components/auth-guard";
 
 const aiTools = [
   {
@@ -179,6 +180,7 @@ const captionFeatures = [
 
 export default function AIHubPage() {
   return (
+    <AuthGuard>
     <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
@@ -505,6 +507,7 @@ export default function AIHubPage() {
           </div>
         </div>
       </div>
-    </main>
+      </main>
+    </AuthGuard>
   );
 }

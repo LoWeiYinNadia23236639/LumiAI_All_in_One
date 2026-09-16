@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
+import { ShareButton } from "@/components/share-button";
 
 // This would normally come from an API based on the ID
 const creatorData = {
@@ -203,6 +204,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                   <p className="text-xl font-bold text-neutral-900">{creatorData.rateRange}</p>
                 </div>
                 <div className="flex gap-2">
+                  <ShareButton />
                   <Button 
                     variant="outline"
                     onClick={() => setShowContactModal(true)}

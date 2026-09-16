@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { 
   Sparkles, 
   Wand2, 
@@ -12,16 +14,13 @@ import {
   ArrowRight, 
   TrendingUp, 
   Shield, 
-  Zap, 
-  Heart, 
-  Users, 
-  Star,
+  Zap,
+  Users,
   Brain,
   Handshake,
   CheckCircle,
   MessageSquare,
-  Calendar,
-  DollarSign
+  Calendar
 } from "lucide-react";
 
 // Animation variants
@@ -60,6 +59,21 @@ const heroFeatures = [
 
 export default function HomePage() {
   const t = useTranslations("home");
+  const [waitlistEmail, setWaitlistEmail] = useState("");
+  const [waitlistState, setWaitlistState] = useState<"idle" | "loading" | "success" | "duplicate" | "error">("idle");
+
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setWaitlistState("loading");
+    const { error } = await getSupabaseClient().from("waitlist").insert({ email: waitlistEmail.trim() });
+    if (!error) {
+      setWaitlistState("success");
+    } else if (error.code === "23505") {
+      setWaitlistState("duplicate");
+    } else {
+      setWaitlistState("error");
+    }
+  };
 
   const mainFeatures = [
     {
@@ -72,7 +86,7 @@ export default function HomePage() {
       bgGradient: "from-violet-50 via-purple-50 to-indigo-50",
       iconBg: "bg-violet-500",
       href: "/ai-hub",
-      stats: "10K+ creators using daily",
+      stats: "Storyboards, captions & more",
       features: ["Storyboard AI", "Caption Generator", "Contract Scanner"]
     },
     {
@@ -85,7 +99,7 @@ export default function HomePage() {
       bgGradient: "from-pink-50 via-rose-50 to-red-50",
       iconBg: "bg-pink-500",
       href: "/marketplace",
-      stats: "$2.5M+ paid to creators",
+      stats: "Brand deals & campaigns",
       features: ["Find Campaigns", "Discover Creators", "Secure Payments"]
     },
     {
@@ -98,7 +112,7 @@ export default function HomePage() {
       bgGradient: "from-orange-50 via-amber-50 to-yellow-50",
       iconBg: "bg-orange-500",
       href: "/equipment",
-      stats: "2,500+ gear items available",
+      stats: "Rent gear from creators",
       features: ["Book by Date", "Message Owners", "Insured Rentals"]
     },
   ];
@@ -296,65 +310,53 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* Closed Beta / Waitlist Section */}
       <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-6">
-            {[
-              { value: "10,000+", label: t("statsCreators"), icon: Users, color: "violet" },
-              { value: "$2.5M+", label: t("statsPaid"), icon: DollarSign, color: "pink" },
-              { value: "500+", label: t("statsBrands"), icon: Star, color: "orange" },
-              { value: "98%", label: t("statsSatisfaction"), icon: Heart, color: "red" },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className={`text-center p-8 bg-${stat.color}-50 rounded-3xl border border-${stat.color}-100`}
-              >
-                <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-${stat.color}-100 text-${stat.color}-600 mb-4`}>
-                  <stat.icon className="w-7 h-7" />
-                </div>
-                <p className="text-4xl font-black text-gray-900 mb-1">{stat.value}</p>
-                <p className="text-gray-600 font-medium">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Demo Accounts Banner */}
-      <section className="py-16 px-4">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden"
+          >
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-20" />
             <div className="relative z-10">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("demoTitle")}</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("closedBeta")}</h2>
               <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-                {t("demoSubtitle")}
+                {t("closedBetaDesc")}
               </p>
-              <div className="grid md:grid-cols-4 gap-4">
-                {[
-                  { role: t("creator"), email: "sarah@demo.com", color: "violet" },
-                  { role: t("company"), email: "glow@demo.com", color: "pink" },
-                ].map((account, i) => (
-                  <div key={i} className="bg-white/10 backdrop-blur rounded-xl p-4 text-left">
-                    <p className={`text-${account.color}-400 text-sm font-bold mb-1`}>{account.role}</p>
-                    <p className="text-white text-sm">{account.email}</p>
-                    <p className="text-gray-400 text-xs mt-1">Pass: demo123</p>
-                  </div>
-                ))}
-              </div>
-              <Link href="/auth">
-                <Button size="lg" className="mt-8 bg-white text-gray-900 hover:bg-gray-100">
-                  {t("signIn")}
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
+              {waitlistState === "success" ? (
+                <p className="text-green-400 font-medium">{t("waitlistSuccess")}</p>
+              ) : (
+                <form
+                  onSubmit={handleWaitlistSubmit}
+                  className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
+                >
+                  <input
+                    type="email"
+                    required
+                    disabled={waitlistState === "loading"}
+                    placeholder={t("waitlistPlaceholder")}
+                    className="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50"
+                    value={waitlistEmail}
+                    onChange={(e) => setWaitlistEmail(e.target.value)}
+                  />
+                  <Button
+                    type="submit"
+                    disabled={waitlistState === "loading"}
+                    className="bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 text-white px-6"
+                  >
+                    {waitlistState === "loading" ? "…" : t("waitlistButton")}
+                  </Button>
+                </form>
+              )}
+              {(waitlistState === "duplicate" || waitlistState === "error") && (
+                <p className={`mt-4 text-sm font-medium ${waitlistState === "duplicate" ? "text-amber-400" : "text-red-400"}`}>
+                  {t(waitlistState === "duplicate" ? "waitlistDuplicate" : "waitlistError")}
+                </p>
+              )}
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -374,7 +376,7 @@ export default function HomePage() {
                 Join thousands of creators and brands building the future of content creation.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <Link href="/auth">
+                <Link href="/signup">
                   <Button size="lg" className="bg-white text-violet-600 hover:bg-gray-100 shadow-xl">
                     Get Started Free
                     <ArrowRight className="w-5 h-5 ml-2" />
@@ -418,8 +420,8 @@ export default function HomePage() {
             <div>
               <h4 className="font-bold mb-4 text-gray-900">For Users</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/auth" className="hover:text-violet-600 transition-colors">Creator Login</Link></li>
-                <li><Link href="/auth" className="hover:text-pink-600 transition-colors">Brand Login</Link></li>
+                <li><Link href="/login" className="hover:text-violet-600 transition-colors">Creator Login</Link></li>
+                <li><Link href="/login" className="hover:text-pink-600 transition-colors">Brand Login</Link></li>
 
               </ul>
             </div>

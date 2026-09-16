@@ -2,20 +2,34 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Menu, X, ChevronDown, Globe, Bell } from "lucide-react";
+import { Sparkles, Menu, X, ChevronDown, Globe, Bell, LogOut, Shield, BarChart3 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useTranslations, useLocale } from "next-intl";
 import { useNotifications } from "@/contexts/notifications-context";
+import { useAuth } from "@/contexts/auth-context";
 
 export function Navbar() {
   const t = useTranslations("nav");
   const locale = useLocale();
+  const router = useRouter();
+  const { user, isLoading, logout } = useAuth();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [langOpen, setLangOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  const dashboardPath = user?.role === "company" ? "/analytics/company" : "/analytics";
+
+  const handleLogout = () => {
+    logout();
+    setUserMenuOpen(false);
+    setMobileMenuOpen(false);
+    router.push(`/${locale}`);
+  };
 
   const navLinks = [
     { 
@@ -206,12 +220,69 @@ export function Navbar() {
               </AnimatePresence>
             </div>
 
-            <Link href="/auth">
-              <Button variant="ghost" size="sm">{t("login")}</Button>
-            </Link>
-            <Link href="/auth">
-              <Button size="sm">{t("getStarted")}</Button>
-            </Link>
+            {!isLoading &&
+              (user ? (
+                <div className="relative">
+            <button
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-xl hover:bg-violet-50 transition-colors"
+            >
+              <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${user.avatarColor} flex items-center justify-center text-white font-bold text-xs`}>
+                {user.avatar}
+              </div>
+              <ChevronDown className="w-4 h-4 text-gray-500" />
+            </button>
+            <AnimatePresence>
+              {userMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border p-2"
+                >
+                  <div className="px-3 py-2 border-b mb-1">
+                    <p className="font-semibold text-sm text-gray-900 truncate">{user.name}</p>
+                    <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  </div>
+                  <Link
+                    href={dashboardPath}
+                    onClick={() => setUserMenuOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition-colors"
+                  >
+                    <BarChart3 className="w-4 h-4" />
+                    {t("dashboard")}
+                  </Link>
+                  {user.isAdmin && (
+                    <Link
+                      href="/admin/overview"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition-colors"
+                    >
+                      <Shield className="w-4 h-4" />
+                      {t("admin")}
+                    </Link>
+                  )}
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    {t("logout")}
+                  </button>
+                </motion.div>
+              )}
+                </AnimatePresence>
+              </div>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="ghost" size="sm">{t("login")}</Button>
+                  </Link>
+                  <Link href="/signup">
+                    <Button size="sm">{t("getStarted")}</Button>
+                  </Link>
+                </>
+              ))}
           </div>
 
           {/* Mobile Menu Button */}
@@ -274,12 +345,40 @@ export function Navbar() {
                     </Link>
                   ))}
                 </div>
-                <Link href="/auth" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">{t("login")}</Button>
-                </Link>
-                <Link href="/auth" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full">{t("getStarted")}</Button>
-                </Link>
+                {!isLoading &&
+                  (user ? (
+                    <div className="px-4 pt-2 space-y-2">
+                      <div className="flex items-center gap-3 px-1 pb-2">
+                        <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${user.avatarColor} flex items-center justify-center text-white font-bold text-sm`}>
+                          {user.avatar}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="font-semibold text-sm text-gray-900 truncate">{user.name}</p>
+                          <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                        </div>
+                      </div>
+                      <Link href={dashboardPath} onClick={() => setMobileMenuOpen(false)}>
+                        <Button variant="outline" className="w-full">{t("dashboard")}</Button>
+                      </Link>
+                      {user.isAdmin && (
+                        <Link href="/admin/overview" onClick={() => setMobileMenuOpen(false)}>
+                          <Button variant="outline" className="w-full">{t("admin")}</Button>
+                        </Link>
+                      )}
+                      <Button variant="outline" className="w-full" onClick={handleLogout}>
+                        {t("logout")}
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                        <Button variant="outline" className="w-full">{t("login")}</Button>
+                      </Link>
+                      <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                        <Button className="w-full">{t("getStarted")}</Button>
+                      </Link>
+                    </>
+                  ))}
               </div>
             </div>
           </motion.div>

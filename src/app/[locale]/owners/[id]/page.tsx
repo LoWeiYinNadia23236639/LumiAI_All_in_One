@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
+import { ShareButton } from "@/components/share-button";
 
 const ownerData = {
   id: "1",
@@ -109,6 +110,7 @@ function OwnerProfilePage({ params }: { params: { id: string } }) {
                 </div>
               </div>
               <div className="pt-4 md:pt-16 flex gap-2">
+                <ShareButton />
                 <Button variant="outline" onClick={() => setShowContactModal(true)}>
                   <Mail className="w-4 h-4 mr-2" />
                   Contact

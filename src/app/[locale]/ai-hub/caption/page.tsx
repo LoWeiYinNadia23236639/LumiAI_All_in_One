@@ -11,21 +11,23 @@ import {
   Copy,
   CheckCircle,
   RefreshCw,
-  Heart,
-  TrendingUp,
   Zap,
   Lightbulb,
   ChevronDown,
   ChevronUp,
-  Quote
+  Quote,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AuthGuard } from "@/components/auth-guard";
+import { AiGenerationHistory } from "@/components/ai-generation-history";
+import { callGenerate, AiAuthError } from "@/lib/ai/client";
+import { useTranslations, useLocale } from "next-intl";
 
 interface CaptionResult {
   text: string;
-  engagement: "high" | "medium" | "low";
   hashtags: string[];
-  cta: string;
+  emoji: string;
 }
 
 const tones = [
@@ -71,41 +73,42 @@ const contentExamples = [
 ];
 
 export default function CaptionAIPage() {
+  const t = useTranslations("aiTools");
+  const locale = useLocale();
   const [prompt, setPrompt] = useState("");
   const [tone, setTone] = useState("confident");
   const [platform, setPlatform] = useState("instagram");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [results, setResults] = useState<CaptionResult[]>([]);
+  const [historyKey, setHistoryKey] = useState(0);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showExamples, setShowExamples] = useState(true);
   const [showTips, setShowTips] = useState(true);
 
-  const generate = () => {
-    if (!prompt.trim()) return;
+  const generate = async () => {
+    if (!prompt.trim() || loading) return;
     setLoading(true);
-    setTimeout(() => {
-      setResults([
-        {
-          text: "3 months ago, I couldn't run a mile without stopping. Today I finished my first half marathon. The only secret? Showing up, even when you don't feel like it. 💪✨",
-          engagement: "high",
-          hashtags: ["#fitnessjourney", "#transformation", "#running", "#motivation", "#nevergiveup"],
-          cta: "What's your fitness goal? Drop it below! 👇"
-        },
-        {
-          text: "This transformation isn't just physical. It's about proving to myself that I'm capable of more than I thought. 3 months of early mornings and zero regrets. 🏃‍♀️",
-          engagement: "high",
-          hashtags: ["#selfimprovement", "#mindset", "#growth", "#fitness"],
-          cta: "Double tap if you're on your own journey! ❤️"
-        },
-        {
-          text: "POV: You decided to stop making excuses and start making progress. The glow up is real, inside and out. 90 days, infinite growth. 💫",
-          engagement: "medium",
-          hashtags: ["#glowup", "#progress", "#fitnessmotivation", "#transformationtuesday"],
-          cta: "Save this for when you need motivation! 📌"
-        },
-      ]);
+    setError(false);
+    try {
+      const data = await callGenerate<{ captions: CaptionResult[] }>("caption", {
+        prompt,
+        tone,
+        platform,
+        locale,
+      });
+      setResults(data.captions ?? []);
+      setHistoryKey((k) => k + 1);
+      window.scrollTo({ top: 400, behavior: "smooth" });
+    } catch (err) {
+      if (err instanceof AiAuthError) {
+        window.location.href = `/${locale}/login`;
+        return;
+      }
+      setError(true);
+    } finally {
       setLoading(false);
-    }, 1800);
+    }
   };
 
   const copy = (text: string, index: number) => {
@@ -121,15 +124,8 @@ export default function CaptionAIPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const getEngagementColor = (level: string) => {
-    switch (level) {
-      case "high": return "bg-green-100 text-green-700";
-      case "medium": return "bg-yellow-100 text-yellow-700";
-      default: return "bg-gray-100 text-gray-700";
-    }
-  };
-
   return (
+    <AuthGuard>
     <main className="min-h-screen bg-gradient-to-b from-pink-50/50 to-white pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4">
         {/* Header */}
@@ -261,6 +257,18 @@ export default function CaptionAIPage() {
             )}
           </div>
 
+          {error && (
+            <div className="mb-6 p-3 bg-red-50 text-red-700 rounded-xl flex items-center justify-between gap-3 text-sm">
+              <span className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                {t("generateFailed")}
+              </span>
+              <Button size="sm" variant="outline" onClick={generate} disabled={loading}>
+                {t("retry")}
+              </Button>
+            </div>
+          )}
+
           <Button 
             onClick={generate}
             disabled={loading || !prompt.trim()}
@@ -269,7 +277,7 @@ export default function CaptionAIPage() {
             {loading ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Creating captions...
+                {t("generating")}
               </>
             ) : (
               <>
@@ -304,13 +312,9 @@ export default function CaptionAIPage() {
                 className="bg-white rounded-2xl border shadow-sm overflow-hidden"
               >
                 <div className="p-6">
-                  {/* Engagement Badge */}
+                  {/* Emoji + Top Pick */}
                   <div className="flex items-center gap-2 mb-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1 ${getEngagementColor(caption.engagement)}`}>
-                      <TrendingUp className="w-3 h-3" />
-                      {caption.engagement === "high" ? "High Engagement Predicted" : 
-                       caption.engagement === "medium" ? "Good Engagement" : "Standard Engagement"}
-                    </span>
+                    <span className="text-2xl leading-none">{caption.emoji}</span>
                     {i === 0 && (
                       <span className="px-3 py-1 bg-pink-100 text-pink-700 text-xs rounded-full flex items-center gap-1">
                         <Zap className="w-3 h-3" />
@@ -322,17 +326,11 @@ export default function CaptionAIPage() {
                   {/* Caption Text */}
                   <p className="text-lg mb-4 leading-relaxed">{caption.text}</p>
 
-                  {/* CTA */}
-                  <p className="text-neutral-600 mb-4 flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-pink-500" />
-                    {caption.cta}
-                  </p>
-
                   {/* Hashtags */}
                   <div className="flex flex-wrap gap-2 mb-4">
                     {caption.hashtags.map((tag, j) => (
                       <span key={j} className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-sm">
-                        {tag}
+                        #{tag.replace(/^#/, "")}
                       </span>
                     ))}
                   </div>
@@ -342,7 +340,7 @@ export default function CaptionAIPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => copy(caption.text + "\n\n" + caption.hashtags.join(" ") + "\n\n" + caption.cta, i)}
+                      onClick={() => copy(caption.text + "\n\n" + caption.hashtags.map(tag => "#" + tag.replace(/^#/, "")).join(" "), i)}
                     >
                       {copiedIndex === i ? (
                         <>
@@ -365,6 +363,11 @@ export default function CaptionAIPage() {
             ))}
           </motion.div>
         )}
+
+        {/* History */}
+        <div className="mt-8">
+          <AiGenerationHistory types={["caption"]} refreshKey={historyKey} />
+        </div>
 
         {/* Tips */}
         <div className="mt-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl p-6 text-white">
@@ -392,6 +395,7 @@ export default function CaptionAIPage() {
           </ul>
         </div>
       </div>
-    </main>
+      </main>
+    </AuthGuard>
   );
 }

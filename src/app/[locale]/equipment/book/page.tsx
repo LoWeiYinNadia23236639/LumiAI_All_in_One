@@ -15,12 +15,12 @@ import {
   Shield,
   MessageSquare,
   Heart,
-  Share2,
   ChevronRight,
   AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
+import { ShareButton } from "@/components/share-button";
 import { useAuth } from "@/contexts/auth-context";
 import { useTranslations } from "next-intl";
 
@@ -296,6 +296,7 @@ function BookingContent() {
                     <MessageSquare className="w-4 h-4 mr-2" />
                     {t("messageOwner")}
                   </Button>
+                  <ShareButton variant="outline" className="px-3" label="" />
                   <Button variant="outline" className="px-3">
                     <Heart className="w-4 h-4" />
                   </Button>

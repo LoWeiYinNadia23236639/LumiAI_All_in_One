@@ -10,7 +10,6 @@ import {
   Loader2,
   Camera,
   Sun,
-  Clock,
   Download,
   Copy,
   CheckCircle,
@@ -18,23 +17,26 @@ import {
   Play,
   Sparkles,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  AlertCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AuthGuard } from "@/components/auth-guard";
+import { AiGenerationHistory } from "@/components/ai-generation-history";
+import { callGenerate, AiAuthError } from "@/lib/ai/client";
+import { useTranslations, useLocale } from "next-intl";
 
 interface Scene {
-  id: number;
-  shot: string;
-  action: string;
+  scene_number: number;
+  description: string;
+  shot_angle: string;
   lighting: string;
-  duration: string;
 }
 
 interface StoryboardResult {
-  title: string;
   scenes: Scene[];
-  equipment: string[];
-  estimatedTime: string;
+  equipment_checklist: string[];
+  pro_tips: string[];
 }
 
 const examples = [
@@ -68,61 +70,40 @@ const tips = [
 ];
 
 export default function StoryboardAIPage() {
+  const t = useTranslations("aiTools");
+  const locale = useLocale();
   const [prompt, setPrompt] = useState("");
+  const [mood, setMood] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
   const [result, setResult] = useState<StoryboardResult | null>(null);
+  const [historyKey, setHistoryKey] = useState(0);
   const [copied, setCopied] = useState(false);
   const [showTips, setShowTips] = useState(true);
   const [showExamples, setShowExamples] = useState(true);
 
-  const generate = () => {
-    if (!prompt.trim()) return;
+  const generate = async () => {
+    if (!prompt.trim() || loading) return;
     setLoading(true);
-    setTimeout(() => {
-      setResult({
-        title: "Morning Glow Skincare Routine",
-        scenes: [
-          { 
-            id: 1, 
-            shot: "Wide shot - Bedroom with natural light", 
-            action: "Wake up, stretch, look at phone",
-            lighting: "Soft morning sun, golden hour",
-            duration: "3s"
-          },
-          { 
-            id: 2, 
-            shot: "Medium close-up - Bathroom mirror", 
-            action: "Splash water on face, satisfied smile",
-            lighting: "Bright, even bathroom lighting",
-            duration: "5s"
-          },
-          { 
-            id: 3, 
-            shot: "Close-up - Product in hand", 
-            action: "Unscrew cap, show texture on fingers",
-            lighting: "Macro ring light for product detail",
-            duration: "4s"
-          },
-          { 
-            id: 4, 
-            shot: "Medium shot - Application process", 
-            action: "Apply serum, massage gently upward",
-            lighting: "Natural side light for dimension",
-            duration: "8s"
-          },
-          { 
-            id: 5, 
-            shot: "Close-up - Final glow", 
-            action: "Turn face, show radiant skin, wink",
-            lighting: "Golden backlight for glow effect",
-            duration: "5s"
-          },
-        ],
-        equipment: ["Ring light (optional)", "Tripod", "iPhone 14 Pro or better"],
-        estimatedTime: "2 hours filming"
+    setError(false);
+    try {
+      const data = await callGenerate<StoryboardResult>("storyboard", {
+        prompt,
+        mood,
+        locale,
       });
+      setResult(data);
+      setHistoryKey((k) => k + 1);
+      window.scrollTo({ top: 400, behavior: "smooth" });
+    } catch (err) {
+      if (err instanceof AiAuthError) {
+        window.location.href = `/${locale}/login`;
+        return;
+      }
+      setError(true);
+    } finally {
       setLoading(false);
-    }, 2000);
+    }
   };
 
   const loadExample = (examplePrompt: string) => {
@@ -133,17 +114,15 @@ export default function StoryboardAIPage() {
   const copyToClipboard = () => {
     if (!result) return;
     const text = `
-${result.title}
+${prompt.slice(0, 80)}
 
 ${result.scenes.map(s => `
-Scene ${s.id}: ${s.shot}
-Action: ${s.action}
+Scene ${s.scene_number}: ${s.shot_angle}
+Action: ${s.description}
 Lighting: ${s.lighting}
-Duration: ${s.duration}
 `).join('')}
 
-Equipment: ${result.equipment.join(", ")}
-Estimated Time: ${result.estimatedTime}
+Equipment: ${result.equipment_checklist.join(", ")}
     `.trim();
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -151,6 +130,7 @@ Estimated Time: ${result.estimatedTime}
   };
 
   return (
+    <AuthGuard>
     <main className="min-h-screen bg-gradient-to-b from-violet-50/50 to-white pt-24 pb-16">
       <div className="max-w-5xl mx-auto px-4">
         {/* Header */}
@@ -220,6 +200,27 @@ Estimated Time: ${result.estimatedTime}
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
+          <label className="block text-sm font-medium text-neutral-700 mb-3">
+            Mood / Atmosphere (optional)
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. cozy morning, high-energy, cinematic, minimalist..."
+            className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 mb-4"
+            value={mood}
+            onChange={(e) => setMood(e.target.value)}
+          />
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-xl flex items-center justify-between gap-3 text-sm">
+              <span className="flex items-center gap-2">
+                <AlertCircle className="w-4 h-4" />
+                {t("generateFailed")}
+              </span>
+              <Button size="sm" variant="outline" onClick={generate} disabled={loading}>
+                {t("retry")}
+              </Button>
+            </div>
+          )}
           <div className="flex items-center justify-between">
             <p className="text-sm text-neutral-500">
               Tip: Include duration, setting, and key actions for best results
@@ -232,7 +233,7 @@ Estimated Time: ${result.estimatedTime}
               {loading ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Generating Storyboard...
+                  {t("generating")}
                 </>
               ) : (
                 <>
@@ -258,12 +259,8 @@ Estimated Time: ${result.estimatedTime}
                   <Sparkles className="w-5 h-5" />
                   <span className="text-sm font-medium opacity-90">AI-Generated Storyboard</span>
                 </div>
-                <h2 className="text-2xl font-bold">{result.title}</h2>
+                <h2 className="text-2xl font-bold">{prompt.slice(0, 60)}</h2>
                 <p className="text-white/80 flex items-center gap-4 mt-1">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {result.estimatedTime}
-                  </span>
                   <span>{result.scenes.length} scenes</span>
                 </p>
               </div>
@@ -288,26 +285,22 @@ Estimated Time: ${result.estimatedTime}
               <div className="space-y-4 mb-8">
                 {result.scenes.map((scene, index) => (
                   <motion.div
-                    key={scene.id}
+                    key={scene.scene_number}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
                     className="flex gap-4 p-4 bg-violet-50 rounded-xl border border-violet-100"
                   >
                     <div className="w-12 h-12 rounded-xl bg-violet-500 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
-                      {scene.id}
+                      {scene.scene_number}
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-violet-900 mb-1">{scene.shot}</h3>
-                      <p className="text-neutral-700 mb-2">{scene.action}</p>
+                      <h3 className="font-semibold text-violet-900 mb-1">{scene.shot_angle}</h3>
+                      <p className="text-neutral-700 mb-2">{scene.description}</p>
                       <div className="flex flex-wrap gap-3 text-sm">
                         <span className="flex items-center gap-1 text-neutral-600 bg-white px-2 py-1 rounded-lg">
                           <Sun className="w-4 h-4 text-amber-500" />
                           {scene.lighting}
-                        </span>
-                        <span className="flex items-center gap-1 text-neutral-600 bg-white px-2 py-1 rounded-lg">
-                          <Clock className="w-4 h-4 text-blue-500" />
-                          {scene.duration}
                         </span>
                       </div>
                     </div>
@@ -322,16 +315,39 @@ Estimated Time: ${result.estimatedTime}
                   Recommended Equipment
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {result.equipment.map((item, i) => (
+                  {result.equipment_checklist.map((item, i) => (
                     <span key={i} className="px-3 py-1.5 bg-white border rounded-lg text-sm">
                       {item}
                     </span>
                   ))}
                 </div>
               </div>
+
+              {/* Pro Tips */}
+              {result.pro_tips.length > 0 && (
+                <div className="bg-violet-50 rounded-xl p-4 mt-4">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-violet-500" />
+                    Director&apos;s Tips
+                  </h4>
+                  <ul className="space-y-2">
+                    {result.pro_tips.map((tip, i) => (
+                      <li key={i} className="text-sm text-neutral-700 flex items-start gap-2">
+                        <span className="text-violet-400 mt-0.5">•</span>
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </motion.div>
         )}
+
+        {/* History */}
+        <div className="mt-8">
+          <AiGenerationHistory types={["storyboard"]} refreshKey={historyKey} />
+        </div>
 
         {/* Tips Section */}
         <div className="mt-12 bg-white rounded-2xl border shadow-sm overflow-hidden">
@@ -358,6 +374,7 @@ Estimated Time: ${result.estimatedTime}
           )}
         </div>
       </div>
-    </main>
+      </main>
+    </AuthGuard>
   );
 }

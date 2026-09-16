@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { 
@@ -20,41 +20,87 @@ import {
   LogOut,
   Settings,
   Bookmark,
-  Shield
+  Shield,
+  CheckCircle2,
+  XCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CompanyGuard } from "@/components/role-guard";
 import { useAuth } from "@/contexts/auth-context";
 import { useSavedLists } from "@/contexts/saved-lists-context";
+import { getSupabaseClient } from "@/lib/supabase/client";
+import { formatDate } from "@/lib/format";
+import { useTranslations, useLocale } from "next-intl";
 
-const mockData = {
-  overview: {
-    campaigns: { value: "12", change: "+3", trend: "up" },
-    spent: { value: "$45,200", change: "+18%", trend: "up" },
-    roi: { value: "3.8x", change: "+0.4x", trend: "up" },
-    reach: { value: "5.2M", change: "+25%", trend: "up" },
-  },
-  activeCampaigns: [
-    { name: "Summer Launch 2026", budget: "$15,000", spent: "$8,200", reach: "1.2M", status: "Active", influencers: 8 },
-    { name: "Product Review Drive", budget: "$10,000", spent: "6,500", reach: "890K", status: "Active", influencers: 12 },
-    { name: "Holiday Special", budget: "$20,000", spent: "$0", reach: "0", status: "Draft", influencers: 0 },
-  ],
-  topInfluencers: [
-    { name: "Sarah Chen", handle: "@sarahstyles", performance: "4.2x ROI", contentType: "Fashion", followers: "125K" },
-    { name: "Mike Chen", handle: "@techwithmike", performance: "5.1x ROI", contentType: "Tech", followers: "450K" },
-    { name: "Emma Davis", handle: "@emmacooks", performance: "3.8x ROI", contentType: "Food", followers: "210K" },
-  ],
-  applications: [
-    { creator: "Jessica Kim", niche: "Beauty", followers: "175K", engagement: "5.8%", appliedAt: "2 hours ago" },
-    { creator: "David Park", niche: "Travel", followers: "320K", engagement: "4.5%", appliedAt: "5 hours ago" },
-    { creator: "Alex Rivera", niche: "Tech", followers: "680K", engagement: "3.9%", appliedAt: "1 day ago" },
-  ],
-};
+interface ReceivedApplication {
+  id: string;
+  status: string;
+  message: string | null;
+  created_at: string;
+  campaignId: string;
+  campaignTitle: string;
+  creatorName: string;
+  creatorNiche: string | null;
+  creatorFollowers: number | null;
+}
 
 function CompanyAnalytics() {
+  const t = useTranslations("analytics");
+  const locale = useLocale();
   const [timeRange, setTimeRange] = useState("30d");
   const { user, logout } = useAuth();
   const { savedCreators } = useSavedLists();
+  const [receivedApps, setReceivedApps] = useState<ReceivedApplication[]>([]);
+  const [appsLoaded, setAppsLoaded] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!user) return;
+    const supabase = getSupabaseClient();
+    (async () => {
+      const { data } = await supabase
+        .from("campaigns")
+        .select("id, title, applications(id, status, message, created_at, profiles(name, niche, follower_count))")
+        .eq("brand_id", user.id);
+      const flat: ReceivedApplication[] = [];
+      ((data ?? []) as unknown as { id: string; title: string; applications: {
+        id: string; status: string; message: string | null; created_at: string;
+        profiles: { name: string; niche: string | null; follower_count: number | null } | null;
+      }[] | null }[]).forEach((c) => {
+        (c.applications ?? []).forEach((a) => {
+          flat.push({
+            id: a.id,
+            status: a.status,
+            message: a.message,
+            created_at: a.created_at,
+            campaignId: c.id,
+            campaignTitle: c.title,
+            creatorName: a.profiles?.name ?? "—",
+            creatorNiche: a.profiles?.niche ?? null,
+            creatorFollowers: a.profiles?.follower_count ?? null,
+          });
+        });
+      });
+      flat.sort((a, b) => b.created_at.localeCompare(a.created_at));
+      setReceivedApps(flat);
+      setAppsLoaded(true);
+    })();
+  }, [user]);
+
+  const handleStatusUpdate = async (appId: string, status: "accepted" | "rejected") => {
+    setActionLoading(appId);
+    const supabase = getSupabaseClient();
+    const { error } = await supabase
+      .from("applications")
+      .update({ status })
+      .eq("id", appId);
+    if (!error) {
+      setReceivedApps((prev) =>
+        prev.map((a) => (a.id === appId ? { ...a, status } : a))
+      );
+    }
+    setActionLoading(null);
+  };
 
   const verificationSteps = [
     { label: "Email", done: true },
@@ -125,7 +171,6 @@ function CompanyAnalytics() {
             { label: "ROI", key: "roi", icon: TrendingUp, color: "text-violet-500", bg: "bg-violet-50" },
             { label: "Total Reach", key: "reach", icon: Users, color: "text-orange-500", bg: "bg-orange-50" },
           ].map((stat) => {
-            const data = mockData.overview[stat.key as keyof typeof mockData.overview];
             return (
               <motion.div
                 key={stat.key}
@@ -139,9 +184,9 @@ function CompanyAnalytics() {
                   </div>
                   <p className="text-sm text-neutral-500">{stat.label}</p>
                 </div>
-                <p className="text-2xl font-bold text-neutral-900">{data.value}</p>
-                <p className={`text-sm font-medium ${data.trend === "up" ? "text-green-600" : "text-red-600"}`}>
-                  {data.change} vs last period
+                <p className="text-2xl font-bold text-neutral-400">—</p>
+                <p className="text-sm font-medium text-neutral-400">
+                  {t("noDataYet")}
                 </p>
               </motion.div>
             );
@@ -158,45 +203,16 @@ function CompanyAnalytics() {
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </div>
-            <div className="space-y-4">
-              {mockData.activeCampaigns.map((campaign, i) => (
-                <div key={i} className="p-4 bg-gray-50 rounded-xl">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-medium">{campaign.name}</h4>
-                      <span className={`px-2 py-0.5 rounded-full text-xs ${
-                        campaign.status === "Active" ? "bg-green-100 text-green-700" :
-                        "bg-gray-200 text-gray-600"
-                      }`}>
-                        {campaign.status}
-                      </span>
-                    </div>
-                    <span className="text-sm text-neutral-500">{campaign.influencers} influencers</span>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <p className="text-neutral-500">Budget</p>
-                      <p className="font-medium">{campaign.budget}</p>
-                    </div>
-                    <div>
-                      <p className="text-neutral-500">Spent</p>
-                      <p className="font-medium">${campaign.spent}</p>
-                    </div>
-                    <div>
-                      <p className="text-neutral-500">Reach</p>
-                      <p className="font-medium">{campaign.reach}</p>
-                    </div>
-                  </div>
-                  <div className="mt-3">
-                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-blue-500 to-violet-500 rounded-full"
-                        style={{ width: `${(parseInt(campaign.spent.replace(/,/g, "")) / parseInt(campaign.budget.replace(/[$,]/g, ""))) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
+            <div className="py-12 text-center">
+              <Briefcase className="w-14 h-14 text-neutral-300 mx-auto mb-4" />
+              <p className="font-medium text-neutral-700 mb-1">{t("noDataYet")}</p>
+              <p className="text-sm text-neutral-500 mb-6">{t("brandEmptyDesc")}</p>
+              <Link href="/marketplace/campaigns/new">
+                <Button className="bg-gradient-to-r from-blue-500 to-violet-600 text-white">
+                  {t("brandEmptyCta")}
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
             </div>
           </div>
 
@@ -250,49 +266,90 @@ function CompanyAnalytics() {
             {/* New Applications */}
             <div className="bg-white rounded-2xl p-6 border shadow-sm">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-lg">New Applications</h3>
-                <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">{mockData.applications.length} new</span>
+                <h3 className="font-bold text-lg">{t("receivedAppsTitle")}</h3>
               </div>
-              <div className="space-y-3">
-                {mockData.applications.map((app, i) => (
-                  <div key={i} className="p-3 bg-gray-50 rounded-xl">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-sm">{app.creator}</p>
-                        <p className="text-xs text-neutral-500">{app.niche} • {app.followers}</p>
+              {!appsLoaded ? (
+                <div className="py-6 text-center">
+                  <div className="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full mx-auto" />
+                </div>
+              ) : receivedApps.length === 0 ? (
+                <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
+              ) : (
+                <div className="space-y-3">
+                  {receivedApps.map((app) => (
+                    <div key={app.id} className="p-3 rounded-xl border border-gray-100">
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                        <span className="font-medium text-sm">{app.creatorName}</span>
+                        {app.creatorNiche && (
+                          <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">
+                            {app.creatorNiche}
+                          </span>
+                        )}
+                        {app.creatorFollowers != null && (
+                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                            {t("followersBadge", { count: app.creatorFollowers.toLocaleString() })}
+                          </span>
+                        )}
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                            app.status === "accepted"
+                              ? "bg-green-100 text-green-700"
+                              : app.status === "rejected"
+                                ? "bg-neutral-200 text-neutral-500"
+                                : "bg-yellow-100 text-yellow-700"
+                          }`}
+                        >
+                          {t(`appStatus.${app.status}`)}
+                        </span>
                       </div>
-                      <span className="text-xs text-neutral-400">{app.appliedAt}</span>
+                      <Link
+                        href={`/marketplace/campaigns/${app.campaignId}`}
+                        className="text-xs text-blue-600 hover:underline"
+                      >
+                        {app.campaignTitle}
+                      </Link>
+                      {app.message && (
+                        <p className="text-xs text-neutral-600 mt-1.5 line-clamp-3 whitespace-pre-line">
+                          {app.message}
+                        </p>
+                      )}
+                      <p className="text-xs text-neutral-400 mt-1">
+                        {formatDate(app.created_at, locale)}
+                      </p>
+                      {app.status === "pending" && (
+                        <div className="flex gap-2 mt-2">
+                          <Button
+                            size="sm"
+                            isLoading={actionLoading === app.id}
+                            disabled={actionLoading !== null}
+                            onClick={() => handleStatusUpdate(app.id, "accepted")}
+                            className="bg-green-500 text-white hover:bg-green-600 h-7 px-3 text-xs"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                            {t("accept")}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            disabled={actionLoading !== null}
+                            onClick={() => handleStatusUpdate(app.id, "rejected")}
+                            className="text-neutral-600 h-7 px-3 text-xs"
+                          >
+                            <XCircle className="w-3.5 h-3.5 mr-1" />
+                            {t("reject")}
+                          </Button>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex gap-2 mt-2">
-                      <Button size="sm" variant="outline" className="flex-1 text-xs">Review</Button>
-                      <Button size="sm" className="flex-1 text-xs bg-blue-500">Accept</Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Top Performing Creators */}
             <div className="bg-white rounded-2xl p-6 border shadow-sm">
               <h3 className="font-bold text-lg mb-4">Top Performers</h3>
-              <div className="space-y-3">
-                {mockData.topInfluencers.map((inf, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold ${
-                      i === 0 ? "bg-yellow-400" : i === 1 ? "bg-gray-400" : "bg-orange-400"
-                    }`}>
-                      {i + 1}
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{inf.name}</p>
-                      <p className="text-xs text-neutral-500">{inf.handle}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-green-600">{inf.performance}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
             </div>
 
             {/* AI Recommendations */}
@@ -301,16 +358,7 @@ function CompanyAnalytics() {
                 <Zap className="w-5 h-5" />
                 <h3 className="font-bold">AI Suggestions</h3>
               </div>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <Star className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  Increase budget for tech creators - 2.3x better ROI
-                </li>
-                <li className="flex items-start gap-2">
-                  <Star className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                  5 creators matching your criteria joined this week
-                </li>
-              </ul>
+              <p className="text-sm text-white/80">{t("noDataYet")}</p>
             </div>
           </div>
         </div>

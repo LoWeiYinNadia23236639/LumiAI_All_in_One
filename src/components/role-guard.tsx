@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { Lock, User, Building2, Globe, Camera, Package } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { useTranslations, useLocale } from "next-intl";
 
 type UserRole = "influencer" | "company" | "admin";
 
@@ -15,15 +16,17 @@ interface RoleGuardProps {
   fallbackUrl?: string;
 }
 
-export function RoleGuard({ children, allowedRoles, fallbackUrl = "/auth" }: RoleGuardProps) {
+export function RoleGuard({ children, allowedRoles, fallbackUrl }: RoleGuardProps) {
   const router = useRouter();
+  const locale = useLocale();
+  const t = useTranslations("auth");
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading && !user) {
-      router.push(fallbackUrl);
+      router.push(fallbackUrl ?? `/${locale}/login`);
     }
-  }, [user, isLoading, router, fallbackUrl]);
+  }, [user, isLoading, router, fallbackUrl, locale]);
 
   if (isLoading) {
     return (
@@ -38,10 +41,10 @@ export function RoleGuard({ children, allowedRoles, fallbackUrl = "/auth" }: Rol
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center">
           <Lock className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Authentication Required</h2>
-          <p className="text-neutral-600 mb-6">Please sign in to access this page.</p>
-          <Link href="/auth">
-            <Button>Sign In</Button>
+          <h2 className="text-2xl font-bold mb-2">{t("authRequired")}</h2>
+          <p className="text-neutral-600 mb-6">{t("pleaseSignIn")}</p>
+          <Link href="/login">
+            <Button>{t("signIn")}</Button>
           </Link>
         </div>
       </div>
@@ -73,7 +76,7 @@ export function RoleGuard({ children, allowedRoles, fallbackUrl = "/auth" }: Rol
         break;
 
       case "admin":
-        redirectUrl = "/admin";
+        redirectUrl = "/admin/overview";
         icon = User;
         roleName = "Admin";
         description = "This page is not for admin users.";
