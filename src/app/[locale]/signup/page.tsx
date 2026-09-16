@@ -146,7 +146,7 @@ export default function SignupPage() {
                 type="email"
                 required
                 autoComplete="email"
-                placeholder="you@example.com"
+                placeholder={t("emailPlaceholder")}
                 className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}

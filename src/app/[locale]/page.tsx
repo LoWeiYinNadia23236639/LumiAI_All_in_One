@@ -155,7 +155,7 @@ export default function HomePage() {
             </motion.p>
 
             {/* Quick Feature Icons */}
-            <motion.div variants={itemVariants} className="flex justify-center gap-4 mb-10">
+            <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4 mb-10">
               {heroFeatures.map((feature, i) => (
                 <div key={i} className={`flex items-center gap-2 px-4 py-2 rounded-full ${feature.bgColor}`}>
                   <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center`}>

@@ -25,6 +25,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
 import { useSavedLists } from "@/contexts/saved-lists-context";
+import { useTranslations } from "next-intl";
 
 const influencers = [
   {
@@ -174,16 +175,19 @@ const influencers = [
 ];
 
 const filters = {
-  niches: ["All", "Fashion", "Beauty", "Tech", "Gaming", "Food", "Travel", "Fitness", "Lifestyle"],
   followerRanges: ["All", "10K-50K", "50K-100K", "100K-500K", "500K+"],
   engagementRanges: ["All", "1-3%", "3-5%", "5%+"],
 };
 
 function TalentPage() {
+  const t = useTranslations("marketplace");
+  const tCommon = useTranslations("common");
   const [selectedNiche, setSelectedNiche] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const { isCreatorSaved, toggleCreator } = useSavedLists();
+
+  const nicheOptions = t.raw("nicheOptions") as { value: string; label: string }[];
 
   const filteredInfluencers = influencers.filter(i => {
     if (selectedNiche !== "All" && !i.niche.toLowerCase().includes(selectedNiche.toLowerCase())) return false;
@@ -199,23 +203,25 @@ function TalentPage() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-100 to-purple-100 text-violet-700 text-sm font-semibold mb-4">
             <Users className="w-4 h-4" />
-            Discover Creators
+            {t("discoverCreators")}
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
-            Find Your Perfect <span className="gradient-text">Creator</span>
+            {t.rich("findPerfectCreator", {
+              creator: (chunks) => <span className="gradient-text">{chunks}</span>,
+            })}
           </h1>
           <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            Browse thousands of vetted startup influencers. Filter by niche, audience, engagement, and more.
+            {t("talentSubtitle")}
           </p>
         </div>
 
         {/* Stats Bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { value: "10,000+", label: "Active Creators", icon: Users },
-            { value: "50+", label: "Niche Categories", icon: Filter },
-            { value: "95%", label: "Avg Engagement", icon: BarChart3 },
-            { value: "4.8", label: "Creator Rating", icon: Star },
+            { value: "10,000+", label: t("activeCreators"), icon: Users },
+            { value: "50+", label: t("statNicheCategories"), icon: Filter },
+            { value: "95%", label: t("statAvgEngagement"), icon: BarChart3 },
+            { value: "4.8", label: t("statCreatorRating"), icon: Star },
           ].map((stat, i) => (
             <div key={i} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
@@ -236,7 +242,7 @@ function TalentPage() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
               <input 
                 type="text"
-                placeholder="Search creators by name, handle, or niche..."
+                placeholder={t("searchCreatorsPlaceholder")}
                 className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -244,22 +250,22 @@ function TalentPage() {
             </div>
             <Button variant="outline">
               <Filter className="w-4 h-4 mr-2" />
-              Filters
+              {t("filters")}
             </Button>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {filters.niches.map((niche) => (
+            {nicheOptions.map((niche) => (
               <button
-                key={niche}
-                onClick={() => setSelectedNiche(niche)}
+                key={niche.value}
+                onClick={() => setSelectedNiche(niche.value)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  selectedNiche === niche
+                  selectedNiche === niche.value
                     ? "bg-violet-500 text-white"
                     : "bg-neutral-100 text-neutral-700 hover:bg-violet-100"
                 }`}
               >
-                {niche}
+                {niche.label}
               </button>
             ))}
           </div>
@@ -317,21 +323,21 @@ function TalentPage() {
               <div className="grid grid-cols-3 gap-3 mb-4">
                 <div className="text-center p-3 bg-gray-50 rounded-xl">
                   <p className="font-bold text-neutral-900">{influencer.followers}</p>
-                  <p className="text-xs text-neutral-500">Followers</p>
+                  <p className="text-xs text-neutral-500">{t("followers")}</p>
                 </div>
                 <div className="text-center p-3 bg-gray-50 rounded-xl">
                   <p className="font-bold text-green-600">{influencer.engagement}</p>
-                  <p className="text-xs text-neutral-500">Engagement</p>
+                  <p className="text-xs text-neutral-500">{t("engagement")}</p>
                 </div>
                 <div className="text-center p-3 bg-gray-50 rounded-xl">
                   <p className="font-bold text-violet-600">{influencer.avgViews}</p>
-                  <p className="text-xs text-neutral-500">Avg Views</p>
+                  <p className="text-xs text-neutral-500">{t("avgViews")}</p>
                 </div>
               </div>
 
               {/* Recent Work / Portfolio Preview */}
               <div className="mb-4">
-                <p className="text-xs text-neutral-500 mb-2">Recent Work</p>
+                <p className="text-xs text-neutral-500 mb-2">{t("recentWork")}</p>
                 <div className="grid grid-cols-3 gap-2">
                   {influencer.recentWork.map((work, i) => (
                     <div key={i} className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center group/work cursor-pointer overflow-hidden">
@@ -363,13 +369,13 @@ function TalentPage() {
               {/* Footer */}
               <div className="flex items-center justify-between pt-4 border-t">
                 <div>
-                  <p className="text-xs text-neutral-500">Starting at</p>
+                  <p className="text-xs text-neutral-500">{t("startingAt")}</p>
                   <p className="font-bold text-neutral-900">{influencer.rateRange}</p>
                 </div>
                 <Link href={`/creators/${influencer.id}`}>
                   <Button size="sm" className="bg-gradient-to-r from-violet-500 to-purple-600 text-white">
                     <ArrowUpRight className="w-4 h-4 mr-1" />
-                    More Info
+                    {tCommon("moreInfo")}
                   </Button>
                 </Link>
               </div>

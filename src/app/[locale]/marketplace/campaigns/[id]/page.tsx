@@ -15,14 +15,44 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
+  ClipboardList,
+  Package,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
+import { Skeleton, ListRowSkeleton } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useToast } from "@/components/ui/toast";
 import { useAuth } from "@/contexts/auth-context";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/format";
+import { formatRelativeTime, daysUntil } from "@/lib/relative-time";
 import { callApply, ApplyAuthError, DuplicateApplicationError } from "@/lib/applications/client";
 import { useTranslations, useLocale } from "next-intl";
+
+function DeadlineChip({ deadline }: { deadline: string | null }) {
+  const tc = useTranslations("common");
+  const d = daysUntil(deadline);
+  if (d === null || d > 7) return null;
+  if (d === 0) {
+    return (
+      <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+        {tc("deadlineToday")}
+      </span>
+    );
+  }
+  const urgent = d <= 3;
+  return (
+    <span
+      className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+        urgent ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"
+      }`}
+    >
+      {urgent ? tc("deadlineUrgent", { days: d }) : tc("deadlineSoon", { days: d })}
+    </span>
+  );
+}
 
 interface CampaignDetail {
   id: string;
@@ -56,13 +86,16 @@ function statusBadgeClass(status: string) {
 
 function CampaignDetailPage() {
   const t = useTranslations("marketplace.campaignDetail");
+  const tc = useTranslations("common");
   const locale = useLocale();
   const params = useParams();
   const campaignId = params.id as string;
   const { user } = useAuth();
+  const toast = useToast();
 
   const [campaign, setCampaign] = useState<CampaignDetail | null>(null);
   const [applicants, setApplicants] = useState<ApplicationRow[]>([]);
+  const [applicantsLoading, setApplicantsLoading] = useState(true);
   const [myApplication, setMyApplication] = useState<ApplicationRow | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -71,9 +104,13 @@ function CampaignDetailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [rejectTarget, setRejectTarget] = useState<string | null>(null);
 
   const isOwnerOrAdmin =
     !!user && (user.role === "admin" || user.id === campaign?.brand_id);
+
+  const pitchLength = pitch.trim().length;
+  const pitchInvalid = pitchLength > 0 && pitchLength < 20;
 
   useEffect(() => {
     if (!campaignId) return;
@@ -87,9 +124,11 @@ function CampaignDetailPage() {
       if (error || !data) {
         setLoadError(true);
         setIsLoading(false);
+        setApplicantsLoading(false);
         return;
       }
       setCampaign(data as unknown as CampaignDetail);
+      setIsLoading(false);
 
       const { data: appRows } = await supabase
         .from("applications")
@@ -97,7 +136,7 @@ function CampaignDetailPage() {
         .eq("campaign_id", campaignId)
         .order("created_at", { ascending: false });
       setApplicants((appRows ?? []) as unknown as ApplicationRow[]);
-      setIsLoading(false);
+      setApplicantsLoading(false);
     })();
   }, [campaignId]);
 
@@ -118,12 +157,21 @@ function CampaignDetailPage() {
 
   const handleApply = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!campaign) return;
+    if (!campaign || pitchLength < 20) return;
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      await callApply(campaign.id, pitch.trim());
-      window.location.reload();
+      const result = await callApply(campaign.id, pitch.trim());
+      setMyApplication({
+        id: result.id,
+        status: result.status,
+        message: pitch.trim(),
+        created_at: new Date().toISOString(),
+        creator_id: user?.id ?? "",
+        profiles: null,
+      });
+      toast.success(t("applySuccess"));
+      setIsSubmitting(false);
     } catch (err) {
       if (err instanceof DuplicateApplicationError) {
         setSubmitError(t("alreadyApplied"));
@@ -147,6 +195,7 @@ function CampaignDetailPage() {
       setApplicants((prev) =>
         prev.map((a) => (a.id === appId ? { ...a, status } : a))
       );
+      toast.success(tc("savedToast"));
     }
     setActionLoading(null);
   };
@@ -154,9 +203,30 @@ function CampaignDetailPage() {
   if (isLoading) {
     return (
       <main className="min-h-screen bg-gradient-to-b from-white via-pink-50/30 to-white pt-24 pb-16">
-        <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-          <div className="animate-spin w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full mx-auto mb-4" />
-          <p className="text-neutral-500">{t("loading")}</p>
+        <div className="max-w-4xl mx-auto px-4">
+          <Skeleton className="w-32 h-9 mb-4" />
+          <div className="bg-white rounded-2xl p-6 md:p-8 border shadow-sm mb-6 space-y-4">
+            <div className="flex items-start gap-3">
+              <Skeleton className="w-12 h-12 rounded-xl" />
+              <div className="flex-1 space-y-2 pt-1">
+                <Skeleton className="w-2/3 h-7" />
+                <Skeleton className="w-40 h-4" />
+              </div>
+            </div>
+            <Skeleton className="w-full h-4" />
+            <Skeleton className="w-5/6 h-4" />
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+              <Skeleton className="h-4" />
+              <Skeleton className="h-4" />
+              <Skeleton className="h-4" />
+              <Skeleton className="h-4" />
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl p-6 md:p-8 border shadow-sm space-y-4">
+            <Skeleton className="w-48 h-6" />
+            <ListRowSkeleton />
+            <ListRowSkeleton />
+          </div>
         </div>
       </main>
     );
@@ -165,11 +235,8 @@ function CampaignDetailPage() {
   if (loadError || !campaign) {
     return (
       <main className="min-h-screen bg-gradient-to-b from-white via-pink-50/30 to-white pt-24 pb-16">
-        <div className="max-w-4xl mx-auto px-4 py-24 text-center">
-          <p className="text-neutral-700 font-medium">{t("notFound")}</p>
-          <Link href="/marketplace/campaigns" className="inline-block mt-4">
-            <Button variant="outline">{t("backToList")}</Button>
-          </Link>
+        <div className="max-w-4xl mx-auto px-4">
+          <ErrorState />
         </div>
       </main>
     );
@@ -194,8 +261,8 @@ function CampaignDetailPage() {
             <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 flex items-center justify-center shrink-0">
               <Megaphone className="w-6 h-6 text-white" />
             </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900">
+            <div className="min-w-0">
+              <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 break-words">
                 {campaign.title}
               </h1>
               <p className="text-neutral-500">
@@ -227,6 +294,7 @@ function CampaignDetailPage() {
                   ? formatDate(campaign.deadline, locale)
                   : t("noDeadline")}
               </span>
+              <DeadlineChip deadline={campaign.deadline} />
             </div>
             <div className="flex items-center gap-2 text-sm text-neutral-600">
               <Briefcase className="w-4 h-4 text-violet-500" />
@@ -242,16 +310,22 @@ function CampaignDetailPage() {
           </div>
 
           {campaign.requirements && (
-            <div className="mb-4">
-              <h3 className="font-bold mb-1.5">{t("requirements")}</h3>
+            <div className="bg-gray-50 rounded-xl p-4 mb-4">
+              <div className="flex items-center gap-2 mb-2">
+                <ClipboardList className="w-4 h-4 text-pink-500" />
+                <h3 className="font-bold">{t("requirements")}</h3>
+              </div>
               <p className="text-sm text-neutral-600 whitespace-pre-line">
                 {campaign.requirements}
               </p>
             </div>
           )}
           {campaign.deliverables && (
-            <div>
-              <h3 className="font-bold mb-1.5">{t("deliverables")}</h3>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Package className="w-4 h-4 text-violet-500" />
+                <h3 className="font-bold">{t("deliverables")}</h3>
+              </div>
               <p className="text-sm text-neutral-600 whitespace-pre-line">
                 {campaign.deliverables}
               </p>
@@ -289,11 +363,28 @@ function CampaignDetailPage() {
                 <textarea
                   required
                   rows={5}
+                  maxLength={500}
                   value={pitch}
                   onChange={(e) => setPitch(e.target.value)}
                   placeholder={t("pitchPlaceholder")}
-                  className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-pink-500 mb-4"
+                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-pink-500 ${
+                    pitchInvalid ? "border-red-400" : ""
+                  }`}
                 />
+                <div className="flex items-center justify-between mt-1 mb-4">
+                  {pitchInvalid ? (
+                    <p className="text-xs text-red-600">{t("pitchTooShort")}</p>
+                  ) : (
+                    <span />
+                  )}
+                  <p
+                    className={`text-xs ml-auto ${
+                      pitch.length > 450 ? "text-yellow-600" : "text-neutral-400"
+                    }`}
+                  >
+                    {tc("charCount", { count: pitch.length, max: 500 })}
+                  </p>
+                </div>
                 {submitError && (
                   <div className="flex items-start gap-2 p-4 rounded-xl bg-red-50 border border-red-200 mb-4">
                     <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
@@ -303,6 +394,7 @@ function CampaignDetailPage() {
                 <Button
                   type="submit"
                   isLoading={isSubmitting}
+                  disabled={pitchLength < 20}
                   className="bg-gradient-to-r from-pink-500 to-violet-500 text-white"
                 >
                   <Send className="w-4 h-4 mr-2" />
@@ -323,7 +415,12 @@ function CampaignDetailPage() {
             <h3 className="font-bold text-lg mb-4">
               {t("applicantsTitle")}
             </h3>
-            {applicants.length === 0 ? (
+            {applicantsLoading ? (
+              <div className="space-y-4">
+                <ListRowSkeleton />
+                <ListRowSkeleton />
+              </div>
+            ) : applicants.length === 0 ? (
               <p className="text-sm text-neutral-500">{t("noApplicants")}</p>
             ) : (
               <div className="space-y-4">
@@ -354,16 +451,17 @@ function CampaignDetailPage() {
                         {t(`status.${app.status}`)}
                       </span>
                       <span className="ml-auto text-xs text-neutral-400">
-                        {formatDate(app.created_at, locale)}
+                        {formatDate(app.created_at, locale)} ·{" "}
+                        {formatRelativeTime(app.created_at, locale)}
                       </span>
                     </div>
                     {app.message && (
-                      <p className="text-sm text-neutral-600 mb-3 whitespace-pre-line">
+                      <p className="text-sm text-neutral-600 mb-3 whitespace-pre-line break-words min-w-0">
                         {app.message}
                       </p>
                     )}
                     {app.status === "pending" && (
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <Button
                           size="sm"
                           isLoading={actionLoading === app.id}
@@ -378,7 +476,7 @@ function CampaignDetailPage() {
                           size="sm"
                           variant="outline"
                           disabled={actionLoading !== null}
-                          onClick={() => handleStatusUpdate(app.id, "rejected")}
+                          onClick={() => setRejectTarget(app.id)}
                           className="text-neutral-600"
                         >
                           <XCircle className="w-4 h-4 mr-1" />
@@ -392,6 +490,19 @@ function CampaignDetailPage() {
             )}
           </motion.div>
         )}
+
+        <ConfirmDialog
+          open={rejectTarget !== null}
+          danger
+          title={t("confirmReject.title")}
+          description={t("confirmReject.description")}
+          confirmLabel={t("confirmReject.confirm")}
+          onConfirm={() => {
+            if (rejectTarget) handleStatusUpdate(rejectTarget, "rejected");
+            setRejectTarget(null);
+          }}
+          onCancel={() => setRejectTarget(null)}
+        />
       </div>
     </main>
   );

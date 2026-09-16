@@ -14,6 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
 import { AiGenerationHistory } from "@/components/ai-generation-history";
+import { AiLoadingText } from "@/components/ai-loading-text";
+import { useToast } from "@/components/ui/toast";
 import { callGenerate, AiAuthError } from "@/lib/ai/client";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -72,7 +74,9 @@ const demoScenarios = {
 
 export default function MarketAdvisorPage() {
   const t = useTranslations("aiTools");
+  const tc = useTranslations("common");
   const locale = useLocale();
+  const { success, error: toastError } = useToast();
   const [activeTab, setActiveTab] = useState<"rates" | "contract" | "quote" | "messages" | "planner">("quote");
   const [visitedTabs, setVisitedTabs] = useState<string[]>([]);
   const [rateProfile, setRateProfile] = useState({ niche: "Beauty & Skincare", followers: "10K - 50K", engagement: "1-3%", platform: "Instagram" });
@@ -94,8 +98,17 @@ export default function MarketAdvisorPage() {
   const [messageContext, setMessageContext] = useState({ scenario: "proposal", clientName: "", projectBrief: "", tone: "professional", specificPoints: "" });
   const [messageDraft, setMessageDraft] = useState<MessageDraft | null>(null);
   const [copied, setCopied] = useState(false);
+  const [copiedQuote, setCopiedQuote] = useState(false);
+  const [copiedRate, setCopiedRate] = useState(false);
+  const [copiedPlanner, setCopiedPlanner] = useState(false);
   const [projectBrief, setProjectBrief] = useState({ campaignName: "", duration: "1month", platforms: [] as string[], contentCount: 3, goals: "" });
   const [projectPlan, setProjectPlan] = useState<ProjectPlan | null>(null);
+  const examples = t.raw("examples") as {
+    quote: { brandName: string; deliverables: string[]; complexity: string; timeline: string; briefDescription: string };
+    message: { scenario: string; clientName: string; projectBrief: string; tone: string; specificPoints: string };
+    planner: { campaignName: string; duration: string; platforms: string[]; contentCount: number; goals: string };
+    rate: { niche: string; followers: string; engagement: string; platform: string };
+  };
 
   useEffect(() => { if (!visitedTabs.includes(activeTab)) setVisitedTabs([...visitedTabs, activeTab]); }, [activeTab]);
 
@@ -117,6 +130,7 @@ export default function MarketAdvisorPage() {
       setHistoryKey((k) => k + 1);
     } catch (err) {
       if (handleAuthError(err)) return;
+      toastError(t("generateFailed"));
       setErrorRates(true);
     } finally {
       setLoadingRates(false);
@@ -154,6 +168,7 @@ export default function MarketAdvisorPage() {
       setHistoryKey((k) => k + 1);
     } catch (err) {
       if (handleAuthError(err)) return;
+      toastError(t("generateFailed"));
       setErrorQuote(true);
     } finally {
       setLoadingQuote(false);
@@ -170,6 +185,7 @@ export default function MarketAdvisorPage() {
       setHistoryKey((k) => k + 1);
     } catch (err) {
       if (handleAuthError(err)) return;
+      toastError(t("generateFailed"));
       setErrorMessage(true);
     } finally {
       setLoadingMessage(false);
@@ -186,13 +202,19 @@ export default function MarketAdvisorPage() {
       setHistoryKey((k) => k + 1);
     } catch (err) {
       if (handleAuthError(err)) return;
+      toastError(t("generateFailed"));
       setErrorPlanner(true);
     } finally {
       setLoadingPlanner(false);
     }
   };
 
-  const copyToClipboard = (text: string) => { navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 2000); };
+  const copyToClipboard = (text: string) => { navigator.clipboard.writeText(text); setCopied(true); success(tc("copied")); setTimeout(() => setCopied(false), 1500); };
+  const copyResult = (text: string, setFn: (v: boolean) => void) => { navigator.clipboard.writeText(text); setFn(true); success(tc("copied")); setTimeout(() => setFn(false), 1500); };
+  const fillQuoteExample = () => setJobDetails({ brandName: examples.quote.brandName, deliverables: examples.quote.deliverables, contentType: "", complexity: examples.quote.complexity, timeline: examples.quote.timeline, briefDescription: examples.quote.briefDescription });
+  const fillMessageExample = () => setMessageContext({ scenario: examples.message.scenario, clientName: examples.message.clientName, projectBrief: examples.message.projectBrief, tone: examples.message.tone, specificPoints: examples.message.specificPoints });
+  const fillPlannerExample = () => setProjectBrief({ campaignName: examples.planner.campaignName, duration: examples.planner.duration, platforms: examples.planner.platforms, contentCount: examples.planner.contentCount, goals: examples.planner.goals });
+  const fillRateExample = () => setRateProfile({ niche: examples.rate.niche, followers: examples.rate.followers, engagement: examples.rate.engagement, platform: examples.rate.platform });
   const getFairnessColor = (fairness: string) => { switch (fairness) { case "fair": return "bg-green-100 text-green-700"; case "neutral": return "bg-yellow-100 text-yellow-700"; case "concerning": return "bg-red-100 text-red-700"; default: return "bg-gray-100 text-gray-700"; } };
   const getImpactIcon = (impact: string) => { switch (impact) { case "positive": return <TrendingUpIcon className="w-4 h-4 text-green-500" />; case "negative": return <TrendingUpIcon className="w-4 h-4 text-red-500 rotate-180" />; default: return <TrendingUpIcon className="w-4 h-4 text-gray-400" />; } };
   const deliverableOptions = [{ id: "feed", label: "Feed Post", icon: Camera, price: "$800-1,200" }, { id: "reel", label: "Instagram Reel", icon: Video, price: "$1,000-1,500" }, { id: "story", label: "Story Series", icon: Layout, price: "$300-500" }, { id: "carousel", label: "Carousel Post", icon: FileText, price: "$1,000-1,400" }, { id: "live", label: "Live Session", icon: Megaphone, price: "$1,500-2,500" }, { id: "tiktok", label: "TikTok Video", icon: Video, price: "$800-1,200" }, { id: "youtube", label: "YouTube Video", icon: Video, price: "$2,000-5,000" }];
@@ -220,7 +242,7 @@ export default function MarketAdvisorPage() {
             <motion.div key="rates" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
               {!rateResult ? (
                 <div className="bg-white rounded-2xl shadow-lg border p-8">
-                  <h2 className="text-2xl font-bold mb-2">Rate Calculator</h2>
+                  <div className="flex items-center justify-between mb-2"><h2 className="text-2xl font-bold">Rate Calculator</h2><Button variant="ghost" size="sm" onClick={fillRateExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button></div>
                   <p className="text-neutral-600 mb-6">Get personalized rate recommendations based on your profile and market data.</p>
                   <div className="grid md:grid-cols-2 gap-6 mb-6">
                     <div><label className="block text-sm font-medium text-neutral-700 mb-2">Niche</label><select value={rateProfile.niche} onChange={(e) => setRateProfile({...rateProfile, niche: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500"><option>Beauty & Skincare</option><option>Fashion</option><option>Fitness</option><option>Tech</option><option>Food</option><option>Travel</option><option>Lifestyle</option></select></div>
@@ -235,12 +257,13 @@ export default function MarketAdvisorPage() {
                     </div>
                   )}
                   <Button onClick={analyzeRates} disabled={loadingRates} className="w-full bg-gradient-to-r from-orange-500 to-amber-500 py-3 h-auto">{loadingRates ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("analyzing")}</>) : (<><BarChart3 className="w-5 h-5 mr-2" />Get Rate Insights</>)}</Button>
+                  {loadingRates && <AiLoadingText toolKey="rate" className="mt-3 text-center" />}
                 </div>
               ) : (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
                   <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-8 text-white">
-                    <div className="flex items-center justify-between">
-                      <div>
+                    <div className="flex items-center justify-between flex-wrap gap-4">
+                      <div className="min-w-0">
                         <p className="text-lg opacity-90">Your recommended rate range</p>
                         <p className="text-5xl font-bold mt-2">${rateResult.suggested_range.min.toLocaleString()} - ${rateResult.suggested_range.max.toLocaleString()}</p>
                         <p className="text-lg opacity-90 mt-1">Per sponsored post (60s video)</p>
@@ -258,7 +281,7 @@ export default function MarketAdvisorPage() {
                       <ul className="space-y-3">{rateResult.recommendations.map((tip, i) => (<li key={i} className="flex items-start gap-2 text-sm"><CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" /><span>{tip}</span></li>))}</ul>
                     </div>
                   </div>
-                  <Button variant="outline" onClick={() => { setRateResult(null); setErrorRates(false); }} className="w-full"><RefreshCw className="w-4 h-4 mr-2" />{t("newAnalysis")}</Button>
+                  <div className="flex gap-3 flex-wrap"><Button variant="outline" className="flex-1" onClick={() => copyResult(`Suggested rate: $${rateResult.suggested_range.min.toLocaleString()} - $${rateResult.suggested_range.max.toLocaleString()} per sponsored post (${rateResult.percentile})\n\nMarket Insights:\n${rateResult.insights.map((i) => `- ${i}`).join("\n")}\n\nRecommendations:\n${rateResult.recommendations.map((r) => `- ${r}`).join("\n")}`, setCopiedRate)}>{copiedRate ? (<><Check className="w-4 h-4 mr-2 text-green-500" />{tc("copied")}</>) : (<><Copy className="w-4 h-4 mr-2" />{tc("copy")}</>)}</Button><Button variant="outline" onClick={() => { setRateResult(null); setErrorRates(false); }} className="flex-1"><RefreshCw className="w-4 h-4 mr-2" />{t("newAnalysis")}</Button></div>
                 </motion.div>
               )}
             </motion.div>
@@ -286,7 +309,7 @@ export default function MarketAdvisorPage() {
                   <div className="bg-white rounded-2xl shadow-lg border p-8">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white"><Briefcase className="w-6 h-6" /></div>
-                      <div><h2 className="text-2xl font-bold">Job Quote Assistant</h2><p className="text-neutral-600">Tell us about the job and get time estimates, pricing recommendations, and deliverables breakdown.</p></div>
+                      <div><h2 className="text-2xl font-bold">Job Quote Assistant</h2><p className="text-neutral-600">Tell us about the job and get time estimates, pricing recommendations, and deliverables breakdown.</p></div><Button variant="ghost" size="sm" className="ml-auto flex-shrink-0" onClick={fillQuoteExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button>
                     </div>
                     <div className="space-y-6">
                       <div><label className="block text-sm font-medium text-neutral-700 mb-2">Brand/Client Name</label><input type="text" value={jobDetails.brandName} onChange={(e) => setJobDetails({...jobDetails, brandName: e.target.value})} placeholder="e.g., Glow Skincare" className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500" /></div>
@@ -306,6 +329,7 @@ export default function MarketAdvisorPage() {
                         </div>
                       )}
                       <Button onClick={generateQuote} disabled={loadingQuote || jobDetails.deliverables.length === 0} className="w-full bg-gradient-to-r from-orange-500 to-amber-500 py-3 h-auto">{loadingQuote ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("generating")}</>) : (<><Sparkles className="w-5 h-5 mr-2" />Generate Quote & Timeline</>)}</Button>
+                      {loadingQuote && <AiLoadingText toolKey="quote" className="mt-3 text-center" />}
                     </div>
                   </div>
                 </div>
@@ -332,7 +356,8 @@ export default function MarketAdvisorPage() {
                     <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Clock className="w-5 h-5 text-orange-500" />Timeline Breakdown</h3>
                     <div className="grid md:grid-cols-4 gap-4">{quoteResult.timelineBreakdown.map((phase, i) => (<div key={i} className="p-4 bg-gray-50 rounded-xl"><div className="flex items-center gap-2 mb-2"><div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">{i + 1}</div><p className="font-medium text-sm">{phase.phase}</p></div><p className="text-xs text-orange-600 font-medium mb-2">{phase.duration}</p><ul className="space-y-1">{phase.tasks.map((task, j) => (<li key={j} className="text-xs text-neutral-600 flex items-center gap-1"><CheckCircle className="w-3 h-3 text-green-500" />{task}</li>))}</ul></div>))}</div>
                   </div>
-                  <div className="flex gap-3">
+                  <div className="flex gap-3 flex-wrap">
+                    <Button variant="outline" className="flex-1" onClick={() => copyResult(`Job Quote\nRecommended price: $${quoteResult.recommendedPrice.min.toLocaleString()} - $${quoteResult.recommendedPrice.max.toLocaleString()}\nEstimated time: ${quoteResult.estimatedHours} hours\nMarket position: ${quoteResult.marketComparison.percentile}\n\nPrice per deliverable:\n${quoteResult.pricePerDeliverable.map((d) => `- ${d.type}: $${d.price.toLocaleString()} (${d.time})`).join("\n")}\n\nPricing factors:\n${quoteResult.factors.map((f) => `- ${f.factor}: ${f.description}`).join("\n")}\n\nTimeline:\n${quoteResult.timelineBreakdown.map((ph, i) => `${i + 1}. ${ph.phase} (${ph.duration})\n${ph.tasks.map((task) => `   - ${task}`).join("\n")}`).join("\n")}`, setCopiedQuote)}>{copiedQuote ? (<><Check className="w-4 h-4 mr-2 text-green-500" />{tc("copied")}</>) : (<><Copy className="w-4 h-4 mr-2" />{tc("copy")}</>)}</Button>
                     <Button variant="outline" onClick={() => {setQuoteResult(null);}} className="flex-1"><RefreshCw className="w-4 h-4 mr-2" />Try Another Quote</Button>
                     <Button 
                       variant="outline"
@@ -378,7 +403,7 @@ export default function MarketAdvisorPage() {
                   <div className="bg-white rounded-2xl shadow-lg border p-8">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white"><Mail className="w-6 h-6" /></div>
-                      <div><h2 className="text-2xl font-bold">Message Assistant</h2><p className="text-neutral-600">Draft professional emails and messages for any scenario.</p></div>
+                      <div><h2 className="text-2xl font-bold">Message Assistant</h2><p className="text-neutral-600">Draft professional emails and messages for any scenario.</p></div><Button variant="ghost" size="sm" className="ml-auto flex-shrink-0" onClick={fillMessageExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button>
                     </div>
                     <div className="space-y-6">
                       <div>
@@ -398,6 +423,7 @@ export default function MarketAdvisorPage() {
                         </div>
                       )}
                       <Button onClick={generateMessage} disabled={loadingMessage} className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 py-3 h-auto">{loadingMessage ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("generating")}</>) : (<><PenTool className="w-5 h-5 mr-2" />Generate Message</>)}</Button>
+                      {loadingMessage && <AiLoadingText toolKey="message" className="mt-3 text-center" />}
                     </div>
                   </div>
                 </div>
@@ -452,7 +478,7 @@ export default function MarketAdvisorPage() {
                   <div className="bg-white rounded-2xl shadow-lg border p-8">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white"><ClipboardList className="w-6 h-6" /></div>
-                      <div><h2 className="text-2xl font-bold">Project Planner</h2><p className="text-neutral-600">Create a detailed project plan with task breakdowns, timelines, and content calendars.</p></div>
+                      <div><h2 className="text-2xl font-bold">Project Planner</h2><p className="text-neutral-600">Create a detailed project plan with task breakdowns, timelines, and content calendars.</p></div><Button variant="ghost" size="sm" className="ml-auto flex-shrink-0" onClick={fillPlannerExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button>
                     </div>
                     <div className="space-y-6">
                       <div className="grid md:grid-cols-2 gap-6">
@@ -476,6 +502,7 @@ export default function MarketAdvisorPage() {
                         </div>
                       )}
                       <Button onClick={generatePlan} disabled={loadingPlanner || projectBrief.platforms.length === 0} className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 py-3 h-auto">{loadingPlanner ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("generating")}</>) : (<><Layout className="w-5 h-5 mr-2" />Generate Project Plan</>)}</Button>
+                      {loadingPlanner && <AiLoadingText toolKey="planner" className="mt-3 text-center" />}
                     </div>
                   </div>
                 </div>
@@ -498,7 +525,7 @@ export default function MarketAdvisorPage() {
                     <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Layout className="w-5 h-5 text-emerald-500" />Phase Breakdown</h3>
                     <div className="space-y-4">{projectPlan.phases.map((phase, i) => (<div key={i} className="p-4 bg-gray-50 rounded-xl"><div className="flex items-center justify-between mb-3"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">{i + 1}</div><h4 className="font-bold">{phase.name}</h4></div><span className="text-sm text-emerald-600 font-medium">{phase.duration}</span></div><div className="grid md:grid-cols-2 gap-4"><div><p className="text-sm font-medium text-neutral-600 mb-2">Tasks</p><ul className="space-y-1">{phase.tasks.map((task, j) => (<li key={j} className="flex items-center gap-2 text-sm"><span className={`w-2 h-2 rounded-full ${task.priority === "high" ? "bg-red-400" : task.priority === "medium" ? "bg-yellow-400" : "bg-green-400"}`} /><span>{task.name}</span><span className="text-xs text-neutral-500">({task.estimatedTime})</span></li>))}</ul></div><div><p className="text-sm font-medium text-neutral-600 mb-2">Deliverables</p><ul className="space-y-1">{phase.deliverables.map((del, j) => (<li key={j} className="flex items-center gap-2 text-sm"><FileCheck className="w-4 h-4 text-emerald-500" />{del}</li>))}</ul></div></div></div>))}</div>
                   </div>
-                  <Button variant="outline" onClick={() => setProjectPlan(null)} className="w-full"><RefreshCw className="w-4 h-4 mr-2" />Create New Plan</Button>
+                  <div className="flex gap-3 flex-wrap"><Button variant="outline" className="flex-1" onClick={() => copyResult(`Project Plan: ${projectBrief.campaignName}\nTotal duration: ${projectPlan.overview.totalDays} days\nKey milestones: ${projectPlan.overview.keyMilestones.join(", ")}\n\nCritical dates:\n${projectPlan.overview.criticalDates.map((d) => `- ${d.date}: ${d.event}`).join("\n")}\n\nPhases:\n${projectPlan.phases.map((ph, i) => `${i + 1}. ${ph.name} (${ph.duration})\nTasks: ${ph.tasks.map((task) => `${task.name} (${task.estimatedTime})`).join("; ")}\nDeliverables: ${ph.deliverables.join(", ")}`).join("\n\n")}`, setCopiedPlanner)}>{copiedPlanner ? (<><Check className="w-4 h-4 mr-2 text-green-500" />{tc("copied")}</>) : (<><Copy className="w-4 h-4 mr-2" />{tc("copy")}</>)}</Button><Button variant="outline" onClick={() => setProjectPlan(null)} className="flex-1"><RefreshCw className="w-4 h-4 mr-2" />Create New Plan</Button></div>
                 </motion.div>
               )}
             </motion.div>

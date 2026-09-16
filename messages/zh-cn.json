@@ -1,7 +1,63 @@
 {
   "metadata": {
     "title": "LumiAI - 创作者操作系统",
-    "description": "创作者与品牌的一站式平台"
+    "description": "创作者与品牌的一站式平台",
+    "marketplace": {
+      "title": "市集 | LumiAI",
+      "description": "在 LumiAI 双向市集发现品牌合作与创作者伙伴。"
+    },
+    "campaigns": {
+      "title": "品牌活动 | LumiAI",
+      "description": "浏览并申请适合你内容风格与受众的品牌活动。"
+    },
+    "newCampaign": {
+      "title": "发布新活动 | LumiAI",
+      "description": "发布新活动，接触适合你品牌的创作者。"
+    },
+    "campaignDetail": {
+      "title": "活动详情 | LumiAI",
+      "description": "查看活动详情、要求与交付内容，几分钟内完成申请。"
+    },
+    "creatorDashboard": {
+      "title": "创作者仪表盘 | LumiAI",
+      "description": "追踪你的成长、收入与内容表现。"
+    },
+    "companyDashboard": {
+      "title": "公司仪表盘 | LumiAI",
+      "description": "追踪活动表现，管理创作者合作。"
+    },
+    "aiHub": {
+      "title": "AI 中心 | LumiAI",
+      "description": "创作者的 AI 工具：分镜、文案生成等等。"
+    },
+    "storyboard": {
+      "title": "分镜生成器 | LumiAI",
+      "description": "用 AI 生成影片分镜与拍摄清单。"
+    },
+    "caption": {
+      "title": "文案生成器 | LumiAI",
+      "description": "用 AI 生成吸引人的社交媒体文案。"
+    },
+    "advisor": {
+      "title": "AI 顾问 | LumiAI",
+      "description": "获取 AI 建议，助你发展创作者事业。"
+    },
+    "login": {
+      "title": "登录 | LumiAI",
+      "description": "登录 LumiAI，继续你的创作之旅。"
+    },
+    "signup": {
+      "title": "注册 | LumiAI",
+      "description": "创建 LumiAI 账户，开始接更好的品牌合作。"
+    },
+    "forgotPassword": {
+      "title": "重置密码 | LumiAI",
+      "description": "重置你的 LumiAI 账户密码。"
+    },
+    "admin": {
+      "title": "管理后台 | LumiAI",
+      "description": "LumiAI 平台管理。"
+    }
   },
   "nav": {
     "aiHub": "AI 中心",
@@ -122,11 +178,12 @@
     "noAccount": "还没有帐户？",
     "haveAccount": "已经有帐户了？",
     "signingIn": "登录中...",
-    "aiFeatures": "AI 分镜及文案生成"
+    "aiFeatures": "AI 分镜及文案生成",
+    "emailPlaceholder": "you@example.com"
   },
   "marketplace": {
     "twoWayMarketplace": "双向市集",
-    "findPerfectMatch": "找到你的完美配对",
+    "findPerfectMatch": "找到你的完美<match>配对</match>",
     "matchSubtitle": "无论你是寻找品牌合作的创作者，还是寻找网红的品牌公司 — 发掘完美的合作伙伴。",
     "forCreators": "创作专区",
     "forBrands": "品牌专区",
@@ -200,7 +257,13 @@
       "placeholderDeliverables": "例如：1 条 Instagram Reel + 3 个 Stories，两星期内发布...",
       "submit": "发布 Campaign",
       "errorGeneric": "发布失败，请再试一次。",
-      "errorMissingColumns": "数据库尚未更新。请先在 Supabase SQL Editor 执行 ALTER TABLE SQL，然后再试。"
+      "errorMissingColumns": "数据库尚未更新。请先在 Supabase SQL Editor 执行 ALTER TABLE SQL，然后再试。",
+      "validation": {
+        "titleTooShort": "标题至少需要 5 个字。",
+        "budgetInvalid": "预算必须是大于 0 的数字。",
+        "deadlinePast": "截止日期不能是过去的日期。"
+      },
+      "publishSuccess": "Campaign 发布成功！"
     },
     "campaignList": {
       "badge": "找下一份品牌合作",
@@ -231,7 +294,7 @@
       "deliverables": "交付内容",
       "applyTitle": "申请这个 Campaign",
       "pitchLabel": "自我介绍和合作构想",
-      "pitchPlaceholder": "向品牌介绍你自己、你的受众，以及你会怎样做这个 campaign...",
+      "pitchPlaceholder": "你好！我是一名生活方式创作者，在香港有 2.5 万粉丝。我会拍一条 60 秒 Reel 介绍你们的新精华，再加 2 个 Stories 放上链接...",
       "applySubmit": "立即申请",
       "applyError": "申请失败，请再试一次。",
       "authError": "你的登录已过期，请重新登录。",
@@ -247,8 +310,67 @@
         "accepted": "已接受",
         "rejected": "已拒绝",
         "withdrawn": "已撤回"
+      },
+      "applySuccess": "申请已提交成功",
+      "pitchTooShort": "请至少写 20 个字，介绍你自己和你的合作构想。",
+      "confirmReject": {
+        "title": "拒绝这个申请？",
+        "description": "创作者会看到申请被拒绝，此操作无法撤销。",
+        "confirm": "拒绝"
       }
-    }
+    },
+    "creatorFeatureMatching": "AI 智能活动配对",
+    "creatorFeatureBudget": "预算范围透明",
+    "creatorFeatureFast": "申请流程快速",
+    "creatorFeatureSecure": "安全付款保障",
+    "brandFeatureCreators": "浏览 10,000+ 已认证创作者",
+    "brandFeatureSearch": "进阶筛选与搜索",
+    "brandFeatureManagement": "活动管理工具",
+    "brandFeatureRoi": "ROI 追踪与分析",
+    "findPerfectCreator": "找到你的完美<creator>创作者</creator>",
+    "talentSubtitle": "浏览数千位已审核的网红，按领域、受众、互动率等筛选。",
+    "statNicheCategories": "领域分类",
+    "statAvgEngagement": "平均互动率",
+    "statCreatorRating": "创作者评分",
+    "searchCreatorsPlaceholder": "按名称、账号或领域搜索创作者...",
+    "nicheOptions": [
+      {
+        "value": "All",
+        "label": "全部"
+      },
+      {
+        "value": "Fashion",
+        "label": "时尚"
+      },
+      {
+        "value": "Beauty",
+        "label": "美妆"
+      },
+      {
+        "value": "Tech",
+        "label": "科技"
+      },
+      {
+        "value": "Gaming",
+        "label": "游戏"
+      },
+      {
+        "value": "Food",
+        "label": "美食"
+      },
+      {
+        "value": "Travel",
+        "label": "旅游"
+      },
+      {
+        "value": "Fitness",
+        "label": "健身"
+      },
+      {
+        "value": "Lifestyle",
+        "label": "生活方式"
+      }
+    ]
   },
   "equipment": {
     "rentProfessionalGear": "租用专业器材",
@@ -380,6 +502,81 @@
       "accepted": "已接受",
       "rejected": "已拒绝",
       "withdrawn": "已撤回"
+    },
+    "statusTooltip": {
+      "pending": "品牌尚未回复你的申请",
+      "accepted": "品牌已接受你的申请，可准备下一步合作",
+      "rejected": "品牌拒绝了该申请，可以申请其他活动"
+    },
+    "statHints": {
+      "followers": {
+        "title": "绑定账号后开始追踪粉丝增长",
+        "cta": "前往 AI Hub"
+      },
+      "engagement": {
+        "title": "参与活动后即可查看互动率",
+        "cta": "浏览活动"
+      },
+      "views": {
+        "title": "发布内容后开始追踪浏览量",
+        "cta": "浏览活动"
+      },
+      "revenue": {
+        "title": "完成合作后开始赚取收入",
+        "cta": "寻找活动"
+      }
+    },
+    "statHintsBrand": {
+      "campaigns": {
+        "title": "发布首个活动，开始招募创作者",
+        "cta": "发布活动"
+      },
+      "spent": {
+        "title": "活动上线后即可查看支出",
+        "cta": "发布活动"
+      },
+      "roi": {
+        "title": "活动产生成效后即可查看 ROI",
+        "cta": "浏览创作者"
+      },
+      "reach": {
+        "title": "与创作者合作，扩大品牌曝光",
+        "cta": "浏览创作者"
+      }
+    },
+    "rateInvalid": "日租金必须大于 0",
+    "deleteGearTitle": "删除这件装备？",
+    "deleteGearDesc": "该刊登将被永久删除，无法恢复。",
+    "rejectConfirmTitle": "拒绝这个申请？",
+    "rejectConfirmDesc": "创作者将收到申请被拒绝的通知。",
+    "publicProfile": {
+      "backToDashboard": "返回仪表盘",
+      "verified": "已认证",
+      "contact": "联系",
+      "workWithMe": "与我合作",
+      "rateRange": "收费范围",
+      "creatorRating": "创作者评分",
+      "followers": "粉丝",
+      "engagement": "互动率",
+      "avgViews": "平均观看",
+      "collabs": "合作次数",
+      "reviewsCount": "（{count} 条评价）",
+      "platforms": "平台",
+      "followersCount": "{count} 粉丝",
+      "tabPortfolio": "作品集",
+      "tabBrandWork": "品牌合作",
+      "viewsCount": "{count} 次观看",
+      "engagementBadge": "{rate} 互动率",
+      "contentSpecialties": "内容专长",
+      "brandReviews": "品牌评价",
+      "contactTitle": "联系 {name}",
+      "rateRangeLine": "收费范围：{range}",
+      "responseTime": "一般回复时间：24 小时内",
+      "yourName": "你的名称",
+      "yourEmail": "你的邮箱",
+      "campaignMessage": "讲讲你的活动计划...",
+      "sendMessage": "发送信息",
+      "messageSent": "信息已发送！创作者会在 24 小时内回复。"
     }
   },
   "admin": {
@@ -551,7 +748,28 @@
     "add": "新增",
     "submit": "提交",
     "continue": "继续",
-    "loading": "加载中..."
+    "loading": "加载中...",
+    "errorTitle": "出现了问题",
+    "errorDesc": "发生了预期以外的错误。请再试一次，或者返回首页。",
+    "tryAgain": "再试一次",
+    "backHome": "返回首页",
+    "confirm": "确认",
+    "copied": "已复制到剪贴簿",
+    "copy": "复制",
+    "required": "必填",
+    "charCount": "{count}/{max} 字",
+    "savedToast": "已成功保存",
+    "deletedToast": "已删除",
+    "deadlineSoon": "还剩 {days} 天",
+    "deadlineUrgent": "只剩 {days} 天！",
+    "deadlineToday": "今日截止！",
+    "exampleButton": "试试示例",
+    "notFound": {
+      "title": "找不到页面",
+      "description": "你要找的页面不存在或已被移动。",
+      "backHome": "返回首页",
+      "goBack": "返回上一页"
+    }
   },
   "help": {
     "helpCenter": "帮助中心",
@@ -667,6 +885,81 @@
     "recommendations": "建议",
     "percentileLabel": "相比同类型创作者",
     "analyzing": "分析中...",
-    "newAnalysis": "重新分析"
+    "newAnalysis": "重新分析",
+    "examples": {
+      "storyboard": {
+        "idea": "一段30秒的晨间护肤流程：睡醒洁面、涂抹精华和面霜，最后以透亮肌肤特写收尾。",
+        "mood": "温暖晨光、柔和自然光、简约风格"
+      },
+      "caption": {
+        "topic": "我刚完成了3个月的健身蜕变之旅，想激励大家一起开始自己的旅程"
+      },
+      "quote": {
+        "brandName": "Glow 护肤",
+        "deliverables": [
+          "reel",
+          "story",
+          "feed"
+        ],
+        "complexity": "medium",
+        "timeline": "2weeks",
+        "briefDescription": "为新款维生素C精华做推广：一条展示产品的主打 Reel、Before/After 对比限时动态系列，以及一篇详细测评 Feed 帖。"
+      },
+      "message": {
+        "scenario": "proposal",
+        "clientName": "Glow 护肤的 Sarah",
+        "projectBrief": "维生素C精华推广活动 — 1 条 Reel + 限时动态系列 + Feed 帖",
+        "tone": "professional",
+        "specificPoints": "我的观众七成是25-34岁、对护肤感兴趣的女性。此前护肤品合作平均互动率为5.2%。"
+      },
+      "planner": {
+        "campaignName": "夏季护肤品推广",
+        "duration": "1month",
+        "platforms": [
+          "Instagram",
+          "TikTok"
+        ],
+        "contentCount": 5,
+        "goals": "提升新款维生素C精华的品牌知名度、带动产品页流量，并展示真实的 Before/After 效果。"
+      },
+      "rate": {
+        "niche": "Beauty & Skincare",
+        "followers": "10K - 50K",
+        "engagement": "1-3%",
+        "platform": "Instagram"
+      }
+    },
+    "loadingMessages": {
+      "storyboard": [
+        "正在构思分镜…",
+        "设计镜头角度…",
+        "整理设备清单…"
+      ],
+      "caption": [
+        "构思开场金句…",
+        "调整语气风格…",
+        "挑选合适 Hashtag…"
+      ],
+      "quote": [
+        "分析市场收费水平…",
+        "估算制作所需时间…",
+        "计算建议报价范围…"
+      ],
+      "message": [
+        "了解你的背景和需求…",
+        "斟酌合适的字眼…",
+        "润色消息草稿…"
+      ],
+      "planner": [
+        "规划重要里程碑…",
+        "拆解各项任务…",
+        "建立内容发布日程…"
+      ],
+      "rate": [
+        "扫描市场基准数据…",
+        "比较同类型创作者…",
+        "微调你的收费范围…"
+      ]
+    }
   }
 }

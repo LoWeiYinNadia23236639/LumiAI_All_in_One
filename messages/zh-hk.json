@@ -1,7 +1,63 @@
 {
   "metadata": {
     "title": "LumiAI - 創作者作業系統",
-    "description": "創作者與品牌的一站式平台"
+    "description": "創作者與品牌的一站式平台",
+    "marketplace": {
+      "title": "市集 | LumiAI",
+      "description": "喺 LumiAI 雙向市集發掘品牌合作同創作者夥伴。"
+    },
+    "campaigns": {
+      "title": "品牌活動 | LumiAI",
+      "description": "瀏覽並申請啱你內容風格同觀眾嘅品牌活動。"
+    },
+    "newCampaign": {
+      "title": "發佈新活動 | LumiAI",
+      "description": "發佈新活動，接觸啱你品牌嘅創作者。"
+    },
+    "campaignDetail": {
+      "title": "活動詳情 | LumiAI",
+      "description": "查看活動詳情、要求同交付內容，幾分鐘內完成申請。"
+    },
+    "creatorDashboard": {
+      "title": "創作者儀表板 | LumiAI",
+      "description": "追蹤你嘅成長、收入同內容表現。"
+    },
+    "companyDashboard": {
+      "title": "公司儀表板 | LumiAI",
+      "description": "追蹤活動表現，管理創作者合作。"
+    },
+    "aiHub": {
+      "title": "AI 中心 | LumiAI",
+      "description": "創作者嘅 AI 工具：分鏡、文案生成等等。"
+    },
+    "storyboard": {
+      "title": "分鏡生成器 | LumiAI",
+      "description": "用 AI 生成影片分鏡同拍攝清單。"
+    },
+    "caption": {
+      "title": "文案生成器 | LumiAI",
+      "description": "用 AI 生成吸引人嘅社交媒體文案。"
+    },
+    "advisor": {
+      "title": "AI 顧問 | LumiAI",
+      "description": "攞取 AI 建議，助你發展創作者事業。"
+    },
+    "login": {
+      "title": "登入 | LumiAI",
+      "description": "登入 LumiAI，繼續你嘅創作之旅。"
+    },
+    "signup": {
+      "title": "註冊 | LumiAI",
+      "description": "建立 LumiAI 帳戶，開始接更好嘅品牌合作。"
+    },
+    "forgotPassword": {
+      "title": "重設密碼 | LumiAI",
+      "description": "重設你嘅 LumiAI 帳戶密碼。"
+    },
+    "admin": {
+      "title": "管理後台 | LumiAI",
+      "description": "LumiAI 平台管理。"
+    }
   },
   "nav": {
     "aiHub": "AI 中心",
@@ -122,11 +178,12 @@
     "noAccount": "還沒有帳戶？",
     "haveAccount": "已經有帳戶？",
     "signingIn": "登入中...",
-    "aiFeatures": "AI 分鏡及文案生成"
+    "aiFeatures": "AI 分鏡及文案生成",
+    "emailPlaceholder": "you@example.com"
   },
   "marketplace": {
     "twoWayMarketplace": "雙向市集",
-    "findPerfectMatch": "找到你的完美配對",
+    "findPerfectMatch": "找到你的完美<match>配對</match>",
     "matchSubtitle": "無論你是尋找品牌合作的創作者，還是尋找網紅的品牌公司 — 發掘完美的合作夥伴。",
     "forCreators": "創作專區",
     "forBrands": "品牌專區",
@@ -200,7 +257,13 @@
       "placeholderDeliverables": "例如：1 條 Instagram Reel + 3 個 Stories，兩星期內發布...",
       "submit": "發布 Campaign",
       "errorGeneric": "發布失敗，請再試一次。",
-      "errorMissingColumns": "資料庫尚未更新。請先在 Supabase SQL Editor 執行 ALTER TABLE SQL，然後再試。"
+      "errorMissingColumns": "資料庫尚未更新。請先在 Supabase SQL Editor 執行 ALTER TABLE SQL，然後再試。",
+      "validation": {
+        "titleTooShort": "標題至少要 5 個字。",
+        "budgetInvalid": "預算一定要大過 0。",
+        "deadlinePast": "截止日期唔可以係過去。"
+      },
+      "publishSuccess": "Campaign 發布成功！"
     },
     "campaignList": {
       "badge": "搵下一份品牌合作",
@@ -231,7 +294,7 @@
       "deliverables": "交付內容",
       "applyTitle": "申請呢個 Campaign",
       "pitchLabel": "自我介紹同合作構想",
-      "pitchPlaceholder": "向品牌介紹你自己、你嘅受眾，同你會點樣做呢個 campaign...",
+      "pitchPlaceholder": "你好！我係一個 Lifestyle 創作者，喺香港有 2.5 萬 followers。我會拍一條 60 秒 Reel 介紹你哋嘅新精華，再加 2 個 Stories 放上 swipe-up 連結...",
       "applySubmit": "立即申請",
       "applyError": "申請失敗，請再試一次。",
       "authError": "你嘅登入已過期，請重新登入。",
@@ -247,8 +310,67 @@
         "accepted": "已接受",
         "rejected": "已拒絕",
         "withdrawn": "已撤回"
+      },
+      "applySuccess": "申請已提交成功",
+      "pitchTooShort": "請至少寫 20 個字，介紹你自己同你嘅合作構想。",
+      "confirmReject": {
+        "title": "拒絕呢個申請？",
+        "description": "創作者會見到自己嘅申請被拒絕，呢個操作冇得還原。",
+        "confirm": "拒絕"
       }
-    }
+    },
+    "creatorFeatureMatching": "AI 智能活動配對",
+    "creatorFeatureBudget": "預算範圍透明",
+    "creatorFeatureFast": "申請流程快",
+    "creatorFeatureSecure": "安全付款保障",
+    "brandFeatureCreators": "瀏覽 10,000+ 已認證創作者",
+    "brandFeatureSearch": "進階篩選同搜尋",
+    "brandFeatureManagement": "活動管理工具",
+    "brandFeatureRoi": "ROI 追蹤同分析",
+    "findPerfectCreator": "搵你嘅完美<creator>創作者</creator>",
+    "talentSubtitle": "瀏覽數千位已審核嘅網紅，按領域、觀眾、互動率等篩選。",
+    "statNicheCategories": "領域分類",
+    "statAvgEngagement": "平均互動率",
+    "statCreatorRating": "創作者評分",
+    "searchCreatorsPlaceholder": "按名稱、帳號或領域搜尋創作者...",
+    "nicheOptions": [
+      {
+        "value": "All",
+        "label": "全部"
+      },
+      {
+        "value": "Fashion",
+        "label": "時尚"
+      },
+      {
+        "value": "Beauty",
+        "label": "美容"
+      },
+      {
+        "value": "Tech",
+        "label": "科技"
+      },
+      {
+        "value": "Gaming",
+        "label": "遊戲"
+      },
+      {
+        "value": "Food",
+        "label": "美食"
+      },
+      {
+        "value": "Travel",
+        "label": "旅遊"
+      },
+      {
+        "value": "Fitness",
+        "label": "健身"
+      },
+      {
+        "value": "Lifestyle",
+        "label": "生活風格"
+      }
+    ]
   },
   "equipment": {
     "rentProfessionalGear": "租用專業器材",
@@ -380,6 +502,81 @@
       "accepted": "已接受",
       "rejected": "已拒絕",
       "withdrawn": "已撤回"
+    },
+    "statusTooltip": {
+      "pending": "品牌仲未回覆你嘅申請",
+      "accepted": "品牌已接受你嘅申請，可以準備下一步",
+      "rejected": "品牌拒絕咗呢個申請，可以申請其他活動"
+    },
+    "statHints": {
+      "followers": {
+        "title": "連結帳號後開始追蹤粉絲增長",
+        "cta": "去 AI Hub"
+      },
+      "engagement": {
+        "title": "參加活動之後先會見到互動率",
+        "cta": "瀏覽活動"
+      },
+      "views": {
+        "title": "發佈內容後開始追蹤瀏覽量",
+        "cta": "瀏覽活動"
+      },
+      "revenue": {
+        "title": "完成合作之後開始賺取收入",
+        "cta": "搵活動"
+      }
+    },
+    "statHintsBrand": {
+      "campaigns": {
+        "title": "刊登第一個活動開始搵創作者",
+        "cta": "刊登活動"
+      },
+      "spent": {
+        "title": "活動上線之後先會顯示支出",
+        "cta": "刊登活動"
+      },
+      "roi": {
+        "title": "活動有成果之後先會顯示投資回報",
+        "cta": "瀏覽創作者"
+      },
+      "reach": {
+        "title": "同創作者合作擴大曝光",
+        "cta": "瀏覽創作者"
+      }
+    },
+    "rateInvalid": "日租金必須大過 0",
+    "deleteGearTitle": "刪除呢件裝備？",
+    "deleteGearDesc": "呢個刊登會被永久刪除，無法復原。",
+    "rejectConfirmTitle": "拒絕呢個申請？",
+    "rejectConfirmDesc": "創作者會收到通知，知道申請被拒絕咗。",
+    "publicProfile": {
+      "backToDashboard": "返回儀表板",
+      "verified": "已認證",
+      "contact": "聯絡",
+      "workWithMe": "同我合作",
+      "rateRange": "收費範圍",
+      "creatorRating": "創作者評分",
+      "followers": "追蹤者",
+      "engagement": "互動率",
+      "avgViews": "平均觀看",
+      "collabs": "合作次數",
+      "reviewsCount": "（{count} 個評價）",
+      "platforms": "平台",
+      "followersCount": "{count} 追蹤者",
+      "tabPortfolio": "作品集",
+      "tabBrandWork": "品牌合作",
+      "viewsCount": "{count} 次觀看",
+      "engagementBadge": "{rate} 互動率",
+      "contentSpecialties": "內容專長",
+      "brandReviews": "品牌評價",
+      "contactTitle": "聯絡 {name}",
+      "rateRangeLine": "收費範圍：{range}",
+      "responseTime": "一般回覆時間：24 小時內",
+      "yourName": "你嘅名稱",
+      "yourEmail": "你嘅電郵",
+      "campaignMessage": "講吓你嘅活動計劃...",
+      "sendMessage": "發送訊息",
+      "messageSent": "訊息已發送！創作者會喺 24 小時內回覆。"
     }
   },
   "admin": {
@@ -551,7 +748,28 @@
     "add": "新增",
     "submit": "提交",
     "continue": "繼續",
-    "loading": "載入中..."
+    "loading": "載入中...",
+    "errorTitle": "出現咗問題",
+    "errorDesc": "發生咗預期以外嘅錯誤。請再試一次，或者返回首頁。",
+    "tryAgain": "再試一次",
+    "backHome": "返回首頁",
+    "confirm": "確認",
+    "copied": "已複製到剪貼簿",
+    "copy": "複製",
+    "required": "必填",
+    "charCount": "{count}/{max} 字",
+    "savedToast": "已成功儲存",
+    "deletedToast": "已刪除",
+    "deadlineSoon": "仲剩 {days} 日",
+    "deadlineUrgent": "只剩 {days} 日！",
+    "deadlineToday": "今日截止！",
+    "exampleButton": "試下範例",
+    "notFound": {
+      "title": "搵唔到頁面",
+      "description": "你想睇嘅頁面唔存在或者已經搬咗。",
+      "backHome": "返回首頁",
+      "goBack": "返回上一頁"
+    }
   },
   "help": {
     "helpCenter": "說明中心",
@@ -667,6 +885,81 @@
     "recommendations": "建議",
     "percentileLabel": "相比同類型創作者",
     "analyzing": "分析中...",
-    "newAnalysis": "重新分析"
+    "newAnalysis": "重新分析",
+    "examples": {
+      "storyboard": {
+        "idea": "一段30秒嘅早晨護膚流程：醒神洗面、塗精華同面霜，最後以透亮肌膚特寫作結。",
+        "mood": "溫暖晨光、柔和自然光、簡約風格"
+      },
+      "caption": {
+        "topic": "我啱啱完成咗3個月嘅健身蛻變之旅，想鼓勵大家一齊開始自己嘅旅程"
+      },
+      "quote": {
+        "brandName": "Glow 護膚",
+        "deliverables": [
+          "reel",
+          "story",
+          "feed"
+        ],
+        "complexity": "medium",
+        "timeline": "2weeks",
+        "briefDescription": "為新推出嘅維他命C精華做宣傳：一條主打產品嘅 Reel、Before/After 對比限時動態系列，同埋一篇詳細用後感 Feed 帖。"
+      },
+      "message": {
+        "scenario": "proposal",
+        "clientName": "Glow 護膚嘅 Sarah",
+        "projectBrief": "維他命C精華宣傳活動 — 1 條 Reel + 限時動態系列 + Feed 帖",
+        "tone": "professional",
+        "specificPoints": "我嘅觀眾有七成係25-34歲、對護膚有興趣嘅女性。之前護膚品合作平均有5.2%互動率。"
+      },
+      "planner": {
+        "campaignName": "夏季護膚品宣傳",
+        "duration": "1month",
+        "platforms": [
+          "Instagram",
+          "TikTok"
+        ],
+        "contentCount": 5,
+        "goals": "提升新維他命C精華嘅品牌知名度、帶動產品頁流量，並展示真實嘅 Before/After 效果。"
+      },
+      "rate": {
+        "niche": "Beauty & Skincare",
+        "followers": "10K - 50K",
+        "engagement": "1-3%",
+        "platform": "Instagram"
+      }
+    },
+    "loadingMessages": {
+      "storyboard": [
+        "正在構思分鏡…",
+        "設計鏡頭角度…",
+        "整理設備清單…"
+      ],
+      "caption": [
+        "構思開場金句…",
+        "調整語氣風格…",
+        "揀選合適 Hashtag…"
+      ],
+      "quote": [
+        "分析市場收費水平…",
+        "估算製作所需時間…",
+        "計算建議報價範圍…"
+      ],
+      "message": [
+        "了解你嘅背景同需求…",
+        "斟酌合適嘅字眼…",
+        "潤飾訊息草稿…"
+      ],
+      "planner": [
+        "規劃重要里程碑…",
+        "拆解各項任務…",
+        "建立內容發佈日程…"
+      ],
+      "rate": [
+        "掃描市場基準數據…",
+        "比較同類型創作者…",
+        "微調你嘅收費範圍…"
+      ]
+    }
   }
 }

@@ -8,6 +8,7 @@ import { ArrowLeft, Megaphone, AlertCircle } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { CompanyGuard } from "@/components/role-guard";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 import { useAuth } from "@/contexts/auth-context";
 import { getSupabaseClient } from "@/lib/supabase/client";
 
@@ -25,11 +26,42 @@ const NICHE_OPTIONS = [
 const inputClass =
   "w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-pink-500";
 
+function FieldError({ message }: { message: string }) {
+  return <p className="text-xs text-red-600 mt-1">{message}</p>;
+}
+
+function CharCount({ count, max }: { count: number; max: number }) {
+  const tc = useTranslations("common");
+  return (
+    <p
+      className={`text-xs mt-1 text-right ${
+        count > max - 50 ? "text-yellow-600" : "text-neutral-400"
+      }`}
+    >
+      {tc("charCount", { count, max })}
+    </p>
+  );
+}
+
+function RequiredMark() {
+  const tc = useTranslations("common");
+  return (
+    <span className="text-red-500">
+      {" "}
+      *{" "}
+      <span className="text-neutral-400 font-normal text-xs">
+        ({tc("required")})
+      </span>
+    </span>
+  );
+}
+
 function NewCampaignForm() {
   const t = useTranslations("marketplace.newCampaign");
   const locale = useLocale();
   const router = useRouter();
   const { user } = useAuth();
+  const toast = useToast();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -40,10 +72,33 @@ function NewCampaignForm() {
   const [deadline, setDeadline] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const titleError =
+    (touched.title || title.length > 0) && title.trim().length < 5
+      ? t("validation.titleTooShort")
+      : null;
+  const budgetError =
+    (touched.budget || budget.length > 0) &&
+    (Number.isNaN(Number(budget)) || Number(budget) <= 0)
+      ? t("validation.budgetInvalid")
+      : null;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const deadlineError =
+    (touched.deadline || deadline.length > 0) &&
+    deadline !== "" &&
+    new Date(`${deadline}T00:00:00`) < today
+      ? t("validation.deadlinePast")
+      : null;
+  const hasErrors = titleError !== null || budgetError !== null || deadlineError !== null;
+
+  const blur = (field: string) =>
+    setTouched((prev) => ({ ...prev, [field]: true }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user || hasErrors) return;
     setIsSubmitting(true);
     setError(null);
 
@@ -66,6 +121,7 @@ function NewCampaignForm() {
 
     if (insertError) {
       setIsSubmitting(false);
+      toast.error(t("errorGeneric"));
       const msg = insertError.message ?? "";
       if (
         insertError.code === "PGRST204" ||
@@ -82,6 +138,7 @@ function NewCampaignForm() {
       return;
     }
 
+    toast.success(t("publishSuccess"));
     router.push(`/${locale}/marketplace/campaigns/${data.id}`);
   };
 
@@ -114,35 +171,42 @@ function NewCampaignForm() {
             <div>
               <label className="block text-sm font-medium mb-1.5">
                 {t("fieldTitle")}
+                <RequiredMark />
               </label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                onBlur={() => blur("title")}
                 placeholder={t("placeholderTitle")}
-                className={inputClass}
+                className={`${inputClass} ${titleError ? "border-red-400" : ""}`}
               />
+              {titleError && <FieldError message={titleError} />}
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-1.5">
                 {t("fieldDescription")}
+                <RequiredMark />
               </label>
               <textarea
                 required
                 rows={4}
+                maxLength={1000}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder={t("placeholderDescription")}
                 className={inputClass}
               />
+              <CharCount count={description.length} max={1000} />
             </div>
 
             <div className="grid md:grid-cols-2 gap-5">
               <div>
                 <label className="block text-sm font-medium mb-1.5">
                   {t("fieldBudget")}
+                  <RequiredMark />
                 </label>
                 <input
                   type="number"
@@ -151,9 +215,11 @@ function NewCampaignForm() {
                   step="1"
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
+                  onBlur={() => blur("budget")}
                   placeholder={t("placeholderBudget")}
-                  className={inputClass}
+                  className={`${inputClass} ${budgetError ? "border-red-400" : ""}`}
                 />
+                {budgetError && <FieldError message={budgetError} />}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1.5">
@@ -163,8 +229,10 @@ function NewCampaignForm() {
                   type="date"
                   value={deadline}
                   onChange={(e) => setDeadline(e.target.value)}
-                  className={inputClass}
+                  onBlur={() => blur("deadline")}
+                  className={`${inputClass} ${deadlineError ? "border-red-400" : ""}`}
                 />
+                {deadlineError && <FieldError message={deadlineError} />}
               </div>
             </div>
 
@@ -192,11 +260,13 @@ function NewCampaignForm() {
               </label>
               <textarea
                 rows={3}
+                maxLength={1000}
                 value={requirements}
                 onChange={(e) => setRequirements(e.target.value)}
                 placeholder={t("placeholderRequirements")}
                 className={inputClass}
               />
+              <CharCount count={requirements.length} max={1000} />
             </div>
 
             <div>
@@ -205,11 +275,13 @@ function NewCampaignForm() {
               </label>
               <textarea
                 rows={3}
+                maxLength={1000}
                 value={deliverables}
                 onChange={(e) => setDeliverables(e.target.value)}
                 placeholder={t("placeholderDeliverables")}
                 className={inputClass}
               />
+              <CharCount count={deliverables.length} max={1000} />
             </div>
 
             {error && (
@@ -222,6 +294,7 @@ function NewCampaignForm() {
             <Button
               type="submit"
               isLoading={isSubmitting}
+              disabled={hasErrors}
               className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white"
             >
               {t("submit")}

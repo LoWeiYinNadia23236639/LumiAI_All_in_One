@@ -1,16 +1,32 @@
+import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AnimationProvider } from "@/components/animation-provider";
 import { Navbar } from "@/components/navbar";
+import { ToastProvider } from "@/components/ui/toast";
 import { AuthProvider } from "@/contexts/auth-context";
 import { NotificationsProvider } from "@/contexts/notifications-context";
 import { SavedListsProvider } from "@/contexts/saved-lists-context";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "metadata" });
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default async function LocaleLayout({
   children,
@@ -35,10 +51,12 @@ export default async function LocaleLayout({
             <NotificationsProvider>
               <SavedListsProvider>
                 <AnimationProvider>
-                  <div className="min-h-screen bg-gradient-to-br from-violet-50 via-pink-50 to-orange-50">
-                    <Navbar />
-                    {children}
-                  </div>
+                  <ToastProvider>
+                    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-pink-50 to-orange-50">
+                      <Navbar />
+                      {children}
+                    </div>
+                  </ToastProvider>
                 </AnimationProvider>
               </SavedListsProvider>
             </NotificationsProvider>

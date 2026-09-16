@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -15,11 +15,37 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
+import { CampaignCardSkeleton } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
 import { useSavedLists } from "@/contexts/saved-lists-context";
 import { useAuth } from "@/contexts/auth-context";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/format";
+import { daysUntil } from "@/lib/relative-time";
 import { useTranslations, useLocale } from "next-intl";
+
+function DeadlineChip({ deadline }: { deadline: string | null }) {
+  const tc = useTranslations("common");
+  const d = daysUntil(deadline);
+  if (d === null || d > 7) return null;
+  if (d === 0) {
+    return (
+      <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+        {tc("deadlineToday")}
+      </span>
+    );
+  }
+  const urgent = d <= 3;
+  return (
+    <span
+      className={`px-2 py-0.5 rounded-full text-xs font-semibold ${
+        urgent ? "bg-red-100 text-red-700" : "bg-yellow-100 text-yellow-700"
+      }`}
+    >
+      {urgent ? tc("deadlineUrgent", { days: d }) : tc("deadlineSoon", { days: d })}
+    </span>
+  );
+}
 
 const CATEGORIES = [
   "All",
@@ -56,22 +82,32 @@ function CampaignsPage() {
   const [loadError, setLoadError] = useState(false);
   const { isCampaignSaved, toggleCampaign } = useSavedLists();
 
-  useEffect(() => {
+  const loadCampaigns = useCallback(async () => {
     const supabase = getSupabaseClient();
-    supabase
+    const { data, error } = await supabase
       .from("campaigns")
       .select("*, profiles(name), applications(count)")
       .eq("status", "active")
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (error) {
-          setLoadError(true);
-        } else {
-          setCampaigns((data ?? []) as unknown as CampaignRow[]);
-        }
-        setIsLoading(false);
-      });
+      .order("created_at", { ascending: false });
+    if (error) {
+      setLoadError(true);
+    } else {
+      setCampaigns((data ?? []) as unknown as CampaignRow[]);
+    }
+    setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      await loadCampaigns();
+    })();
+  }, [loadCampaigns]);
+
+  const retryLoad = () => {
+    setIsLoading(true);
+    setLoadError(false);
+    loadCampaigns();
+  };
 
   const filteredCampaigns = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
@@ -141,17 +177,16 @@ function CampaignsPage() {
 
         {/* Loading */}
         {isLoading && (
-          <div className="py-24 text-center">
-            <div className="animate-spin w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full mx-auto mb-4" />
-            <p className="text-neutral-500">{t("loading")}</p>
+          <div className="space-y-4">
+            <CampaignCardSkeleton />
+            <CampaignCardSkeleton />
+            <CampaignCardSkeleton />
           </div>
         )}
 
         {/* Error */}
         {!isLoading && loadError && (
-          <div className="py-24 text-center">
-            <p className="text-neutral-700 font-medium mb-1">{t("loadError")}</p>
-          </div>
+          <ErrorState onRetry={retryLoad} />
         )}
 
         {/* Empty state */}
@@ -249,6 +284,7 @@ function CampaignsPage() {
                           ? formatDate(campaign.deadline, locale)
                           : t("noDeadline")}
                       </span>
+                      <DeadlineChip deadline={campaign.deadline} />
                     </div>
                     <div className="flex items-center gap-2 text-sm text-neutral-600">
                       <Briefcase className="w-4 h-4 text-violet-500" />
@@ -269,6 +305,9 @@ function CampaignsPage() {
                         ? formatDate(campaign.deadline, locale)
                         : t("noDeadline")}
                     </p>
+                    <div className="mt-1 flex lg:justify-end">
+                      <DeadlineChip deadline={campaign.deadline} />
+                    </div>
                   </div>
                   <Link href={`/marketplace/campaigns/${campaign.id}`}>
                     <Button className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white">

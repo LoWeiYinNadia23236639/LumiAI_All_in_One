@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PublicView } from "@/components/role-guard";
+import { useTranslations } from "next-intl";
 
 const publicProfile = {
   name: "Sarah Chen",
@@ -67,6 +68,8 @@ const publicProfile = {
 };
 
 function PublicProfileContent() {
+  const t = useTranslations("analytics.publicProfile");
+  const tCommon = useTranslations("common");
   const [activeTab, setActiveTab] = useState("portfolio");
   const [showContactModal, setShowContactModal] = useState(false);
 
@@ -77,7 +80,7 @@ function PublicProfileContent() {
         <Link href="/analytics">
           <Button variant="ghost" className="mb-6">
             <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
-            Back to Dashboard
+            {t("backToDashboard")}
           </Button>
         </Link>
 
@@ -98,7 +101,7 @@ function PublicProfileContent() {
                   {publicProfile.verified && (
                     <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full flex items-center gap-1">
                       <CheckCircle className="w-3 h-3" />
-                      Verified
+                      {t("verified")}
                     </span>
                   )}
                 </div>
@@ -123,11 +126,11 @@ function PublicProfileContent() {
                   onClick={() => setShowContactModal(true)}
                 >
                   <Mail className="w-4 h-4 mr-2" />
-                  Contact
+                  {t("contact")}
                 </Button>
                 <Button className="bg-gradient-to-r from-violet-500 to-pink-500">
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Work With Me
+                  {t("workWithMe")}
                 </Button>
               </div>
             </div>
@@ -138,15 +141,15 @@ function PublicProfileContent() {
             {/* Rate Range */}
             <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl mb-6">
               <div>
-                <p className="text-sm text-neutral-500">Rate Range</p>
+                <p className="text-sm text-neutral-500">{t("rateRange")}</p>
                 <p className="text-xl font-bold text-neutral-900">{publicProfile.rateRange}</p>
               </div>
               <div className="ml-auto">
-                <p className="text-sm text-neutral-500">Creator Rating</p>
+                <p className="text-sm text-neutral-500">{t("creatorRating")}</p>
                 <div className="flex items-center gap-1">
                   <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
                   <span className="font-bold">{publicProfile.stats.rating}</span>
-                  <span className="text-sm text-neutral-500">({publicProfile.stats.collaborations} reviews)</span>
+                  <span className="text-sm text-neutral-500">{t("reviewsCount", { count: publicProfile.stats.collaborations })}</span>
                 </div>
               </div>
             </div>
@@ -154,10 +157,10 @@ function PublicProfileContent() {
             {/* Stats */}
             <div className="grid grid-cols-4 gap-4 mb-8">
               {[
-                { label: "Followers", value: publicProfile.stats.followers },
-                { label: "Engagement", value: publicProfile.stats.engagement },
-                { label: "Avg Views", value: publicProfile.stats.avgViews },
-                { label: "Collabs", value: publicProfile.stats.collaborations },
+                { label: t("followers"), value: publicProfile.stats.followers },
+                { label: t("engagement"), value: publicProfile.stats.engagement },
+                { label: t("avgViews"), value: publicProfile.stats.avgViews },
+                { label: t("collabs"), value: publicProfile.stats.collaborations },
               ].map((stat, i) => (
                 <div key={i} className="text-center p-4 bg-gray-50 rounded-2xl">
                   <p className="text-2xl font-bold text-neutral-900">{stat.value}</p>
@@ -168,7 +171,7 @@ function PublicProfileContent() {
 
             {/* Platforms */}
             <div className="mb-8">
-              <h3 className="font-bold text-lg mb-4">Platforms</h3>
+              <h3 className="font-bold text-lg mb-4">{t("platforms")}</h3>
               <div className="grid md:grid-cols-3 gap-4">
                 {publicProfile.platforms.map((platform, i) => (
                   <div key={i} className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
@@ -177,7 +180,7 @@ function PublicProfileContent() {
                     </div>
                     <div>
                       <p className="font-medium">{platform.name}</p>
-                      <p className="text-sm text-neutral-500">{platform.followers} followers</p>
+                      <p className="text-sm text-neutral-500">{t("followersCount", { count: platform.followers })}</p>
                     </div>
                   </div>
                 ))}
@@ -187,8 +190,8 @@ function PublicProfileContent() {
             {/* Tabs */}
             <div className="flex gap-4 border-b mb-6">
               {[
-                { id: "portfolio", label: "Portfolio", icon: Grid3X3 },
-                { id: "work", label: "Brand Work", icon: Star },
+                { id: "portfolio", label: t("tabPortfolio"), icon: Grid3X3 },
+                { id: "work", label: t("tabBrandWork"), icon: Star },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -226,7 +229,7 @@ function PublicProfileContent() {
                     )}
                     <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent text-white">
                       <p className="font-medium text-sm truncate">{item.title}</p>
-                      <p className="text-xs opacity-80">{item.views} views</p>
+                      <p className="text-xs opacity-80">{t("viewsCount", { count: item.views })}</p>
                     </div>
                     {item.duration && (
                       <span className="absolute top-2 right-2 px-2 py-1 bg-black/60 text-white text-xs rounded">
@@ -248,7 +251,7 @@ function PublicProfileContent() {
                       <p className="text-sm text-neutral-500">{work.type}</p>
                     </div>
                     <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
-                      {work.engagement} engagement
+                      {t("engagementBadge", { rate: work.engagement })}
                     </span>
                   </div>
                 ))}
@@ -257,7 +260,7 @@ function PublicProfileContent() {
 
             {/* Content Types */}
             <div className="mt-8 pt-8 border-t">
-              <h3 className="font-bold text-lg mb-4">Content Specialties</h3>
+              <h3 className="font-bold text-lg mb-4">{t("contentSpecialties")}</h3>
               <div className="flex flex-wrap gap-2">
                 {publicProfile.contentTypes.map((type, i) => (
                   <span key={i} className="px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm font-medium">
@@ -272,11 +275,11 @@ function PublicProfileContent() {
         {/* Reviews */}
         <div className="bg-white rounded-2xl p-6 border shadow-sm">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="font-bold text-lg">Brand Reviews</h3>
+            <h3 className="font-bold text-lg">{t("brandReviews")}</h3>
             <div className="flex items-center gap-2">
               <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
               <span className="font-bold">{publicProfile.stats.rating}</span>
-              <span className="text-neutral-500">({publicProfile.stats.collaborations} reviews)</span>
+              <span className="text-neutral-500">{t("reviewsCount", { count: publicProfile.stats.collaborations })}</span>
             </div>
           </div>
           <div className="space-y-4">
@@ -313,7 +316,7 @@ function PublicProfileContent() {
             className="bg-white rounded-2xl p-6 w-full max-w-md"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-lg">Contact {publicProfile.name}</h3>
+              <h3 className="font-bold text-lg">{t("contactTitle", { name: publicProfile.name })}</h3>
               <button 
                 onClick={() => setShowContactModal(false)}
                 className="p-2 hover:bg-gray-100 rounded-lg"
@@ -323,22 +326,22 @@ function PublicProfileContent() {
             </div>
             
             <div className="bg-gray-50 rounded-xl p-4 mb-4">
-              <p className="text-sm text-neutral-600">Rate Range: {publicProfile.rateRange}</p>
-              <p className="text-xs text-neutral-500">Typical response time: Within 24 hours</p>
+              <p className="text-sm text-neutral-600">{t("rateRangeLine", { range: publicProfile.rateRange })}</p>
+              <p className="text-xs text-neutral-500">{t("responseTime")}</p>
             </div>
 
             <input
               type="text"
-              placeholder="Your name"
+              placeholder={t("yourName")}
               className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
             <input
               type="email"
-              placeholder="Your email"
+              placeholder={t("yourEmail")}
               className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
             <textarea
-              placeholder="Tell me about your campaign..."
+              placeholder={t("campaignMessage")}
               className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none mb-4"
             />
 
@@ -348,16 +351,16 @@ function PublicProfileContent() {
                 className="flex-1"
                 onClick={() => setShowContactModal(false)}
               >
-                Cancel
+                {tCommon("cancel")}
               </Button>
               <Button 
                 className="flex-1 bg-gradient-to-r from-violet-500 to-pink-500"
                 onClick={() => {
                   setShowContactModal(false);
-                  alert("Message sent! Sarah will respond within 24 hours.");
+                  alert(t("messageSent"));
                 }}
               >
-                Send Message
+                {t("sendMessage")}
               </Button>
             </div>
           </motion.div>

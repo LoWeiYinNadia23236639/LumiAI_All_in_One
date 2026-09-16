@@ -9,7 +9,7 @@ import {
   Sparkles,
   Loader2,
   Copy,
-  CheckCircle,
+  Check,
   RefreshCw,
   Zap,
   Lightbulb,
@@ -21,6 +21,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
 import { AiGenerationHistory } from "@/components/ai-generation-history";
+import { AiLoadingText } from "@/components/ai-loading-text";
+import { useToast } from "@/components/ui/toast";
 import { callGenerate, AiAuthError } from "@/lib/ai/client";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -74,7 +76,9 @@ const contentExamples = [
 
 export default function CaptionAIPage() {
   const t = useTranslations("aiTools");
+  const tc = useTranslations("common");
   const locale = useLocale();
+  const { success, error: toastError } = useToast();
   const [prompt, setPrompt] = useState("");
   const [tone, setTone] = useState("confident");
   const [platform, setPlatform] = useState("instagram");
@@ -85,6 +89,7 @@ export default function CaptionAIPage() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [showExamples, setShowExamples] = useState(true);
   const [showTips, setShowTips] = useState(true);
+  const example = t.raw("examples.caption") as { topic: string };
 
   const generate = async () => {
     if (!prompt.trim() || loading) return;
@@ -106,6 +111,7 @@ export default function CaptionAIPage() {
         return;
       }
       setError(true);
+      toastError(t("generateFailed"));
     } finally {
       setLoading(false);
     }
@@ -114,7 +120,8 @@ export default function CaptionAIPage() {
   const copy = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
     setCopiedIndex(index);
-    setTimeout(() => setCopiedIndex(null), 2000);
+    success(tc("copied"));
+    setTimeout(() => setCopiedIndex(null), 1500);
   };
 
   const loadExample = (example: typeof contentExamples[0]) => {
@@ -217,9 +224,15 @@ export default function CaptionAIPage() {
 
           {/* Content Input */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-neutral-700 mb-3">
-              What are you posting about?
-            </label>
+            <div className="flex items-center justify-between mb-3">
+              <label className="block text-sm font-medium text-neutral-700">
+                What are you posting about?
+              </label>
+              <Button variant="ghost" size="sm" onClick={() => setPrompt(example.topic)}>
+                <Sparkles className="w-4 h-4 mr-2" />
+                {tc("exampleButton")}
+              </Button>
+            </div>
             <textarea
               placeholder="Example: Just completed my 3-month fitness transformation journey, want to inspire others..."
               className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
@@ -286,6 +299,7 @@ export default function CaptionAIPage() {
               </>
             )}
           </Button>
+          {loading && <AiLoadingText toolKey="caption" className="mt-3 text-center" />}
         </div>
 
         {/* Results */}
@@ -344,13 +358,13 @@ export default function CaptionAIPage() {
                     >
                       {copiedIndex === i ? (
                         <>
-                          <CheckCircle className="w-4 h-4 mr-2" />
-                          Copied!
+                          <Check className="w-4 h-4 mr-2 text-green-500" />
+                          {tc("copied")}
                         </>
                       ) : (
                         <>
                           <Copy className="w-4 h-4 mr-2" />
-                          Copy
+                          {tc("copy")}
                         </>
                       )}
                     </Button>

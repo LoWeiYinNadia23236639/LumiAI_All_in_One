@@ -1,7 +1,63 @@
 {
   "metadata": {
     "title": "LumiAI - Creator Operating System",
-    "description": "All-in-one platform for content creators and brands"
+    "description": "All-in-one platform for content creators and brands",
+    "marketplace": {
+      "title": "Marketplace | LumiAI",
+      "description": "Discover brand deals and creator partnerships in LumiAI's two-way marketplace."
+    },
+    "campaigns": {
+      "title": "Brand Campaigns | LumiAI",
+      "description": "Browse and apply to brand campaigns matched to your content style and audience."
+    },
+    "newCampaign": {
+      "title": "Post a New Campaign | LumiAI",
+      "description": "Reach creators who match your brand by posting a new campaign."
+    },
+    "campaignDetail": {
+      "title": "Campaign Details | LumiAI",
+      "description": "View campaign details, requirements and deliverables, and apply in minutes."
+    },
+    "creatorDashboard": {
+      "title": "Creator Dashboard | LumiAI",
+      "description": "Track your growth, earnings and content performance."
+    },
+    "companyDashboard": {
+      "title": "Company Dashboard | LumiAI",
+      "description": "Track campaign performance and manage creator partnerships."
+    },
+    "aiHub": {
+      "title": "AI Hub | LumiAI",
+      "description": "AI-powered tools for creators: storyboards, captions and more."
+    },
+    "storyboard": {
+      "title": "Storyboard Generator | LumiAI",
+      "description": "Generate video storyboards and shot lists with AI."
+    },
+    "caption": {
+      "title": "Caption Generator | LumiAI",
+      "description": "Generate engaging social media captions with AI."
+    },
+    "advisor": {
+      "title": "AI Advisor | LumiAI",
+      "description": "Get AI-powered advice to grow your creator business."
+    },
+    "login": {
+      "title": "Sign In | LumiAI",
+      "description": "Sign in to LumiAI to continue your creator journey."
+    },
+    "signup": {
+      "title": "Sign Up | LumiAI",
+      "description": "Create a LumiAI account and start landing better brand deals."
+    },
+    "forgotPassword": {
+      "title": "Reset Password | LumiAI",
+      "description": "Reset your LumiAI account password."
+    },
+    "admin": {
+      "title": "Admin | LumiAI",
+      "description": "LumiAI platform administration."
+    }
   },
   "nav": {
     "aiHub": "AI Hub",
@@ -122,11 +178,12 @@
     "noAccount": "Don’t have an account?",
     "haveAccount": "Already have an account?",
     "signingIn": "Signing in...",
-    "aiFeatures": "AI Storyboard & Caption Generation"
+    "aiFeatures": "AI Storyboard & Caption Generation",
+    "emailPlaceholder": "you@example.com"
   },
   "marketplace": {
     "twoWayMarketplace": "Two-Way Marketplace",
-    "findPerfectMatch": "Find Your Perfect Match",
+    "findPerfectMatch": "Find Your Perfect <match>Match</match>",
     "matchSubtitle": "Whether you're a creator looking for brand deals or a company seeking influencers — discover the perfect partnership.",
     "forCreators": "For Creators",
     "forBrands": "For Brands",
@@ -200,7 +257,13 @@
       "placeholderDeliverables": "e.g. 1 Instagram Reel + 3 Stories, posted within 2 weeks...",
       "submit": "Publish Campaign",
       "errorGeneric": "Publishing failed. Please try again.",
-      "errorMissingColumns": "The database has not been updated yet. Please run the ALTER TABLE SQL in the Supabase SQL Editor first, then try again."
+      "errorMissingColumns": "The database has not been updated yet. Please run the ALTER TABLE SQL in the Supabase SQL Editor first, then try again.",
+      "validation": {
+        "titleTooShort": "Title must be at least 5 characters.",
+        "budgetInvalid": "Budget must be a number greater than 0.",
+        "deadlinePast": "The deadline cannot be in the past."
+      },
+      "publishSuccess": "Campaign published successfully!"
     },
     "campaignList": {
       "badge": "Find Your Next Brand Deal",
@@ -231,7 +294,7 @@
       "deliverables": "Deliverables",
       "applyTitle": "Apply for this Campaign",
       "pitchLabel": "Introduce yourself & your collaboration idea",
-      "pitchPlaceholder": "Tell the brand who you are, your audience, and how you would approach this campaign...",
+      "pitchPlaceholder": "Hi! I'm a lifestyle creator with 25K followers in Hong Kong. I'd create a 60-second Reel showcasing your new serum, plus 2 Stories with a swipe-up link...",
       "applySubmit": "Apply Now",
       "applyError": "Application failed. Please try again.",
       "authError": "Your session has expired. Please sign in again.",
@@ -247,8 +310,67 @@
         "accepted": "Accepted",
         "rejected": "Rejected",
         "withdrawn": "Withdrawn"
+      },
+      "applySuccess": "Application submitted successfully",
+      "pitchTooShort": "Please write at least 20 characters about yourself and your idea.",
+      "confirmReject": {
+        "title": "Reject this application?",
+        "description": "The creator will see that their application was rejected. This cannot be undone.",
+        "confirm": "Reject"
       }
-    }
+    },
+    "creatorFeatureMatching": "AI-powered campaign matching",
+    "creatorFeatureBudget": "Transparent budget ranges",
+    "creatorFeatureFast": "Fast application process",
+    "creatorFeatureSecure": "Secure payment protection",
+    "brandFeatureCreators": "Browse 10,000+ verified creators",
+    "brandFeatureSearch": "Advanced filtering & search",
+    "brandFeatureManagement": "Campaign management tools",
+    "brandFeatureRoi": "ROI tracking & analytics",
+    "findPerfectCreator": "Find Your Perfect <creator>Creator</creator>",
+    "talentSubtitle": "Browse thousands of vetted influencers. Filter by niche, audience, engagement, and more.",
+    "statNicheCategories": "Niche Categories",
+    "statAvgEngagement": "Avg Engagement",
+    "statCreatorRating": "Creator Rating",
+    "searchCreatorsPlaceholder": "Search creators by name, handle, or niche...",
+    "nicheOptions": [
+      {
+        "value": "All",
+        "label": "All"
+      },
+      {
+        "value": "Fashion",
+        "label": "Fashion"
+      },
+      {
+        "value": "Beauty",
+        "label": "Beauty"
+      },
+      {
+        "value": "Tech",
+        "label": "Tech"
+      },
+      {
+        "value": "Gaming",
+        "label": "Gaming"
+      },
+      {
+        "value": "Food",
+        "label": "Food"
+      },
+      {
+        "value": "Travel",
+        "label": "Travel"
+      },
+      {
+        "value": "Fitness",
+        "label": "Fitness"
+      },
+      {
+        "value": "Lifestyle",
+        "label": "Lifestyle"
+      }
+    ]
   },
   "equipment": {
     "rentProfessionalGear": "Rent Professional Gear",
@@ -380,6 +502,81 @@
       "accepted": "Accepted",
       "rejected": "Rejected",
       "withdrawn": "Withdrawn"
+    },
+    "statusTooltip": {
+      "pending": "Waiting for the brand to respond to your application",
+      "accepted": "The brand accepted your application — get ready for the next steps",
+      "rejected": "The brand declined this application — you can apply to other campaigns"
+    },
+    "statHints": {
+      "followers": {
+        "title": "Link your account to start tracking follower growth",
+        "cta": "Go to AI Hub"
+      },
+      "engagement": {
+        "title": "Join campaigns to see your engagement rate",
+        "cta": "Browse campaigns"
+      },
+      "views": {
+        "title": "Publish content to track views across platforms",
+        "cta": "Browse campaigns"
+      },
+      "revenue": {
+        "title": "Complete collaborations to start earning",
+        "cta": "Find campaigns"
+      }
+    },
+    "statHintsBrand": {
+      "campaigns": {
+        "title": "Post your first campaign to start hiring creators",
+        "cta": "Post campaign"
+      },
+      "spent": {
+        "title": "Campaign spend will show here once live",
+        "cta": "Post campaign"
+      },
+      "roi": {
+        "title": "ROI appears once campaigns generate results",
+        "cta": "Browse creators"
+      },
+      "reach": {
+        "title": "Partner with creators to grow your reach",
+        "cta": "Browse creators"
+      }
+    },
+    "rateInvalid": "Daily rate must be a number greater than 0",
+    "deleteGearTitle": "Delete this gear?",
+    "deleteGearDesc": "This listing will be permanently removed.",
+    "rejectConfirmTitle": "Reject this application?",
+    "rejectConfirmDesc": "The creator will be notified that their application was declined.",
+    "publicProfile": {
+      "backToDashboard": "Back to Dashboard",
+      "verified": "Verified",
+      "contact": "Contact",
+      "workWithMe": "Work With Me",
+      "rateRange": "Rate Range",
+      "creatorRating": "Creator Rating",
+      "followers": "Followers",
+      "engagement": "Engagement",
+      "avgViews": "Avg Views",
+      "collabs": "Collabs",
+      "reviewsCount": "({count} reviews)",
+      "platforms": "Platforms",
+      "followersCount": "{count} followers",
+      "tabPortfolio": "Portfolio",
+      "tabBrandWork": "Brand Work",
+      "viewsCount": "{count} views",
+      "engagementBadge": "{rate} engagement",
+      "contentSpecialties": "Content Specialties",
+      "brandReviews": "Brand Reviews",
+      "contactTitle": "Contact {name}",
+      "rateRangeLine": "Rate Range: {range}",
+      "responseTime": "Typical response time: Within 24 hours",
+      "yourName": "Your name",
+      "yourEmail": "Your email",
+      "campaignMessage": "Tell me about your campaign...",
+      "sendMessage": "Send Message",
+      "messageSent": "Message sent! The creator will respond within 24 hours."
     }
   },
   "admin": {
@@ -551,7 +748,28 @@
     "add": "Add",
     "submit": "Submit",
     "continue": "Continue",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "errorTitle": "Something went wrong",
+    "errorDesc": "An unexpected error occurred. Please try again, or head back home.",
+    "tryAgain": "Try Again",
+    "backHome": "Back to Home",
+    "confirm": "Confirm",
+    "copied": "Copied to clipboard",
+    "copy": "Copy",
+    "required": "required",
+    "charCount": "{count}/{max} characters",
+    "savedToast": "Saved successfully",
+    "deletedToast": "Deleted successfully",
+    "deadlineSoon": "{days} days left",
+    "deadlineUrgent": "Only {days} days left!",
+    "deadlineToday": "Deadline today!",
+    "exampleButton": "Try an example",
+    "notFound": {
+      "title": "Page Not Found",
+      "description": "The page you're looking for doesn't exist or has been moved.",
+      "backHome": "Back to Home",
+      "goBack": "Go Back"
+    }
   },
   "help": {
     "helpCenter": "Help Center",
@@ -667,6 +885,81 @@
     "recommendations": "Recommendations",
     "percentileLabel": "compared to similar creators",
     "analyzing": "Analyzing...",
-    "newAnalysis": "Run New Analysis"
+    "newAnalysis": "Run New Analysis",
+    "examples": {
+      "storyboard": {
+        "idea": "A relaxing 30-second morning skincare routine: waking up refreshed, washing face, applying serum and moisturizer, ending with a glowing skin close-up.",
+        "mood": "cozy morning, soft natural light, minimalist"
+      },
+      "caption": {
+        "topic": "Just completed my 3-month fitness transformation journey and want to inspire others to start theirs"
+      },
+      "quote": {
+        "brandName": "Glow Skincare",
+        "deliverables": [
+          "reel",
+          "story",
+          "feed"
+        ],
+        "complexity": "medium",
+        "timeline": "2weeks",
+        "briefDescription": "Launch campaign for a new vitamin C serum: one main reel showcasing the product, a story series with before/after results, and a feed post with a detailed review."
+      },
+      "message": {
+        "scenario": "proposal",
+        "clientName": "Sarah from Glow Skincare",
+        "projectBrief": "Vitamin C serum launch campaign - 1 reel + story series + feed post",
+        "tone": "professional",
+        "specificPoints": "My audience is 70% women aged 25-34 interested in skincare. Previous skincare collabs averaged 5.2% engagement."
+      },
+      "planner": {
+        "campaignName": "Summer Skincare Launch",
+        "duration": "1month",
+        "platforms": [
+          "Instagram",
+          "TikTok"
+        ],
+        "contentCount": 5,
+        "goals": "Increase brand awareness for the new vitamin C serum, drive traffic to the product page, and showcase authentic before/after results."
+      },
+      "rate": {
+        "niche": "Beauty & Skincare",
+        "followers": "10K - 50K",
+        "engagement": "1-3%",
+        "platform": "Instagram"
+      }
+    },
+    "loadingMessages": {
+      "storyboard": [
+        "Sketching your scenes...",
+        "Framing the perfect shots...",
+        "Assembling the equipment checklist..."
+      ],
+      "caption": [
+        "Brainstorming hook lines...",
+        "Matching your tone...",
+        "Picking the right hashtags..."
+      ],
+      "quote": [
+        "Analyzing market rates...",
+        "Estimating production time...",
+        "Calculating your price range..."
+      ],
+      "message": [
+        "Understanding your context...",
+        "Choosing the right words...",
+        "Polishing the draft..."
+      ],
+      "planner": [
+        "Mapping out milestones...",
+        "Breaking down tasks...",
+        "Building your content calendar..."
+      ],
+      "rate": [
+        "Scanning market benchmarks...",
+        "Comparing creators like you...",
+        "Fine-tuning your range..."
+      ]
+    }
   }
 }

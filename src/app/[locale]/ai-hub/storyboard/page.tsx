@@ -16,6 +16,7 @@ import {
   Lightbulb,
   Play,
   Sparkles,
+  Check,
   ChevronDown,
   ChevronUp,
   AlertCircle
@@ -23,6 +24,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
 import { AiGenerationHistory } from "@/components/ai-generation-history";
+import { AiLoadingText } from "@/components/ai-loading-text";
+import { useToast } from "@/components/ui/toast";
 import { callGenerate, AiAuthError } from "@/lib/ai/client";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -71,7 +74,9 @@ const tips = [
 
 export default function StoryboardAIPage() {
   const t = useTranslations("aiTools");
+  const tc = useTranslations("common");
   const locale = useLocale();
+  const { success, error: toastError } = useToast();
   const [prompt, setPrompt] = useState("");
   const [mood, setMood] = useState("");
   const [loading, setLoading] = useState(false);
@@ -79,8 +84,11 @@ export default function StoryboardAIPage() {
   const [result, setResult] = useState<StoryboardResult | null>(null);
   const [historyKey, setHistoryKey] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [copiedScene, setCopiedScene] = useState<number | null>(null);
+  const [copiedLists, setCopiedLists] = useState(false);
   const [showTips, setShowTips] = useState(true);
   const [showExamples, setShowExamples] = useState(true);
+  const example = t.raw("examples.storyboard") as { idea: string; mood: string };
 
   const generate = async () => {
     if (!prompt.trim() || loading) return;
@@ -101,6 +109,7 @@ export default function StoryboardAIPage() {
         return;
       }
       setError(true);
+      toastError(t("generateFailed"));
     } finally {
       setLoading(false);
     }
@@ -109,6 +118,11 @@ export default function StoryboardAIPage() {
   const loadExample = (examplePrompt: string) => {
     setPrompt(examplePrompt);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const fillExample = () => {
+    setPrompt(example.idea);
+    setMood(example.mood);
   };
 
   const copyToClipboard = () => {
@@ -126,7 +140,31 @@ Equipment: ${result.equipment_checklist.join(", ")}
     `.trim();
     navigator.clipboard.writeText(text);
     setCopied(true);
+    success(tc("copied"));
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const copyScene = (scene: Scene) => {
+    navigator.clipboard.writeText(
+      `Scene ${scene.scene_number}: ${scene.shot_angle}\n${scene.description}\nLighting: ${scene.lighting}`
+    );
+    setCopiedScene(scene.scene_number);
+    success(tc("copied"));
+    setTimeout(() => setCopiedScene(null), 1500);
+  };
+
+  const copyLists = () => {
+    if (!result) return;
+    const text = [
+      `Equipment: ${result.equipment_checklist.join(", ")}`,
+      result.pro_tips.length > 0
+        ? `Tips:\n${result.pro_tips.map((tip) => `- ${tip}`).join("\n")}`
+        : "",
+    ].filter(Boolean).join("\n\n");
+    navigator.clipboard.writeText(text);
+    setCopiedLists(true);
+    success(tc("copied"));
+    setTimeout(() => setCopiedLists(false), 1500);
   };
 
   return (
@@ -191,9 +229,15 @@ Equipment: ${result.equipment_checklist.join(", ")}
 
         {/* Input Section */}
         <div className="bg-white rounded-2xl shadow-lg border p-6 mb-8">
-          <label className="block text-sm font-medium text-neutral-700 mb-3">
-            Describe your video idea
-          </label>
+          <div className="flex items-center justify-between mb-3">
+            <label className="block text-sm font-medium text-neutral-700">
+              Describe your video idea
+            </label>
+            <Button variant="ghost" size="sm" onClick={fillExample}>
+              <Sparkles className="w-4 h-4 mr-2" />
+              {tc("exampleButton")}
+            </Button>
+          </div>
           <textarea
             placeholder="Example: A 30-second morning skincare routine showing a person waking up refreshed, washing their face, and applying serum with a natural glow..."
             className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none mb-4"
@@ -221,7 +265,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
               </Button>
             </div>
           )}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
             <p className="text-sm text-neutral-500">
               Tip: Include duration, setting, and key actions for best results
             </p>
@@ -243,6 +287,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
               )}
             </Button>
           </div>
+          {loading && <AiLoadingText toolKey="storyboard" className="mt-3" />}
         </div>
 
         {/* Result Section */}
@@ -253,7 +298,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
             className="bg-white rounded-2xl shadow-lg border overflow-hidden"
           >
             {/* Result Header */}
-            <div className="bg-gradient-to-r from-violet-500 to-purple-600 p-6 text-white flex items-center justify-between">
+            <div className="bg-gradient-to-r from-violet-500 to-purple-600 p-6 text-white flex items-center justify-between flex-wrap gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles className="w-5 h-5" />
@@ -294,8 +339,13 @@ Equipment: ${result.equipment_checklist.join(", ")}
                     <div className="w-12 h-12 rounded-xl bg-violet-500 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
                       {scene.scene_number}
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-violet-900 mb-1">{scene.shot_angle}</h3>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="font-semibold text-violet-900 mb-1">{scene.shot_angle}</h3>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 flex-shrink-0" onClick={() => copyScene(scene)} aria-label={tc("copy")}>
+                          {copiedScene === scene.scene_number ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                        </Button>
+                      </div>
                       <p className="text-neutral-700 mb-2">{scene.description}</p>
                       <div className="flex flex-wrap gap-3 text-sm">
                         <span className="flex items-center gap-1 text-neutral-600 bg-white px-2 py-1 rounded-lg">
@@ -310,10 +360,16 @@ Equipment: ${result.equipment_checklist.join(", ")}
 
               {/* Equipment */}
               <div className="bg-gray-50 rounded-xl p-4">
-                <h4 className="font-semibold mb-3 flex items-center gap-2">
-                  <Camera className="w-5 h-5 text-violet-500" />
-                  Recommended Equipment
-                </h4>
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-semibold flex items-center gap-2">
+                    <Camera className="w-5 h-5 text-violet-500" />
+                    Recommended Equipment
+                  </h4>
+                  <Button variant="ghost" size="sm" onClick={copyLists}>
+                    {copiedLists ? <Check className="w-4 h-4 mr-2 text-green-500" /> : <Copy className="w-4 h-4 mr-2" />}
+                    {copiedLists ? tc("copied") : tc("copy")}
+                  </Button>
+                </div>
                 <div className="flex flex-wrap gap-2">
                   {result.equipment_checklist.map((item, i) => (
                     <span key={i} className="px-3 py-1.5 bg-white border rounded-lg text-sm">

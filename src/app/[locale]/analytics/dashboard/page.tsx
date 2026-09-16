@@ -31,6 +31,9 @@ import {
   ClipboardList
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ListRowSkeleton } from "@/components/ui/skeleton";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useToast } from "@/components/ui/toast";
 import { InfluencerGuard } from "@/components/role-guard";
 import { useAuth } from "@/contexts/auth-context";
 import { useSavedLists } from "@/contexts/saved-lists-context";
@@ -42,7 +45,7 @@ interface MyApplication {
   id: string;
   status: string;
   created_at: string;
-  campaigns: { id: string; title: string; profiles: { name: string } | null } | null;
+  campaigns: { id: string; title: string; niche: string | null; profiles: { name: string } | null } | null;
 }
 
 interface UserGearItem {
@@ -72,6 +75,7 @@ function InfluencerAnalytics() {
   const t = useTranslations("analytics");
   const tc = useTranslations("common");
   const locale = useLocale();
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState("analytics");
   const [timeRange, setTimeRange] = useState("7d");
   const { user, logout } = useAuth();
@@ -81,6 +85,7 @@ function InfluencerAnalytics() {
   const [newGear, setNewGear] = useState({ name: "", dailyRate: "", condition: "Excellent", description: "" });
   const [myApplications, setMyApplications] = useState<MyApplication[]>([]);
   const [myAppsLoaded, setMyAppsLoaded] = useState(false);
+  const [gearToDelete, setGearToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("lumiai_user_gear");
@@ -98,7 +103,7 @@ function InfluencerAnalytics() {
     const supabase = getSupabaseClient();
     supabase
       .from("applications")
-      .select("id, status, created_at, campaigns(id, title, profiles(name))")
+      .select("id, status, created_at, campaigns(id, title, niche, profiles(name)))")
       .eq("creator_id", user.id)
       .order("created_at", { ascending: false })
       .then(({ data }) => {
@@ -108,7 +113,7 @@ function InfluencerAnalytics() {
   }, [user]);
 
   const handleAddGear = () => {
-    if (!newGear.name || !newGear.dailyRate || !user) return;
+    if (!newGear.name || !newGear.dailyRate || !(parseFloat(newGear.dailyRate) > 0) || !user) return;
     const daily = parseFloat(newGear.dailyRate);
     const item: UserGearItem = {
       id: `user-gear-${Date.now()}`,
@@ -135,6 +140,7 @@ function InfluencerAnalytics() {
     setUserGear((prev) => [item, ...prev]);
     setNewGear({ name: "", dailyRate: "", condition: "Excellent", description: "" });
     setShowAddModal(false);
+    toast.success(tc("savedToast"));
   };
 
   const toggleAvailability = (id: string) => {
@@ -143,6 +149,12 @@ function InfluencerAnalytics() {
 
   const deleteGear = (id: string) => {
     setUserGear((prev) => prev.filter((g) => g.id !== id));
+  };
+
+  const statusTooltip: Record<string, string> = {
+    pending: t("statusTooltip.pending"),
+    accepted: t("statusTooltip.accepted"),
+    rejected: t("statusTooltip.rejected"),
   };
 
   const verificationSteps = [
@@ -161,7 +173,7 @@ function InfluencerAnalytics() {
             <h1 className="text-3xl font-bold text-neutral-900">{t("creatorAnalytics")}</h1>
             <p className="text-neutral-600">{t("trackGrowth")}</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <select 
               value={timeRange} 
               onChange={(e) => setTimeRange(e.target.value)}
@@ -235,10 +247,10 @@ function InfluencerAnalytics() {
         {/* Overview Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: t("totalFollowers"), key: "followers", icon: Users, color: "text-blue-500", bg: "bg-blue-50" },
-            { label: t("engagementRate"), key: "engagement", icon: Heart, color: "text-pink-500", bg: "bg-pink-50" },
-            { label: t("totalViews"), key: "views", icon: Eye, color: "text-violet-500", bg: "bg-violet-50" },
-            { label: t("revenue"), key: "revenue", icon: DollarSign, color: "text-green-500", bg: "bg-green-50" },
+            { label: t("totalFollowers"), key: "followers", icon: Users, color: "text-blue-500", bg: "bg-blue-50", href: "/ai-hub" },
+            { label: t("engagementRate"), key: "engagement", icon: Heart, color: "text-pink-500", bg: "bg-pink-50", href: "/marketplace/campaigns" },
+            { label: t("totalViews"), key: "views", icon: Eye, color: "text-violet-500", bg: "bg-violet-50", href: "/marketplace/campaigns" },
+            { label: t("revenue"), key: "revenue", icon: DollarSign, color: "text-green-500", bg: "bg-green-50", href: "/marketplace/campaigns" },
           ].map((stat) => {
             return (
               <motion.div
@@ -253,10 +265,14 @@ function InfluencerAnalytics() {
                   </div>
                   <p className="text-sm text-neutral-500">{stat.label}</p>
                 </div>
-                <p className="text-2xl font-bold text-neutral-400">—</p>
-                <p className="text-sm font-medium text-neutral-400">
-                  {t("noDataYet")}
+                <p className="text-sm font-medium text-neutral-500 mb-3">
+                  {t(`statHints.${stat.key}.title`)}
                 </p>
+                <Link href={stat.href}>
+                  <Button variant="outline" size="sm">
+                    {t(`statHints.${stat.key}.cta`)}
+                  </Button>
+                </Link>
               </motion.div>
             );
           })}
@@ -289,8 +305,10 @@ function InfluencerAnalytics() {
               <h3 className="font-bold text-lg">{t("myAppsTitle")}</h3>
             </div>
             {!myAppsLoaded ? (
-              <div className="py-6 text-center">
-                <div className="animate-spin w-6 h-6 border-4 border-violet-500 border-t-transparent rounded-full mx-auto" />
+              <div className="space-y-3">
+                {[0, 1, 2].map((i) => (
+                  <ListRowSkeleton key={i} />
+                ))}
               </div>
             ) : myApplications.length === 0 ? (
               <p className="text-sm text-neutral-500">{t("myAppsEmpty")}</p>
@@ -302,19 +320,26 @@ function InfluencerAnalytics() {
                     className="flex flex-wrap items-center gap-3 p-3 rounded-xl border border-gray-100"
                   >
                     <div className="flex-1 min-w-[200px]">
-                      <Link
-                        href={`/marketplace/campaigns/${app.campaigns?.id}`}
-                        className="font-medium text-neutral-900 hover:text-violet-600 transition-colors"
-                      >
-                        {app.campaigns?.title ?? "—"}
-                      </Link>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Link
+                          href={`/marketplace/campaigns/${app.campaigns?.id}`}
+                          className="font-medium text-neutral-900 hover:text-violet-600 transition-colors"
+                        >
+                          {app.campaigns?.title ?? "—"}
+                        </Link>
+                        {app.campaigns?.niche && (
+                          <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">
+                            {app.campaigns.niche}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-xs text-neutral-500">
                         {app.campaigns?.profiles?.name ?? "—"} •{" "}
                         {formatDate(app.created_at, locale)}
                       </p>
                     </div>
                     <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      className={`relative group px-3 py-1 rounded-full text-xs font-medium ${
                         app.status === "accepted"
                           ? "bg-green-100 text-green-700"
                           : app.status === "rejected"
@@ -323,6 +348,11 @@ function InfluencerAnalytics() {
                       }`}
                     >
                       {t(`appStatus.${app.status}`)}
+                      {statusTooltip[app.status] && (
+                        <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 hidden group-hover:block bg-neutral-900 text-white text-xs font-normal rounded-lg px-2.5 py-1.5 w-48 text-center z-20 pointer-events-none">
+                          {statusTooltip[app.status]}
+                        </span>
+                      )}
                     </span>
                   </div>
                 ))}
@@ -504,7 +534,7 @@ function InfluencerAnalytics() {
                           {item.available ? <ToggleRight className="w-5 h-5 text-green-500" /> : <ToggleLeft className="w-5 h-5 text-gray-400" />}
                         </button>
                         <button
-                          onClick={() => deleteGear(item.id)}
+                          onClick={() => setGearToDelete(item.id)}
                           className="p-1 hover:bg-red-50 rounded-lg text-red-500"
                           title={tc("delete")}
                         >
@@ -557,7 +587,9 @@ function InfluencerAnalytics() {
               <h3 className="text-xl font-bold mb-4">{t("listNewGear")}</h3>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">{t("itemName")}</label>
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    {t("itemName")} <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="text"
                     value={newGear.name}
@@ -567,7 +599,9 @@ function InfluencerAnalytics() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">{t("dailyRate")}</label>
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    {t("dailyRate")} <span className="text-red-500">*</span>
+                  </label>
                   <input
                     type="number"
                     value={newGear.dailyRate}
@@ -575,6 +609,9 @@ function InfluencerAnalytics() {
                     placeholder="75"
                     className="w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
+                  {newGear.dailyRate && !(parseFloat(newGear.dailyRate) > 0) && (
+                    <p className="text-xs text-red-500 mt-1">{t("rateInvalid")}</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-1">Condition</label>
@@ -600,7 +637,7 @@ function InfluencerAnalytics() {
                 </div>
                 <div className="flex gap-3 pt-2">
                   <Button variant="outline" className="flex-1" onClick={() => setShowAddModal(false)}>{tc("cancel")}</Button>
-                  <Button className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500" onClick={handleAddGear} disabled={!newGear.name || !newGear.dailyRate}>
+                  <Button className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500" onClick={handleAddGear} disabled={!newGear.name || !newGear.dailyRate || !(parseFloat(newGear.dailyRate) > 0)}>
                     {t("listGear")}
                   </Button>
                 </div>
@@ -608,6 +645,22 @@ function InfluencerAnalytics() {
             </motion.div>
           </div>
         )}
+
+        {/* Delete Gear Confirm */}
+        <ConfirmDialog
+          open={gearToDelete !== null}
+          danger
+          title={t("deleteGearTitle")}
+          description={t("deleteGearDesc")}
+          onConfirm={() => {
+            if (gearToDelete) {
+              deleteGear(gearToDelete);
+              toast.success(tc("deletedToast"));
+            }
+            setGearToDelete(null);
+          }}
+          onCancel={() => setGearToDelete(null)}
+        />
       </div>
     </main>
   );

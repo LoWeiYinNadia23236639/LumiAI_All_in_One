@@ -25,11 +25,15 @@ import {
   XCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ListRowSkeleton } from "@/components/ui/skeleton";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useToast } from "@/components/ui/toast";
 import { CompanyGuard } from "@/components/role-guard";
 import { useAuth } from "@/contexts/auth-context";
 import { useSavedLists } from "@/contexts/saved-lists-context";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/format";
+import { formatRelativeTime } from "@/lib/relative-time";
 import { useTranslations, useLocale } from "next-intl";
 
 interface ReceivedApplication {
@@ -46,13 +50,22 @@ interface ReceivedApplication {
 
 function CompanyAnalytics() {
   const t = useTranslations("analytics");
+  const tc = useTranslations("common");
   const locale = useLocale();
+  const toast = useToast();
   const [timeRange, setTimeRange] = useState("30d");
   const { user, logout } = useAuth();
   const { savedCreators } = useSavedLists();
   const [receivedApps, setReceivedApps] = useState<ReceivedApplication[]>([]);
   const [appsLoaded, setAppsLoaded] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [rejectAppId, setRejectAppId] = useState<string | null>(null);
+
+  const statusTooltip: Record<string, string> = {
+    pending: t("statusTooltip.pending"),
+    accepted: t("statusTooltip.accepted"),
+    rejected: t("statusTooltip.rejected"),
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -98,6 +111,7 @@ function CompanyAnalytics() {
       setReceivedApps((prev) =>
         prev.map((a) => (a.id === appId ? { ...a, status } : a))
       );
+      toast.success(tc("savedToast"));
     }
     setActionLoading(null);
   };
@@ -118,7 +132,7 @@ function CompanyAnalytics() {
             <h1 className="text-3xl font-bold text-neutral-900">Company Dashboard</h1>
             <p className="text-neutral-600">Track campaign performance and manage creator partnerships</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <select 
               value={timeRange} 
               onChange={(e) => setTimeRange(e.target.value)}
@@ -166,10 +180,10 @@ function CompanyAnalytics() {
         {/* Overview Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Active Campaigns", key: "campaigns", icon: Briefcase, color: "text-blue-500", bg: "bg-blue-50" },
-            { label: "Total Spent", key: "spent", icon: DollarSign, color: "text-green-500", bg: "bg-green-50" },
-            { label: "ROI", key: "roi", icon: TrendingUp, color: "text-violet-500", bg: "bg-violet-50" },
-            { label: "Total Reach", key: "reach", icon: Users, color: "text-orange-500", bg: "bg-orange-50" },
+            { label: "Active Campaigns", key: "campaigns", icon: Briefcase, color: "text-blue-500", bg: "bg-blue-50", href: "/marketplace/campaigns/new" },
+            { label: "Total Spent", key: "spent", icon: DollarSign, color: "text-green-500", bg: "bg-green-50", href: "/marketplace/campaigns/new" },
+            { label: "ROI", key: "roi", icon: TrendingUp, color: "text-violet-500", bg: "bg-violet-50", href: "/marketplace/talent" },
+            { label: "Total Reach", key: "reach", icon: Users, color: "text-orange-500", bg: "bg-orange-50", href: "/marketplace/talent" },
           ].map((stat) => {
             return (
               <motion.div
@@ -184,10 +198,14 @@ function CompanyAnalytics() {
                   </div>
                   <p className="text-sm text-neutral-500">{stat.label}</p>
                 </div>
-                <p className="text-2xl font-bold text-neutral-400">—</p>
-                <p className="text-sm font-medium text-neutral-400">
-                  {t("noDataYet")}
+                <p className="text-sm font-medium text-neutral-500 mb-3">
+                  {t(`statHintsBrand.${stat.key}.title`)}
                 </p>
+                <Link href={stat.href}>
+                  <Button variant="outline" size="sm">
+                    {t(`statHintsBrand.${stat.key}.cta`)}
+                  </Button>
+                </Link>
               </motion.div>
             );
           })}
@@ -269,8 +287,10 @@ function CompanyAnalytics() {
                 <h3 className="font-bold text-lg">{t("receivedAppsTitle")}</h3>
               </div>
               {!appsLoaded ? (
-                <div className="py-6 text-center">
-                  <div className="animate-spin w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full mx-auto" />
+                <div className="space-y-3">
+                  {[0, 1, 2].map((i) => (
+                    <ListRowSkeleton key={i} />
+                  ))}
                 </div>
               ) : receivedApps.length === 0 ? (
                 <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
@@ -291,7 +311,7 @@ function CompanyAnalytics() {
                           </span>
                         )}
                         <span
-                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                          className={`relative group px-2 py-0.5 rounded-full text-xs font-medium ${
                             app.status === "accepted"
                               ? "bg-green-100 text-green-700"
                               : app.status === "rejected"
@@ -300,6 +320,11 @@ function CompanyAnalytics() {
                           }`}
                         >
                           {t(`appStatus.${app.status}`)}
+                          {statusTooltip[app.status] && (
+                            <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 hidden group-hover:block bg-neutral-900 text-white text-xs font-normal rounded-lg px-2.5 py-1.5 w-48 text-center z-20 pointer-events-none">
+                              {statusTooltip[app.status]}
+                            </span>
+                          )}
                         </span>
                       </div>
                       <Link
@@ -314,7 +339,7 @@ function CompanyAnalytics() {
                         </p>
                       )}
                       <p className="text-xs text-neutral-400 mt-1">
-                        {formatDate(app.created_at, locale)}
+                        {formatDate(app.created_at, locale)} · {formatRelativeTime(app.created_at, locale)}
                       </p>
                       {app.status === "pending" && (
                         <div className="flex gap-2 mt-2">
@@ -332,7 +357,7 @@ function CompanyAnalytics() {
                             size="sm"
                             variant="outline"
                             disabled={actionLoading !== null}
-                            onClick={() => handleStatusUpdate(app.id, "rejected")}
+                            onClick={() => setRejectAppId(app.id)}
                             className="text-neutral-600 h-7 px-3 text-xs"
                           >
                             <XCircle className="w-3.5 h-3.5 mr-1" />
@@ -362,6 +387,19 @@ function CompanyAnalytics() {
             </div>
           </div>
         </div>
+
+        {/* Reject Application Confirm */}
+        <ConfirmDialog
+          open={rejectAppId !== null}
+          danger
+          title={t("rejectConfirmTitle")}
+          description={t("rejectConfirmDesc")}
+          onConfirm={() => {
+            if (rejectAppId) handleStatusUpdate(rejectAppId, "rejected");
+            setRejectAppId(null);
+          }}
+          onCancel={() => setRejectAppId(null)}
+        />
       </div>
     </main>
   );
