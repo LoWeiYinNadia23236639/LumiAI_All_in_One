@@ -31,7 +31,6 @@ const publicProfile = {
   handle: "@sarahstyles",
   verified: true,
   avatar: "SC",
-  avatarColor: "from-pink-400 to-rose-500",
   bio: "Fashion enthusiast sharing affordable style tips. Helping you look expensive on a budget! 💕 Based in Los Angeles.",
   location: "Los Angeles, CA",
   website: "sarahstyles.com",
@@ -74,7 +73,7 @@ function PublicProfileContent() {
   const [showContactModal, setShowContactModal] = useState(false);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-4xl mx-auto px-4">
         {/* Back Link */}
         <Link href="/analytics">
@@ -85,14 +84,14 @@ function PublicProfileContent() {
         </Link>
 
         {/* Profile Card */}
-        <div className="bg-white rounded-3xl shadow-xl border overflow-hidden mb-8">
+        <div className="bg-paper rounded-xl border overflow-hidden mb-8">
           {/* Cover */}
-          <div className="h-48 bg-gradient-to-r from-pink-400 via-violet-500 to-purple-600" />
+          <div className="h-48 bg-primary" />
           
           <div className="px-8 pb-8">
             {/* Avatar & Basic Info */}
             <div className="flex flex-col md:flex-row gap-6 -mt-16 mb-6">
-              <div className={`w-32 h-32 rounded-3xl bg-gradient-to-br ${publicProfile.avatarColor} flex items-center justify-center text-white text-4xl font-bold border-4 border-white shadow-lg`}>
+              <div className={`w-32 h-32 rounded-xl bg-primary flex items-center justify-center text-cream text-4xl font-bold border-4 border-paper`}>
                 {publicProfile.avatar}
               </div>
               <div className="flex-1 pt-4 md:pt-16">
@@ -115,7 +114,7 @@ function PublicProfileContent() {
                     <LinkIcon className="w-4 h-4" />
                     {publicProfile.website}
                   </span>
-                  <span className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-medium">
+                  <span className="px-3 py-1 bg-primary-soft text-primary rounded-full text-xs font-medium">
                     {publicProfile.niche}
                   </span>
                 </div>
@@ -128,7 +127,7 @@ function PublicProfileContent() {
                   <Mail className="w-4 h-4 mr-2" />
                   {t("contact")}
                 </Button>
-                <Button className="bg-gradient-to-r from-violet-500 to-pink-500">
+                <Button>
                   <MessageSquare className="w-4 h-4 mr-2" />
                   {t("workWithMe")}
                 </Button>
@@ -162,7 +161,7 @@ function PublicProfileContent() {
                 { label: t("avgViews"), value: publicProfile.stats.avgViews },
                 { label: t("collabs"), value: publicProfile.stats.collaborations },
               ].map((stat, i) => (
-                <div key={i} className="text-center p-4 bg-gray-50 rounded-2xl">
+                <div key={i} className="text-center p-4 bg-gray-50 rounded-lg">
                   <p className="text-2xl font-bold text-neutral-900">{stat.value}</p>
                   <p className="text-sm text-neutral-500">{stat.label}</p>
                 </div>
@@ -175,7 +174,7 @@ function PublicProfileContent() {
               <div className="grid md:grid-cols-3 gap-4">
                 {publicProfile.platforms.map((platform, i) => (
                   <div key={i} className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-pink-400 flex items-center justify-center text-white">
+                    <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-cream">
                       <platform.icon className="w-5 h-5" />
                     </div>
                     <div>
@@ -198,7 +197,7 @@ function PublicProfileContent() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
                     activeTab === tab.id
-                      ? "border-violet-500 text-violet-600"
+                      ? "border-primary text-primary"
                       : "border-transparent text-neutral-500 hover:text-neutral-700"
                   }`}
                 >
@@ -217,7 +216,7 @@ function PublicProfileContent() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className="group relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl aspect-square flex items-center justify-center cursor-pointer overflow-hidden"
+                    className="group relative bg-neutral-100 rounded-xl aspect-square flex items-center justify-center cursor-pointer overflow-hidden"
                   >
                     <span className="text-6xl group-hover:scale-110 transition-transform">{item.thumbnail}</span>
                     {item.type === "video" && (
@@ -250,7 +249,7 @@ function PublicProfileContent() {
                       <p className="font-medium">{work.brand}</p>
                       <p className="text-sm text-neutral-500">{work.type}</p>
                     </div>
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                    <span className="px-3 py-1 bg-primary-soft text-primary rounded-full text-sm font-medium">
                       {t("engagementBadge", { rate: work.engagement })}
                     </span>
                   </div>
@@ -263,7 +262,7 @@ function PublicProfileContent() {
               <h3 className="font-bold text-lg mb-4">{t("contentSpecialties")}</h3>
               <div className="flex flex-wrap gap-2">
                 {publicProfile.contentTypes.map((type, i) => (
-                  <span key={i} className="px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm font-medium">
+                  <span key={i} className="px-4 py-2 bg-primary-soft text-primary rounded-full text-sm font-medium">
                     {type}
                   </span>
                 ))}
@@ -273,7 +272,7 @@ function PublicProfileContent() {
         </div>
 
         {/* Reviews */}
-        <div className="bg-white rounded-2xl p-6 border shadow-sm">
+        <div className="bg-paper rounded-lg p-6 border">
           <div className="flex items-center justify-between mb-6">
             <h3 className="font-bold text-lg">{t("brandReviews")}</h3>
             <div className="flex items-center gap-2">
@@ -313,7 +312,7 @@ function PublicProfileContent() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-6 w-full max-w-md"
+            className="bg-paper rounded-lg p-6 w-full max-w-md"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-lg">{t("contactTitle", { name: publicProfile.name })}</h3>
@@ -333,16 +332,16 @@ function PublicProfileContent() {
             <input
               type="text"
               placeholder={t("yourName")}
-              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <input
               type="email"
               placeholder={t("yourEmail")}
-              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <textarea
               placeholder={t("campaignMessage")}
-              className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none mb-4"
+              className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none mb-4"
             />
 
             <div className="flex gap-3">
@@ -353,8 +352,8 @@ function PublicProfileContent() {
               >
                 {tCommon("cancel")}
               </Button>
-              <Button 
-                className="flex-1 bg-gradient-to-r from-violet-500 to-pink-500"
+              <Button
+                className="flex-1"
                 onClick={() => {
                   setShowContactModal(false);
                   alert(t("messageSent"));

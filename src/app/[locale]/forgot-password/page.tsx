@@ -62,12 +62,12 @@ function ForgotPasswordForm() {
   if (updated) {
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-8">
-        <div className="w-16 h-16 rounded-2xl bg-green-100 flex items-center justify-center mx-auto mb-6">
+        <div className="w-16 h-16 rounded-lg bg-green-100 flex items-center justify-center mx-auto mb-6">
           <MailCheck className="w-8 h-8 text-green-600" />
         </div>
         <p className="text-neutral-600 mb-8">{t("resetSent", { email: sentTo || email })}</p>
         <Link href="/login">
-          <Button className="w-full bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 text-white">
+          <Button className="w-full">
             {t("backToSignIn")}
           </Button>
         </Link>
@@ -91,7 +91,7 @@ function ForgotPasswordForm() {
                 required
                 autoComplete="new-password"
                 placeholder="••••••••"
-                className="w-full pl-12 pr-12 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full pl-12 pr-12 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
                 value={passwords.password}
                 onChange={(e) => setPasswords({ ...passwords, password: e.target.value })}
               />
@@ -115,7 +115,7 @@ function ForgotPasswordForm() {
                 required
                 autoComplete="new-password"
                 placeholder="••••••••"
-                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
                 value={passwords.confirm}
                 onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
               />
@@ -124,7 +124,7 @@ function ForgotPasswordForm() {
           <Button
             type="submit"
             disabled={submitting}
-            className="w-full bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 text-white py-3 h-auto text-lg"
+            className="w-full py-3 h-auto text-lg"
           >
             {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : t("sendResetLink")}
             {!submitting && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -137,8 +137,8 @@ function ForgotPasswordForm() {
   if (sentTo) {
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="text-center py-8">
-        <div className="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center mx-auto mb-6">
-          <MailCheck className="w-8 h-8 text-violet-600" />
+        <div className="w-16 h-16 rounded-lg bg-primary-soft flex items-center justify-center mx-auto mb-6">
+          <MailCheck className="w-8 h-8 text-primary" />
         </div>
         <h1 className="text-2xl font-bold mb-4">{t("resetSentTitle")}</h1>
         <p className="text-neutral-600 mb-8">{t("resetSent", { email: sentTo })}</p>
@@ -166,7 +166,7 @@ function ForgotPasswordForm() {
               required
               autoComplete="email"
               placeholder={t("emailPlaceholder")}
-              className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -175,14 +175,14 @@ function ForgotPasswordForm() {
         <Button
           type="submit"
           disabled={submitting}
-          className="w-full bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 text-white py-3 h-auto text-lg"
+          className="w-full py-3 h-auto text-lg"
         >
           {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : t("sendResetLink")}
           {!submitting && <ArrowRight className="w-5 h-5 ml-2" />}
         </Button>
       </form>
       <p className="mt-6 text-center text-sm text-neutral-600">
-        <Link href="/login" className="text-violet-600 hover:underline font-medium">
+        <Link href="/login" className="text-primary hover:underline font-medium">
           {t("backToSignIn")}
         </Link>
       </p>
@@ -197,7 +197,7 @@ export default function ForgotPasswordPage() {
       <Suspense
         fallback={
           <div className="min-h-[300px] flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         }
       >

@@ -24,7 +24,7 @@ const NICHE_OPTIONS = [
 ];
 
 const inputClass =
-  "w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-pink-500";
+  "w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary";
 
 function FieldError({ message }: { message: string }) {
   return <p className="text-xs text-red-600 mt-1">{message}</p>;
@@ -143,7 +143,7 @@ function NewCampaignForm() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-pink-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-3xl mx-auto px-4">
         <Link href="/marketplace/campaigns">
           <Button variant="ghost" size="sm" className="mb-4">
@@ -155,11 +155,11 @@ function NewCampaignForm() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl p-6 md:p-8 border shadow-sm"
+          className="bg-paper rounded-lg p-6 md:p-8 border border-line"
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 flex items-center justify-center">
-              <Megaphone className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center">
+              <Megaphone className="w-6 h-6 text-cream" />
             </div>
             <div>
               <h1 className="text-2xl font-bold">{t("title")}</h1>
@@ -295,7 +295,7 @@ function NewCampaignForm() {
               type="submit"
               isLoading={isSubmitting}
               disabled={hasErrors}
-              className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white"
+              className="w-full"
             >
               {t("submit")}
             </Button>

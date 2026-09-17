@@ -11,19 +11,19 @@ import { AuthGuard } from "@/components/auth-guard";
 const conversations = [
   {
     id: "conv-1",
-    contact: { name: "Glow Skincare", avatar: "GS", avatarColor: "from-green-400 to-emerald-500", status: "online", lastActive: "Active now" },
+    contact: { name: "Glow Skincare", avatar: "GS", avatarColor: "", status: "online", lastActive: "Active now" },
     lastMessage: { text: "We love your portfolio! Are you available for a campaign next month?", time: "10 min ago", unread: true, sender: "them" },
     context: "Summer Sunscreen Launch",
   },
   {
     id: "conv-2",
-    contact: { name: "Sarah Chen", avatar: "SC", avatarColor: "from-pink-400 to-rose-500", status: "offline", lastActive: "2 hours ago" },
+    contact: { name: "Sarah Chen", avatar: "SC", avatarColor: "", status: "offline", lastActive: "2 hours ago" },
     lastMessage: { text: "Thanks for the offer! Could we discuss the deliverables in more detail?", time: "2 hours ago", unread: false, sender: "them" },
     context: "Product Review Campaign",
   },
   {
     id: "conv-3",
-    contact: { name: "TechMaster Pro", avatar: "TM", avatarColor: "from-violet-400 to-purple-500", status: "online", lastActive: "Active now" },
+    contact: { name: "TechMaster Pro", avatar: "TM", avatarColor: "", status: "online", lastActive: "Active now" },
     lastMessage: { text: "Contract sent. Please review and sign when ready.", time: "1 day ago", unread: false, sender: "me" },
     context: "Gaming Headset Review",
   },
@@ -70,11 +70,11 @@ function MessagesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white pt-16">
+    <main className="min-h-screen bg-cream pt-16">
       <div className="max-w-6xl mx-auto">
         <div className="flex h-[calc(100vh-4rem)]">
           {/* Sidebar */}
-          <div className="w-80 border-r bg-white flex flex-col">
+          <div className="w-80 border-r bg-paper flex flex-col">
             <div className="p-4 border-b">
               <h2 className="text-xl font-bold">{t("messages")}</h2>
             </div>
@@ -84,10 +84,10 @@ function MessagesPage() {
                   key={conv.id}
                   onClick={() => setSelectedId(conv.id)}
                   className={`w-full p-4 flex gap-3 text-left transition-colors border-b ${
-                    selectedId === conv.id ? "bg-violet-50 border-l-4 border-l-violet-500" : "hover:bg-gray-50"
+                    selectedId === conv.id ? "bg-primary-soft border-l-4 border-l-primary" : "hover:bg-gray-50"
                   }`}
                 >
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${conv.contact.avatarColor} flex items-center justify-center text-white font-bold flex-shrink-0`}>
+                  <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-cream font-bold flex-shrink-0">
                     {conv.contact.avatar}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -106,7 +106,7 @@ function MessagesPage() {
           </div>
 
           {/* Chat */}
-          <div className="flex-1 flex flex-col bg-white">
+          <div className="flex-1 flex flex-col bg-paper">
             {/* Header */}
             <div className="border-b px-4 py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -115,7 +115,7 @@ function MessagesPage() {
                     <ArrowLeft className="w-4 h-4" />
                   </Button>
                 </Link>
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${selected.contact.avatarColor} flex items-center justify-center text-white font-bold`}>
+                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-cream font-bold">
                   {selected.contact.avatar}
                 </div>
                 <div>
@@ -140,8 +140,8 @@ function MessagesPage() {
             </div>
 
             {/* Context Banner */}
-            <div className="bg-violet-50 border-b px-4 py-2">
-              <p className="text-sm text-violet-800 font-medium">{t("context")}: {selected.context}</p>
+            <div className="bg-primary-soft border-b px-4 py-2">
+              <p className="text-sm text-primary font-medium">{t("context")}: {selected.context}</p>
             </div>
 
             {/* Messages */}
@@ -154,9 +154,9 @@ function MessagesPage() {
                   transition={{ delay: index * 0.02 }}
                   className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}
                 >
-                  <div className={`max-w-[70%] ${msg.sender === "me" ? "bg-violet-500 text-white" : "bg-gray-100 text-neutral-900"} rounded-2xl px-4 py-3`}>
+                  <div className={`max-w-[70%] ${msg.sender === "me" ? "bg-primary text-cream" : "bg-gray-100 text-neutral-900"} rounded-lg px-4 py-3`}>
                     <p className="text-sm">{msg.text}</p>
-                    <p className={`text-xs mt-1 ${msg.sender === "me" ? "text-violet-100" : "text-neutral-500"}`}>
+                    <p className={`text-xs mt-1 ${msg.sender === "me" ? "text-cream/70" : "text-neutral-500"}`}>
                       {msg.time}
                       {msg.sender === "me" && <CheckCheck className="w-3 h-3 inline ml-1" />}
                     </p>
@@ -172,12 +172,12 @@ function MessagesPage() {
                 <input
                   type="text"
                   placeholder={t("typeMessage")}
-                  className="flex-1 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="flex-1 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                 />
-                <Button onClick={sendMessage} disabled={!input.trim()} className="bg-violet-500 hover:bg-violet-600">
+                <Button onClick={sendMessage} disabled={!input.trim()}>
                   <Send className="w-4 h-4" />
                 </Button>
               </div>

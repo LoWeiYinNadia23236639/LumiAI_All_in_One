@@ -227,33 +227,36 @@ export default function MarketAdvisorPage() {
 
   return (
     <AuthGuard>
-    <main className="min-h-screen bg-gradient-to-b from-orange-50/50 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16 overflow-x-clip">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/ai-hub"><Button variant="ghost" size="sm"><ArrowLeft className="w-4 h-4 mr-2" />{t("backToAiHub")}</Button></Link>
         </div>
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 text-orange-700 text-sm font-semibold mb-4"><TrendingUp className="w-4 h-4" />{t("advisor.badge")}</div>
-          <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">{t("advisor.titleBefore")} <span className="gradient-text">{t("advisor.titleHighlight")}</span></h1>
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">{t("advisor.subtitle")}</p>
+        <div className="text-center mb-10 relative overflow-hidden">
+          <span className="absolute pointer-events-none select-none font-quote text-[12rem] leading-none text-ink/5 -right-8 -top-10">ADVISOR</span>
+          <div className="relative z-10">
+            <div className="inline-flex items-center rounded-full border border-primary/40 text-primary px-4 py-1 text-xs uppercase tracking-widest mb-4">{t("advisorKicker")}</div>
+            <h1 className="text-4xl md:text-5xl text-ink mb-4">{t("advisor.titleBefore")} <span className="text-ink">{t("advisor.titleHighlight")}</span></h1>
+            <p className="font-quote text-xl text-ink-soft max-w-2xl mx-auto">{t("advisor.subtitle")}</p>
+          </div>
         </div>
         <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {[{ id: "rates", label: t("advisor.tabs.rates"), icon: BarChart3 }, { id: "quote", label: t("advisor.tabs.quote"), icon: Briefcase }, { id: "messages", label: t("advisor.tabs.messages"), icon: MessageSquare }, { id: "planner", label: t("advisor.tabs.planner"), icon: ClipboardList }, { id: "contract", label: t("advisor.tabs.contract"), icon: Shield }].map((tab) => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`px-4 py-3 rounded-xl font-medium transition-all flex items-center gap-2 ${activeTab === tab.id ? "bg-gradient-to-r from-orange-500 to-amber-500 text-white shadow-lg" : "bg-white text-neutral-600 hover:text-neutral-900 hover:bg-gray-50 border"}`}><tab.icon className="w-4 h-4" />{tab.label}</button>
+          {[{ id: "rates", label: t("advisor.tabs.rates"), icon: BarChart3 }, { id: "quote", label: t("advisor.tabs.quote"), icon: Briefcase }, { id: "messages", label: t("advisor.tabs.messages"), icon: MessageSquare }, { id: "planner", label: t("advisor.tabs.planner"), icon: ClipboardList }, { id: "contract", label: t("advisor.tabs.contract"), icon: Shield }].map((tab, index) => (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`px-4 py-3 font-medium transition-all flex items-center gap-2 border-b-2 ${activeTab === tab.id ? "border-primary text-primary font-semibold" : "border-transparent text-ink/40 hover:text-ink"}`}><span className={`font-quote ${activeTab === tab.id ? "text-primary" : "text-ink/40"}`}>{String(index + 1).padStart(2, "0")}</span><tab.icon className="w-4 h-4" />{tab.label}</button>
           ))}
         </div>
         <AnimatePresence mode="wait">
           {activeTab === "rates" && (
             <motion.div key="rates" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
               {!rateResult ? (
-                <div className="bg-white rounded-2xl shadow-lg border p-8">
-                  <div className="flex items-center justify-between mb-2"><h2 className="text-2xl font-bold">{t("advisor.tabs.rates")}</h2><Button variant="ghost" size="sm" onClick={fillRateExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button></div>
+                <div className="bg-paper rounded-lg border p-8">
+                  <div className="flex items-center justify-between mb-2"><h2 className="text-2xl font-bold"><span className="text-accent">✦</span> {t("advisor.tabs.rates")}</h2><Button variant="ghost" size="sm" onClick={fillRateExample} className="rounded-full border border-dashed border-primary/40 text-primary text-xs hover:border-solid"><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button></div>
                   <p className="text-neutral-600 mb-6">{t("advisor.rateDesc")}</p>
                   <div className="grid md:grid-cols-2 gap-6 mb-6">
-                    <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.nicheLabel")}</label><select value={rateProfile.niche} onChange={(e) => setRateProfile({...rateProfile, niche: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500">{nicheOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
-                    <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.followersLabel")}</label><select value={rateProfile.followers} onChange={(e) => setRateProfile({...rateProfile, followers: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500">{followerOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
-                    <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.engagementLabel")}</label><select value={rateProfile.engagement} onChange={(e) => setRateProfile({...rateProfile, engagement: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500">{engagementOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
-                    <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.platformLabel")}</label><select value={rateProfile.platform} onChange={(e) => setRateProfile({...rateProfile, platform: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500">{platformOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
+                    <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "01" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.nicheLabel")}</span></label><select value={rateProfile.niche} onChange={(e) => setRateProfile({...rateProfile, niche: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary">{nicheOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
+                    <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "02" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.followersLabel")}</span></label><select value={rateProfile.followers} onChange={(e) => setRateProfile({...rateProfile, followers: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary">{followerOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
+                    <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "03" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.engagementLabel")}</span></label><select value={rateProfile.engagement} onChange={(e) => setRateProfile({...rateProfile, engagement: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary">{engagementOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
+                    <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "04" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.platformLabel")}</span></label><select value={rateProfile.platform} onChange={(e) => setRateProfile({...rateProfile, platform: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary">{platformOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
                   </div>
                   {errorRates && (
                     <div className="mb-6 p-3 bg-red-50 text-red-700 rounded-xl flex items-center justify-between gap-3 text-sm">
@@ -261,28 +264,28 @@ export default function MarketAdvisorPage() {
                       <Button size="sm" variant="outline" onClick={analyzeRates} disabled={loadingRates}>{t("retry")}</Button>
                     </div>
                   )}
-                  <Button onClick={analyzeRates} disabled={loadingRates} className="w-full bg-gradient-to-r from-orange-500 to-amber-500 py-3 h-auto">{loadingRates ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("analyzing")}</>) : (<><BarChart3 className="w-5 h-5 mr-2" />{t("advisor.getRateInsights")}</>)}</Button>
-                  {loadingRates && <AiLoadingText toolKey="rate" className="mt-3 text-center" />}
+                  <Button onClick={analyzeRates} disabled={loadingRates} className="w-full py-3 h-auto">{loadingRates ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("analyzing")}</>) : (<><BarChart3 className="w-5 h-5 mr-2" />{t("advisor.getRateInsights")}</>)}</Button>
+                  {loadingRates && <div className="mt-3 bg-primary-soft rounded-lg"><AiLoadingText toolKey="rate" className="text-center" /></div>}
                 </div>
               ) : (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                  <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-8 text-white">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 relative"><div className="absolute -top-3 right-4 pointer-events-none rotate-[8deg] rounded border-2 border-primary/50 text-primary/70 px-3 py-1 font-quote uppercase tracking-widest text-xs z-10">{t("stampGenerated")}</div>
+                  <div className="bg-primary rounded-lg p-8 text-cream">
                     <div className="flex items-center justify-between flex-wrap gap-4">
                       <div className="min-w-0">
                         <p className="text-lg opacity-90">{t("advisor.recommendedRange")}</p>
                         <p className="text-5xl font-bold mt-2">${rateResult.suggested_range.min.toLocaleString()} - ${rateResult.suggested_range.max.toLocaleString()}</p>
                         <p className="text-lg opacity-90 mt-1">{t("advisor.perPost")}</p>
                       </div>
-                      <div className="text-right"><div className="inline-flex items-center gap-1 px-3 py-1 bg-white/20 rounded-full text-sm"><TrendingUp className="w-4 h-4" />{rateResult.percentile}</div></div>
+                      <div className="text-right"><div className="inline-flex items-center gap-1 px-3 py-1 bg-cream/20 rounded-full text-sm"><TrendingUp className="w-4 h-4" />{rateResult.percentile}</div></div>
                     </div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-white rounded-2xl border shadow-sm p-6">
-                      <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Target className="w-5 h-5 text-orange-500" />{t("marketInsights")}</h3>
+                    <div className="bg-paper rounded-lg border-t-2 border-ink/40 p-6">
+                      <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Target className="w-5 h-5 text-primary" />{t("marketInsights")}</h3>
                       <div className="space-y-3">{rateResult.insights.map((insight, i) => (<div key={i} className="flex items-start gap-2 p-3 bg-gray-50 rounded-xl"><span className="text-sm text-neutral-600">{insight}</span></div>))}</div>
                     </div>
-                    <div className="bg-white rounded-2xl border shadow-sm p-6">
-                      <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Zap className="w-5 h-5 text-orange-500" />{t("advisor.growthRecs")}</h3>
+                    <div className="bg-paper rounded-lg border-t-2 border-ink/40 p-6">
+                      <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Zap className="w-5 h-5 text-primary" />{t("advisor.growthRecs")}</h3>
                       <ul className="space-y-3">{rateResult.recommendations.map((tip, i) => (<li key={i} className="flex items-start gap-2 text-sm"><CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" /><span>{tip}</span></li>))}</ul>
                     </div>
                   </div>
@@ -296,70 +299,70 @@ export default function MarketAdvisorPage() {
             <motion.div key="quote" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
               {!quoteResult ? (
                 <div className="space-y-6">
-                  <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-200 p-6">
-                    <div className="flex items-center gap-3 mb-4"><Wand2 className="w-5 h-5 text-orange-600" /><h3 className="font-bold text-lg">{t("advisor.quickStartQuote")}</h3></div>
+                  <div className="bg-primary-soft/50 rounded-lg border border-line p-6">
+                    <div className="flex items-center gap-3 mb-4"><Wand2 className="w-5 h-5 text-primary" /><h3 className="font-bold text-lg">{t("advisor.quickStartQuote")}</h3></div>
                     <div className="grid md:grid-cols-3 gap-4">
                       {demoScenarios.quote.map((scenario) => (
-                        <button key={scenario.id} onClick={() => loadQuoteDemo(scenario.id)} className="group p-4 rounded-xl border-2 border-white bg-white hover:border-orange-400 hover:shadow-md transition-all text-left">
+                        <button key={scenario.id} onClick={() => loadQuoteDemo(scenario.id)} className="group p-4 rounded-xl border-2 border-line bg-paper hover:border-primary transition-all text-left">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white group-hover:scale-110 transition-transform"><scenario.icon className="w-5 h-5" /></div>
-                            <div><h4 className="font-bold text-sm">{scenario.title}</h4><p className="text-xs text-orange-600">{scenario.brand}</p></div>
+                            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-cream group-hover:scale-110 transition-transform"><scenario.icon className="w-5 h-5" /></div>
+                            <div><h4 className="font-bold text-sm">{scenario.title}</h4><p className="text-xs text-primary">{scenario.brand}</p></div>
                           </div>
                           <p className="text-xs text-neutral-600 mb-2">{scenario.description}</p>
-                          <div className="flex flex-wrap gap-1">{scenario.deliverables.map(d => (<span key={d} className="px-2 py-0.5 bg-orange-100 text-orange-700 rounded text-[10px] uppercase">{d}</span>))}</div>
+                          <div className="flex flex-wrap gap-1">{scenario.deliverables.map(d => (<span key={d} className="px-2 py-0.5 bg-primary-soft text-primary rounded text-[10px] uppercase">{d}</span>))}</div>
                         </button>
                       ))}
                     </div>
                   </div>
-                  <div className="bg-white rounded-2xl shadow-lg border p-8">
+                  <div className="bg-paper rounded-lg border p-8">
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white"><Briefcase className="w-6 h-6" /></div>
-                      <div><h2 className="text-2xl font-bold">{t("advisor.quoteTitle")}</h2><p className="text-neutral-600">{t("advisor.quoteDesc")}</p></div><Button variant="ghost" size="sm" className="ml-auto flex-shrink-0" onClick={fillQuoteExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button>
+                      <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-cream"><Briefcase className="w-6 h-6" /></div>
+                      <div><h2 className="text-2xl font-bold"><span className="text-accent">✦</span> {t("advisor.quoteTitle")}</h2><p className="text-neutral-600">{t("advisor.quoteDesc")}</p></div><Button variant="ghost" size="sm" className="ml-auto flex-shrink-0 rounded-full border border-dashed border-primary/40 text-primary text-xs hover:border-solid" onClick={fillQuoteExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button>
                     </div>
                     <div className="space-y-6">
-                      <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.brandNameLabel")}</label><input type="text" value={jobDetails.brandName} onChange={(e) => setJobDetails({...jobDetails, brandName: e.target.value})} placeholder={t("advisor.brandNamePlaceholder")} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500" /></div>
+                      <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "01" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.brandNameLabel")}</span></label><input type="text" value={jobDetails.brandName} onChange={(e) => setJobDetails({...jobDetails, brandName: e.target.value})} placeholder={t("advisor.brandNamePlaceholder")} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary" /></div>
                       <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-3">{t("advisor.deliverablesLabel")}</label>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{deliverableOptions.map((option) => (<button key={option.id} onClick={() => toggleDeliverable(option.id)} className={`p-4 rounded-xl border-2 transition-all text-left ${jobDetails.deliverables.includes(option.id) ? "border-orange-500 bg-orange-50" : "border-gray-200 hover:border-orange-200"}`}><option.icon className={`w-5 h-5 mb-2 ${jobDetails.deliverables.includes(option.id) ? "text-orange-500" : "text-gray-400"}`} /><p className="font-medium text-sm">{option.label}</p><p className="text-xs text-neutral-500">{option.price}</p></button>))}</div>
+                        <label className="block mb-3"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "02" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.deliverablesLabel")}</span></label>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">{deliverableOptions.map((option) => (<button key={option.id} onClick={() => toggleDeliverable(option.id)} className={`p-4 rounded-xl border-2 transition-all text-left ${jobDetails.deliverables.includes(option.id) ? "border-primary bg-primary-soft" : "border-gray-200 hover:border-primary/40"}`}><option.icon className={`w-5 h-5 mb-2 ${jobDetails.deliverables.includes(option.id) ? "text-primary" : "text-gray-400"}`} /><p className="font-medium text-sm">{option.label}</p><p className="text-xs text-neutral-500">{option.price}</p></button>))}</div>
                       </div>
                       <div className="grid md:grid-cols-2 gap-6">
-                        <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.complexityLabel")}</label><select value={jobDetails.complexity} onChange={(e) => setJobDetails({...jobDetails, complexity: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500"><option value="low">{t("advisor.complexityOptions.low")}</option><option value="medium">{t("advisor.complexityOptions.medium")}</option><option value="high">{t("advisor.complexityOptions.high")}</option></select></div>
-                        <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.timelineLabel")}</label><select value={jobDetails.timeline} onChange={(e) => setJobDetails({...jobDetails, timeline: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500"><option value="1week">{t("advisor.timelineOptions.1week")}</option><option value="2weeks">{t("advisor.timelineOptions.2weeks")}</option><option value="1month">{t("advisor.timelineOptions.1month")}</option></select></div>
+                        <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "03" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.complexityLabel")}</span></label><select value={jobDetails.complexity} onChange={(e) => setJobDetails({...jobDetails, complexity: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"><option value="low">{t("advisor.complexityOptions.low")}</option><option value="medium">{t("advisor.complexityOptions.medium")}</option><option value="high">{t("advisor.complexityOptions.high")}</option></select></div>
+                        <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "04" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.timelineLabel")}</span></label><select value={jobDetails.timeline} onChange={(e) => setJobDetails({...jobDetails, timeline: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"><option value="1week">{t("advisor.timelineOptions.1week")}</option><option value="2weeks">{t("advisor.timelineOptions.2weeks")}</option><option value="1month">{t("advisor.timelineOptions.1month")}</option></select></div>
                       </div>
-                      <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.briefLabel")}</label><textarea value={jobDetails.briefDescription} onChange={(e) => setJobDetails({...jobDetails, briefDescription: e.target.value})} placeholder={t("advisor.briefPlaceholder")} rows={4} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none" /></div>
+                      <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "05" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.briefLabel")}</span></label><textarea value={jobDetails.briefDescription} onChange={(e) => setJobDetails({...jobDetails, briefDescription: e.target.value})} placeholder={t("advisor.briefPlaceholder")} rows={4} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none" /></div>
                       {errorQuote && (
                         <div className="p-3 bg-red-50 text-red-700 rounded-xl flex items-center justify-between gap-3 text-sm">
                           <span className="flex items-center gap-2"><AlertCircle className="w-4 h-4" />{t("generateFailed")}</span>
                           <Button size="sm" variant="outline" onClick={generateQuote} disabled={loadingQuote}>{t("retry")}</Button>
                         </div>
                       )}
-                      <Button onClick={generateQuote} disabled={loadingQuote || jobDetails.deliverables.length === 0} className="w-full bg-gradient-to-r from-orange-500 to-amber-500 py-3 h-auto">{loadingQuote ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("generating")}</>) : (<><Sparkles className="w-5 h-5 mr-2" />{t("advisor.generateQuote")}</>)}</Button>
-                      {loadingQuote && <AiLoadingText toolKey="quote" className="mt-3 text-center" />}
+                      <Button onClick={generateQuote} disabled={loadingQuote || jobDetails.deliverables.length === 0} className="w-full py-3 h-auto">{loadingQuote ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("generating")}</>) : (<><Sparkles className="w-5 h-5 mr-2" />{t("advisor.generateQuote")}</>)}</Button>
+                      {loadingQuote && <div className="mt-3 bg-primary-soft rounded-lg"><AiLoadingText toolKey="quote" className="text-center" /></div>}
                     </div>
                   </div>
                 </div>
               ) : (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                  <div className="bg-gradient-to-r from-orange-500 to-amber-500 rounded-2xl p-8 text-white">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 relative"><div className="absolute -top-3 right-4 pointer-events-none rotate-[8deg] rounded border-2 border-primary/50 text-primary/70 px-3 py-1 font-quote uppercase tracking-widest text-xs z-10">{t("stampGenerated")}</div>
+                  <div className="bg-primary rounded-lg p-8 text-cream">
                     <div className="grid md:grid-cols-3 gap-6">
-                      <div><p className="text-white/80 text-sm">{t("advisor.recommendedPrice")}</p><p className="text-4xl font-bold mt-1">${quoteResult.recommendedPrice.min.toLocaleString()} - ${quoteResult.recommendedPrice.max.toLocaleString()}</p></div>
-                      <div><p className="text-white/80 text-sm">{t("advisor.estimatedTime")}</p><p className="text-4xl font-bold mt-1">{t("advisor.hoursUnit", { count: quoteResult.estimatedHours })}</p></div>
-                      <div><p className="text-white/80 text-sm">{t("advisor.marketPosition")}</p><p className="text-2xl font-bold mt-1">{quoteResult.marketComparison.percentile}</p></div>
+                      <div><p className="text-cream/80 text-sm">{t("advisor.recommendedPrice")}</p><p className="text-4xl font-bold mt-1">${quoteResult.recommendedPrice.min.toLocaleString()} - ${quoteResult.recommendedPrice.max.toLocaleString()}</p></div>
+                      <div><p className="text-cream/80 text-sm">{t("advisor.estimatedTime")}</p><p className="text-4xl font-bold mt-1">{t("advisor.hoursUnit", { count: quoteResult.estimatedHours })}</p></div>
+                      <div><p className="text-cream/80 text-sm">{t("advisor.marketPosition")}</p><p className="text-2xl font-bold mt-1">{quoteResult.marketComparison.percentile}</p></div>
                     </div>
                   </div>
                   <div className="grid md:grid-cols-2 gap-6">
-                    <div className="bg-white rounded-2xl border shadow-sm p-6">
-                      <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><DollarSign className="w-5 h-5 text-orange-500" />{t("advisor.pricePerDeliverable")}</h3>
-                      <div className="space-y-3">{quoteResult.pricePerDeliverable.map((item, i) => (<div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><p className="font-medium capitalize">{item.type}</p><p className="text-xs text-neutral-500">{t("advisor.estPrefix")} {item.time}</p></div><p className="font-bold text-orange-600">${item.price.toLocaleString()}</p></div>))}</div>
+                    <div className="bg-paper rounded-lg border-t-2 border-ink/40 p-6">
+                      <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><DollarSign className="w-5 h-5 text-primary" />{t("advisor.pricePerDeliverable")}</h3>
+                      <div className="space-y-3">{quoteResult.pricePerDeliverable.map((item, i) => (<div key={i} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><p className="font-medium capitalize">{item.type}</p><p className="text-xs text-neutral-500">{t("advisor.estPrefix")} {item.time}</p></div><p className="font-bold text-primary">${item.price.toLocaleString()}</p></div>))}</div>
                     </div>
-                    <div className="bg-white rounded-2xl border shadow-sm p-6">
-                      <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Lightbulb className="w-5 h-5 text-orange-500" />{t("advisor.pricingFactors")}</h3>
+                    <div className="bg-paper rounded-lg border-t-2 border-ink/40 p-6">
+                      <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Lightbulb className="w-5 h-5 text-primary" />{t("advisor.pricingFactors")}</h3>
                       <div className="space-y-3">{quoteResult.factors.map((factor, i) => (<div key={i} className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl">{getImpactIcon(factor.impact)}<div><p className="font-medium text-sm">{factor.factor}</p><p className="text-xs text-neutral-600">{factor.description}</p></div></div>))}</div>
                     </div>
                   </div>
-                  <div className="bg-white rounded-2xl border shadow-sm p-6">
-                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Clock className="w-5 h-5 text-orange-500" />{t("advisor.timelineBreakdown")}</h3>
-                    <div className="grid md:grid-cols-4 gap-4">{quoteResult.timelineBreakdown.map((phase, i) => (<div key={i} className="p-4 bg-gray-50 rounded-xl"><div className="flex items-center gap-2 mb-2"><div className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-bold">{i + 1}</div><p className="font-medium text-sm">{phase.phase}</p></div><p className="text-xs text-orange-600 font-medium mb-2">{phase.duration}</p><ul className="space-y-1">{phase.tasks.map((task, j) => (<li key={j} className="text-xs text-neutral-600 flex items-center gap-1"><CheckCircle className="w-3 h-3 text-green-500" />{task}</li>))}</ul></div>))}</div>
+                  <div className="bg-paper rounded-lg border-t-2 border-ink/40 p-6">
+                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Clock className="w-5 h-5 text-primary" />{t("advisor.timelineBreakdown")}</h3>
+                    <div className="grid md:grid-cols-4 gap-4">{quoteResult.timelineBreakdown.map((phase, i) => (<div key={i} className="p-4 bg-gray-50 rounded-xl"><div className="flex items-center gap-2 mb-2"><div className="w-6 h-6 rounded-full bg-primary-soft text-primary flex items-center justify-center text-xs font-bold">{i + 1}</div><p className="font-medium text-sm">{phase.phase}</p></div><p className="text-xs text-primary font-medium mb-2">{phase.duration}</p><ul className="space-y-1">{phase.tasks.map((task, j) => (<li key={j} className="text-xs text-neutral-600 flex items-center gap-1"><CheckCircle className="w-3 h-3 text-green-500" />{task}</li>))}</ul></div>))}</div>
                   </div>
                   <div className="flex gap-3 flex-wrap">
                     <Button variant="outline" className="flex-1" onClick={() => copyResult(`Job Quote\nRecommended price: $${quoteResult.recommendedPrice.min.toLocaleString()} - $${quoteResult.recommendedPrice.max.toLocaleString()}\nEstimated time: ${quoteResult.estimatedHours} hours\nMarket position: ${quoteResult.marketComparison.percentile}\n\nPrice per deliverable:\n${quoteResult.pricePerDeliverable.map((d) => `- ${d.type}: $${d.price.toLocaleString()} (${d.time})`).join("\n")}\n\nPricing factors:\n${quoteResult.factors.map((f) => `- ${f.factor}: ${f.description}`).join("\n")}\n\nTimeline:\n${quoteResult.timelineBreakdown.map((ph, i) => `${i + 1}. ${ph.phase} (${ph.duration})\n${ph.tasks.map((task) => `   - ${task}`).join("\n")}`).join("\n")}`, setCopiedQuote)}>{copiedQuote ? (<><Check className="w-4 h-4 mr-2 text-green-500" />{tc("copied")}</>) : (<><Copy className="w-4 h-4 mr-2" />{tc("copy")}</>)}</Button>
@@ -376,7 +379,7 @@ export default function MarketAdvisorPage() {
                         });
                         setActiveTab("messages");
                       }}
-                      className="flex-1 bg-blue-50 hover:bg-blue-100 border-blue-200"
+                      className="flex-1 border-primary text-primary hover:bg-primary-soft"
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />{t("advisor.draftMessage")}
                     </Button>
@@ -390,54 +393,54 @@ export default function MarketAdvisorPage() {
             <motion.div key="messages" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
               {!messageDraft ? (
                 <div className="space-y-6">
-                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200 p-6">
-                    <div className="flex items-center gap-3 mb-4"><Quote className="w-5 h-5 text-blue-600" /><h3 className="font-bold text-lg">{t("advisor.quickStartMessage")}</h3></div>
+                  <div className="bg-primary-soft/50 rounded-lg border border-line p-6">
+                    <div className="flex items-center gap-3 mb-4"><Quote className="w-5 h-5 text-primary" /><h3 className="font-bold text-lg">{t("advisor.quickStartMessage")}</h3></div>
                     <div className="grid md:grid-cols-3 gap-4">
                       {demoScenarios.message.map((scenario) => (
-                        <button key={scenario.id} onClick={() => loadMessageDemo(scenario.id)} className="group p-4 rounded-xl border-2 border-white bg-white hover:border-blue-400 hover:shadow-md transition-all text-left">
+                        <button key={scenario.id} onClick={() => loadMessageDemo(scenario.id)} className="group p-4 rounded-xl border-2 border-line bg-paper hover:border-primary transition-all text-left">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white group-hover:scale-110 transition-transform"><scenario.icon className="w-5 h-5" /></div>
-                            <div><h4 className="font-bold text-sm">{scenario.title}</h4><p className="text-xs text-blue-600">{scenario.clientName}</p></div>
+                            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-cream group-hover:scale-110 transition-transform"><scenario.icon className="w-5 h-5" /></div>
+                            <div><h4 className="font-bold text-sm">{scenario.title}</h4><p className="text-xs text-primary">{scenario.clientName}</p></div>
                           </div>
                           <p className="text-xs text-neutral-600">{scenario.description}</p>
-                          <div className="mt-2"><span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-[10px] capitalize">{scenario.tone}</span></div>
+                          <div className="mt-2"><span className="px-2 py-1 bg-primary-soft text-primary rounded text-[10px] capitalize">{scenario.tone}</span></div>
                         </button>
                       ))}
                     </div>
                   </div>
-                  <div className="bg-white rounded-2xl shadow-lg border p-8">
+                  <div className="bg-paper rounded-lg border p-8">
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white"><Mail className="w-6 h-6" /></div>
-                      <div><h2 className="text-2xl font-bold">{t("advisor.tabs.messages")}</h2><p className="text-neutral-600">{t("advisor.messageDesc")}</p></div><Button variant="ghost" size="sm" className="ml-auto flex-shrink-0" onClick={fillMessageExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button>
+                      <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-cream"><Mail className="w-6 h-6" /></div>
+                      <div><h2 className="text-2xl font-bold"><span className="text-accent">✦</span> {t("advisor.tabs.messages")}</h2><p className="text-neutral-600">{t("advisor.messageDesc")}</p></div><Button variant="ghost" size="sm" className="ml-auto flex-shrink-0 rounded-full border border-dashed border-primary/40 text-primary text-xs hover:border-solid" onClick={fillMessageExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button>
                     </div>
                     <div className="space-y-6">
                       <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-3">{t("advisor.scenarioLabel")}</label>
-                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">{[{ id: "dm", label: t("msgTypeDm"), icon: Send }, { id: "proposal", label: t("msgTypeProposal"), icon: Mail }, { id: "followup", label: t("msgTypeFollowup"), icon: Clock }, { id: "decline", label: t("msgTypeDecline"), icon: ThumbsDown }, { id: "negotiation", label: t("msgTypeNegotiation"), icon: TrendingUp }].map((s) => (<button key={s.id} onClick={() => setMessageContext({...messageContext, scenario: s.id})} className={`p-3 rounded-xl border-2 transition-all text-center ${messageContext.scenario === s.id ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-blue-200"}`}><s.icon className={`w-5 h-5 mx-auto mb-2 ${messageContext.scenario === s.id ? "text-blue-500" : "text-gray-400"}`} /><p className="font-medium text-sm">{s.label}</p></button>))}</div>
+                        <label className="block mb-3"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "01" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.scenarioLabel")}</span></label>
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">{[{ id: "dm", label: t("msgTypeDm"), icon: Send }, { id: "proposal", label: t("msgTypeProposal"), icon: Mail }, { id: "followup", label: t("msgTypeFollowup"), icon: Clock }, { id: "decline", label: t("msgTypeDecline"), icon: ThumbsDown }, { id: "negotiation", label: t("msgTypeNegotiation"), icon: TrendingUp }].map((s) => (<button key={s.id} onClick={() => setMessageContext({...messageContext, scenario: s.id})} className={`p-3 rounded-xl border-2 transition-all text-center ${messageContext.scenario === s.id ? "border-primary bg-primary-soft" : "border-gray-200 hover:border-primary/40"}`}><s.icon className={`w-5 h-5 mx-auto mb-2 ${messageContext.scenario === s.id ? "text-primary" : "text-gray-400"}`} /><p className="font-medium text-sm">{s.label}</p></button>))}</div>
                       </div>
                       <div className="grid md:grid-cols-2 gap-6">
-                        <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.clientNameLabel")}</label><input type="text" value={messageContext.clientName} onChange={(e) => setMessageContext({...messageContext, clientName: e.target.value})} placeholder={t("advisor.clientNamePlaceholder")} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500" /></div>
-                        <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.toneLabel")}</label><select value={messageContext.tone} onChange={(e) => setMessageContext({...messageContext, tone: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500"><option value="professional">{t("advisor.toneOptions.professional")}</option><option value="friendly">{t("advisor.toneOptions.friendly")}</option><option value="formal">{t("advisor.toneOptions.formal")}</option><option value="enthusiastic">{t("advisor.toneOptions.enthusiastic")}</option></select></div>
+                        <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "02" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.clientNameLabel")}</span></label><input type="text" value={messageContext.clientName} onChange={(e) => setMessageContext({...messageContext, clientName: e.target.value})} placeholder={t("advisor.clientNamePlaceholder")} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary" /></div>
+                        <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "03" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.toneLabel")}</span></label><select value={messageContext.tone} onChange={(e) => setMessageContext({...messageContext, tone: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"><option value="professional">{t("advisor.toneOptions.professional")}</option><option value="friendly">{t("advisor.toneOptions.friendly")}</option><option value="formal">{t("advisor.toneOptions.formal")}</option><option value="enthusiastic">{t("advisor.toneOptions.enthusiastic")}</option></select></div>
                       </div>
-                      <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.msgBriefLabel")}</label><textarea value={messageContext.projectBrief} onChange={(e) => setMessageContext({...messageContext, projectBrief: e.target.value})} placeholder={t("advisor.msgBriefPlaceholder")} rows={3} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" /></div>
-                      <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.pointsLabel")}</label><textarea value={messageContext.specificPoints} onChange={(e) => setMessageContext({...messageContext, specificPoints: e.target.value})} placeholder={t("advisor.pointsPlaceholder")} rows={3} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" /></div>
+                      <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "04" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.msgBriefLabel")}</span></label><textarea value={messageContext.projectBrief} onChange={(e) => setMessageContext({...messageContext, projectBrief: e.target.value})} placeholder={t("advisor.msgBriefPlaceholder")} rows={3} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none" /></div>
+                      <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "05" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.pointsLabel")}</span></label><textarea value={messageContext.specificPoints} onChange={(e) => setMessageContext({...messageContext, specificPoints: e.target.value})} placeholder={t("advisor.pointsPlaceholder")} rows={3} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none" /></div>
                       {errorMessage && (
                         <div className="p-3 bg-red-50 text-red-700 rounded-xl flex items-center justify-between gap-3 text-sm">
                           <span className="flex items-center gap-2"><AlertCircle className="w-4 h-4" />{t("generateFailed")}</span>
                           <Button size="sm" variant="outline" onClick={generateMessage} disabled={loadingMessage}>{t("retry")}</Button>
                         </div>
                       )}
-                      <Button onClick={generateMessage} disabled={loadingMessage} className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 py-3 h-auto">{loadingMessage ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("generating")}</>) : (<><PenTool className="w-5 h-5 mr-2" />{t("advisor.generateMessage")}</>)}</Button>
-                      {loadingMessage && <AiLoadingText toolKey="message" className="mt-3 text-center" />}
+                      <Button onClick={generateMessage} disabled={loadingMessage} className="w-full py-3 h-auto">{loadingMessage ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("generating")}</>) : (<><PenTool className="w-5 h-5 mr-2" />{t("advisor.generateMessage")}</>)}</Button>
+                      {loadingMessage && <div className="mt-3 bg-primary-soft rounded-lg"><AiLoadingText toolKey="message" className="text-center" /></div>}
                     </div>
                   </div>
                 </div>
               ) : (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                  <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
-                    <div className="p-4 bg-gradient-to-r from-blue-500 to-indigo-500 text-white flex items-center justify-between">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 relative"><div className="absolute -top-3 right-4 pointer-events-none rotate-[8deg] rounded border-2 border-primary/50 text-primary/70 px-3 py-1 font-quote uppercase tracking-widest text-xs z-10">{t("stampGenerated")}</div>
+                  <div className="bg-paper rounded-lg border overflow-hidden">
+                    <div className="p-4 bg-primary text-cream flex items-center justify-between">
                       <div className="flex items-center gap-3"><Mail className="w-5 h-5" /><span className="font-medium">{t("advisor.draftBadge")}</span></div>
-                      <span className="text-sm bg-white/20 px-3 py-1 rounded-full">{messageContext.tone}</span>
+                      <span className="text-sm bg-cream/20 px-3 py-1 rounded-full">{messageContext.tone}</span>
                     </div>
                     <div className="p-6">
                       <div className="mb-4 p-3 bg-gray-100 rounded-lg"><span className="text-sm text-neutral-500">{t("advisor.subjectLabel")} </span><span className="font-medium">{messageDraft.subject}</span></div>
@@ -448,13 +451,13 @@ export default function MarketAdvisorPage() {
                       </div>
                     </div>
                   </div>
-                  <div className="bg-blue-50 rounded-2xl border border-blue-100 p-6">
-                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-blue-800"><Lightbulb className="w-5 h-5" />{t("advisor.tipsTitle")}</h3>
-                    <ul className="space-y-2">{messageDraft.tips.map((tip, i) => (<li key={i} className="flex items-start gap-2 text-sm text-blue-700"><CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />{tip}</li>))}</ul>
+                  <div className="bg-primary-soft/50 rounded-lg border border-line p-6">
+                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-primary"><Lightbulb className="w-5 h-5" />{t("advisor.tipsTitle")}</h3>
+                    <ul className="space-y-2">{messageDraft.tips.map((tip, i) => (<li key={i} className="flex items-start gap-2 text-sm text-ink-soft"><CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />{tip}</li>))}</ul>
                   </div>
-                  <div className="bg-white rounded-2xl border shadow-sm p-6">
+                  <div className="bg-paper rounded-lg border-t-2 border-ink/40 p-6">
                     <h3 className="font-bold text-lg mb-4">{t("advisor.tryTones")}</h3>
-                    <div className="grid md:grid-cols-3 gap-3">{messageDraft.alternatives.map((alt, i) => (<button key={i} onClick={() => setMessageContext({...messageContext, tone: alt.tone})} className="p-4 text-left border rounded-xl hover:border-blue-300 hover:bg-blue-50 transition-all"><p className="font-medium text-sm capitalize mb-1">{alt.tone}</p><p className="text-xs text-neutral-500 truncate">{alt.preview}</p></button>))}</div>
+                    <div className="grid md:grid-cols-3 gap-3">{messageDraft.alternatives.map((alt, i) => (<button key={i} onClick={() => setMessageContext({...messageContext, tone: alt.tone})} className="p-4 text-left border rounded-xl hover:border-primary hover:bg-primary-soft transition-all"><p className="font-medium text-sm capitalize mb-1">{alt.tone}</p><p className="text-xs text-neutral-500 truncate">{alt.preview}</p></button>))}</div>
                   </div>
                 </motion.div>
               )}
@@ -465,70 +468,70 @@ export default function MarketAdvisorPage() {
             <motion.div key="planner" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
               {!projectPlan ? (
                 <div className="space-y-6">
-                  <div className="bg-gradient-to-r from-emerald-50 to-teal-50 rounded-2xl border border-emerald-200 p-6">
-                    <div className="flex items-center gap-3 mb-4"><Layout className="w-5 h-5 text-emerald-600" /><h3 className="font-bold text-lg">{t("advisor.quickStartPlanner")}</h3></div>
+                  <div className="bg-primary-soft/50 rounded-lg border border-line p-6">
+                    <div className="flex items-center gap-3 mb-4"><Layout className="w-5 h-5 text-primary" /><h3 className="font-bold text-lg">{t("advisor.quickStartPlanner")}</h3></div>
                     <div className="grid md:grid-cols-3 gap-4">
                       {demoScenarios.planner.map((scenario) => (
-                        <button key={scenario.id} onClick={() => loadPlannerDemo(scenario.id)} className="group p-4 rounded-xl border-2 border-white bg-white hover:border-emerald-400 hover:shadow-md transition-all text-left">
+                        <button key={scenario.id} onClick={() => loadPlannerDemo(scenario.id)} className="group p-4 rounded-xl border-2 border-line bg-paper hover:border-primary transition-all text-left">
                           <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white group-hover:scale-110 transition-transform"><scenario.icon className="w-5 h-5" /></div>
-                            <div><h4 className="font-bold text-sm">{scenario.title}</h4><p className="text-xs text-emerald-600">{scenario.duration === "2weeks" ? t("advisor.twoWeeks") : scenario.duration === "1month" ? t("advisor.oneMonth") : t("advisor.twoMonths")}</p></div>
+                            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-cream group-hover:scale-110 transition-transform"><scenario.icon className="w-5 h-5" /></div>
+                            <div><h4 className="font-bold text-sm">{scenario.title}</h4><p className="text-xs text-primary">{scenario.duration === "2weeks" ? t("advisor.twoWeeks") : scenario.duration === "1month" ? t("advisor.oneMonth") : t("advisor.twoMonths")}</p></div>
                           </div>
                           <p className="text-xs text-neutral-600 mb-2">{scenario.goals.slice(0, 50)}...</p>
-                          <div className="flex flex-wrap gap-1">{scenario.platforms.map(p => (<span key={p} className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[10px]">{p}</span>))}</div>
+                          <div className="flex flex-wrap gap-1">{scenario.platforms.map(p => (<span key={p} className="px-2 py-0.5 bg-primary-soft text-primary rounded text-[10px]">{p}</span>))}</div>
                         </button>
                       ))}
                     </div>
                   </div>
-                  <div className="bg-white rounded-2xl shadow-lg border p-8">
+                  <div className="bg-paper rounded-lg border p-8">
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white"><ClipboardList className="w-6 h-6" /></div>
-                      <div><h2 className="text-2xl font-bold">{t("advisor.tabs.planner")}</h2><p className="text-neutral-600">{t("advisor.plannerDesc")}</p></div><Button variant="ghost" size="sm" className="ml-auto flex-shrink-0" onClick={fillPlannerExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button>
+                      <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-cream"><ClipboardList className="w-6 h-6" /></div>
+                      <div><h2 className="text-2xl font-bold"><span className="text-accent">✦</span> {t("advisor.tabs.planner")}</h2><p className="text-neutral-600">{t("advisor.plannerDesc")}</p></div><Button variant="ghost" size="sm" className="ml-auto flex-shrink-0 rounded-full border border-dashed border-primary/40 text-primary text-xs hover:border-solid" onClick={fillPlannerExample}><Sparkles className="w-4 h-4 mr-2" />{tc("exampleButton")}</Button>
                     </div>
                     <div className="space-y-6">
                       <div className="grid md:grid-cols-2 gap-6">
-                        <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.campaignNameLabel")}</label><input type="text" value={projectBrief.campaignName} onChange={(e) => setProjectBrief({...projectBrief, campaignName: e.target.value})} placeholder={t("advisor.campaignNamePlaceholder")} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-emerald-500" /></div>
-                        <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.durationLabel")}</label><select value={projectBrief.duration} onChange={(e) => setProjectBrief({...projectBrief, duration: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-emerald-500"><option value="2weeks">{t("advisor.twoWeeks")}</option><option value="1month">{t("advisor.oneMonth")}</option><option value="2months">{t("advisor.twoMonths")}</option></select></div>
+                        <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "01" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.campaignNameLabel")}</span></label><input type="text" value={projectBrief.campaignName} onChange={(e) => setProjectBrief({...projectBrief, campaignName: e.target.value})} placeholder={t("advisor.campaignNamePlaceholder")} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary" /></div>
+                        <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "02" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.durationLabel")}</span></label><select value={projectBrief.duration} onChange={(e) => setProjectBrief({...projectBrief, duration: e.target.value})} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"><option value="2weeks">{t("advisor.twoWeeks")}</option><option value="1month">{t("advisor.oneMonth")}</option><option value="2months">{t("advisor.twoMonths")}</option></select></div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-3">{t("advisor.platformsLabel")}</label>
-                        <div className="flex flex-wrap gap-3">{["Instagram", "TikTok", "YouTube", "Twitter/X", "LinkedIn"].map((platform) => (<button key={platform} onClick={() => { const newPlatforms = projectBrief.platforms.includes(platform) ? projectBrief.platforms.filter(p => p !== platform) : [...projectBrief.platforms, platform]; setProjectBrief({...projectBrief, platforms: newPlatforms}); }} className={`px-4 py-2 rounded-xl border-2 transition-all ${projectBrief.platforms.includes(platform) ? "border-emerald-500 bg-emerald-50 text-emerald-700" : "border-gray-200 text-neutral-600 hover:border-emerald-200"}`}>{platform}</button>))}</div>
+                        <label className="block mb-3"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "03" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.platformsLabel")}</span></label>
+                        <div className="flex flex-wrap gap-3">{["Instagram", "TikTok", "YouTube", "Twitter/X", "LinkedIn"].map((platform) => (<button key={platform} onClick={() => { const newPlatforms = projectBrief.platforms.includes(platform) ? projectBrief.platforms.filter(p => p !== platform) : [...projectBrief.platforms, platform]; setProjectBrief({...projectBrief, platforms: newPlatforms}); }} className={`px-4 py-2 rounded-xl border-2 transition-all ${projectBrief.platforms.includes(platform) ? "border-primary bg-primary-soft text-primary" : "border-gray-200 text-neutral-600 hover:border-primary/40"}`}>{platform}</button>))}</div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.contentCountLabel")} <span className="text-emerald-600 font-bold">{projectBrief.contentCount}</span></label>
-                        <input type="range" min="1" max="10" value={projectBrief.contentCount} onChange={(e) => setProjectBrief({...projectBrief, contentCount: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-500" />
+                        <label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "04" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.contentCountLabel")}</span> <span className="text-primary font-bold">{projectBrief.contentCount}</span></label>
+                        <input type="range" min="1" max="10" value={projectBrief.contentCount} onChange={(e) => setProjectBrief({...projectBrief, contentCount: parseInt(e.target.value)})} className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary" />
                         <div className="flex justify-between text-xs text-neutral-500 mt-1"><span>{t("advisor.onePiece")}</span><span>{t("advisor.tenPieces")}</span></div>
                       </div>
-                      <div><label className="block text-sm font-medium text-neutral-700 mb-2">{t("advisor.goalsLabel")}</label><textarea value={projectBrief.goals} onChange={(e) => setProjectBrief({...projectBrief, goals: e.target.value})} placeholder={t("advisor.goalsPlaceholder")} rows={3} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none" /></div>
+                      <div><label className="block mb-2"><span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "05" })}</span> <span className="uppercase tracking-widest text-xs text-ink-soft">{t("advisor.goalsLabel")}</span></label><textarea value={projectBrief.goals} onChange={(e) => setProjectBrief({...projectBrief, goals: e.target.value})} placeholder={t("advisor.goalsPlaceholder")} rows={3} className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none" /></div>
                       {errorPlanner && (
                         <div className="p-3 bg-red-50 text-red-700 rounded-xl flex items-center justify-between gap-3 text-sm">
                           <span className="flex items-center gap-2"><AlertCircle className="w-4 h-4" />{t("generateFailed")}</span>
                           <Button size="sm" variant="outline" onClick={generatePlan} disabled={loadingPlanner}>{t("retry")}</Button>
                         </div>
                       )}
-                      <Button onClick={generatePlan} disabled={loadingPlanner || projectBrief.platforms.length === 0} className="w-full bg-gradient-to-r from-emerald-500 to-teal-500 py-3 h-auto">{loadingPlanner ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("generating")}</>) : (<><Layout className="w-5 h-5 mr-2" />{t("advisor.generatePlan")}</>)}</Button>
-                      {loadingPlanner && <AiLoadingText toolKey="planner" className="mt-3 text-center" />}
+                      <Button onClick={generatePlan} disabled={loadingPlanner || projectBrief.platforms.length === 0} className="w-full py-3 h-auto">{loadingPlanner ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("generating")}</>) : (<><Layout className="w-5 h-5 mr-2" />{t("advisor.generatePlan")}</>)}</Button>
+                      {loadingPlanner && <div className="mt-3 bg-primary-soft rounded-lg"><AiLoadingText toolKey="planner" className="text-center" /></div>}
                     </div>
                   </div>
                 </div>
               ) : (
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                  <div className="bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl p-8 text-white">
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-6 relative"><div className="absolute -top-3 right-4 pointer-events-none rotate-[8deg] rounded border-2 border-primary/50 text-primary/70 px-3 py-1 font-quote uppercase tracking-widest text-xs z-10">{t("stampGenerated")}</div>
+                  <div className="bg-primary rounded-lg p-8 text-cream">
                     <h3 className="text-2xl font-bold mb-4">{projectBrief.campaignName || t("advisor.campaignPlanFallback")}</h3>
                     <div className="grid md:grid-cols-3 gap-6">
-                      <div><p className="text-white/80 text-sm">{t("advisor.totalDuration")}</p><p className="text-3xl font-bold mt-1">{t("advisor.daysUnit", { count: projectPlan.overview.totalDays })}</p></div>
-                      <div><p className="text-white/80 text-sm">{t("advisor.keyMilestones")}</p><p className="text-3xl font-bold mt-1">{projectPlan.overview.keyMilestones.length}</p></div>
-                      <div><p className="text-white/80 text-sm">{t("advisor.contentPieces")}</p><p className="text-3xl font-bold mt-1">{projectBrief.contentCount}</p></div>
+                      <div><p className="text-cream/80 text-sm">{t("advisor.totalDuration")}</p><p className="text-3xl font-bold mt-1">{t("advisor.daysUnit", { count: projectPlan.overview.totalDays })}</p></div>
+                      <div><p className="text-cream/80 text-sm">{t("advisor.keyMilestones")}</p><p className="text-3xl font-bold mt-1">{projectPlan.overview.keyMilestones.length}</p></div>
+                      <div><p className="text-cream/80 text-sm">{t("advisor.contentPieces")}</p><p className="text-3xl font-bold mt-1">{projectBrief.contentCount}</p></div>
                     </div>
-                    <div className="mt-6 flex flex-wrap gap-2">{projectBrief.platforms.map((platform) => (<span key={platform} className="px-3 py-1 bg-white/20 rounded-full text-sm">{platform}</span>))}</div>
+                    <div className="mt-6 flex flex-wrap gap-2">{projectBrief.platforms.map((platform) => (<span key={platform} className="px-3 py-1 bg-cream/20 rounded-full text-sm">{platform}</span>))}</div>
                   </div>
-                  <div className="bg-white rounded-2xl border shadow-sm p-6">
-                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Clock className="w-5 h-5 text-emerald-500" />{t("advisor.criticalDates")}</h3>
-                    <div className="grid md:grid-cols-4 gap-4">{projectPlan.overview.criticalDates.map((date, i) => (<div key={i} className="p-4 bg-emerald-50 rounded-xl text-center"><p className="text-2xl font-bold text-emerald-600">{date.date}</p><p className="text-sm text-neutral-700 mt-1">{date.event}</p></div>))}</div>
+                  <div className="bg-paper rounded-lg border-t-2 border-ink/40 p-6">
+                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Clock className="w-5 h-5 text-primary" />{t("advisor.criticalDates")}</h3>
+                    <div className="grid md:grid-cols-4 gap-4">{projectPlan.overview.criticalDates.map((date, i) => (<div key={i} className="p-4 bg-primary-soft rounded-xl text-center"><p className="text-2xl font-bold text-primary">{date.date}</p><p className="text-sm text-neutral-700 mt-1">{date.event}</p></div>))}</div>
                   </div>
-                  <div className="bg-white rounded-2xl border shadow-sm p-6">
-                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Layout className="w-5 h-5 text-emerald-500" />{t("advisor.phaseBreakdown")}</h3>
-                    <div className="space-y-4">{projectPlan.phases.map((phase, i) => (<div key={i} className="p-4 bg-gray-50 rounded-xl"><div className="flex items-center justify-between mb-3"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">{i + 1}</div><h4 className="font-bold">{phase.name}</h4></div><span className="text-sm text-emerald-600 font-medium">{phase.duration}</span></div><div className="grid md:grid-cols-2 gap-4"><div><p className="text-sm font-medium text-neutral-600 mb-2">{t("advisor.tasksLabel")}</p><ul className="space-y-1">{phase.tasks.map((task, j) => (<li key={j} className="flex items-center gap-2 text-sm"><span className={`w-2 h-2 rounded-full ${task.priority === "high" ? "bg-red-400" : task.priority === "medium" ? "bg-yellow-400" : "bg-green-400"}`} /><span>{task.name}</span><span className="text-xs text-neutral-500">({task.estimatedTime})</span></li>))}</ul></div><div><p className="text-sm font-medium text-neutral-600 mb-2">{t("advisor.deliverablesTitle")}</p><ul className="space-y-1">{phase.deliverables.map((del, j) => (<li key={j} className="flex items-center gap-2 text-sm"><FileCheck className="w-4 h-4 text-emerald-500" />{del}</li>))}</ul></div></div></div>))}</div>
+                  <div className="bg-paper rounded-lg border-t-2 border-ink/40 p-6">
+                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2"><Layout className="w-5 h-5 text-primary" />{t("advisor.phaseBreakdown")}</h3>
+                    <div className="space-y-4">{projectPlan.phases.map((phase, i) => (<div key={i} className="p-4 bg-gray-50 rounded-xl"><div className="flex items-center justify-between mb-3"><div className="flex items-center gap-3"><div className="w-8 h-8 rounded-full bg-primary-soft text-primary flex items-center justify-center font-bold">{i + 1}</div><h4 className="font-bold">{phase.name}</h4></div><span className="text-sm text-primary font-medium">{phase.duration}</span></div><div className="grid md:grid-cols-2 gap-4"><div><p className="text-sm font-medium text-neutral-600 mb-2">{t("advisor.tasksLabel")}</p><ul className="space-y-1">{phase.tasks.map((task, j) => (<li key={j} className="flex items-center gap-2 text-sm"><span className={`w-2 h-2 rounded-full ${task.priority === "high" ? "bg-red-400" : task.priority === "medium" ? "bg-yellow-400" : "bg-green-400"}`} /><span>{task.name}</span><span className="text-xs text-neutral-500">({task.estimatedTime})</span></li>))}</ul></div><div><p className="text-sm font-medium text-neutral-600 mb-2">{t("advisor.deliverablesTitle")}</p><ul className="space-y-1">{phase.deliverables.map((del, j) => (<li key={j} className="flex items-center gap-2 text-sm"><FileCheck className="w-4 h-4 text-primary" />{del}</li>))}</ul></div></div></div>))}</div>
                   </div>
                   <div className="flex gap-3 flex-wrap"><Button variant="outline" className="flex-1" onClick={() => copyResult(`Project Plan: ${projectBrief.campaignName}\nTotal duration: ${projectPlan.overview.totalDays} days\nKey milestones: ${projectPlan.overview.keyMilestones.join(", ")}\n\nCritical dates:\n${projectPlan.overview.criticalDates.map((d) => `- ${d.date}: ${d.event}`).join("\n")}\n\nPhases:\n${projectPlan.phases.map((ph, i) => `${i + 1}. ${ph.name} (${ph.duration})\nTasks: ${ph.tasks.map((task) => `${task.name} (${task.estimatedTime})`).join("; ")}\nDeliverables: ${ph.deliverables.join(", ")}`).join("\n\n")}`, setCopiedPlanner)}>{copiedPlanner ? (<><Check className="w-4 h-4 mr-2 text-green-500" />{tc("copied")}</>) : (<><Copy className="w-4 h-4 mr-2" />{tc("copy")}</>)}</Button><Button variant="outline" onClick={() => setProjectPlan(null)} className="flex-1"><RefreshCw className="w-4 h-4 mr-2" />{t("advisor.createNewPlan")}</Button></div>
                 </motion.div>
@@ -540,36 +543,40 @@ export default function MarketAdvisorPage() {
             <motion.div key="contract" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}>
               {!contractResult ? (
                 <div className="space-y-6">
-                  <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-200 p-6">
-                    <div className="flex items-center gap-3 mb-4"><Eye className="w-5 h-5 text-amber-600" /><h3 className="font-bold text-lg">{t("advisor.quickStartContract")}</h3></div>
+                  <div className="bg-primary-soft/50 rounded-lg border border-line p-6">
+                    <div className="flex items-center gap-3 mb-4"><Eye className="w-5 h-5 text-primary" /><h3 className="font-bold text-lg">{t("advisor.quickStartContract")}</h3></div>
                     <div className="grid md:grid-cols-3 gap-4">
-                      <button onClick={() => setUploadedFile(new File([""], "glow-skincare-contract.pdf", { type: "application/pdf" }))} className="group p-4 rounded-xl border-2 border-white bg-white hover:border-amber-400 hover:shadow-md transition-all text-left">
-                        <div className="flex items-center gap-3 mb-2"><div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-white group-hover:scale-110 transition-transform"><FileText className="w-5 h-5" /></div><div><h4 className="font-bold text-sm">{t("advisor.sampleStandard")}</h4><p className="text-xs text-amber-600">Glow Skincare</p></div></div>
+                      <button onClick={() => setUploadedFile(new File([""], "glow-skincare-contract.pdf", { type: "application/pdf" }))} className="group p-4 rounded-xl border-2 border-line bg-paper hover:border-primary transition-all text-left">
+                        <div className="flex items-center gap-3 mb-2"><div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-cream group-hover:scale-110 transition-transform"><FileText className="w-5 h-5" /></div><div><h4 className="font-bold text-sm">{t("advisor.sampleStandard")}</h4><p className="text-xs text-primary">Glow Skincare</p></div></div>
                         <p className="text-xs text-neutral-600">{t("advisor.sampleStandardDesc")}</p>
                         <div className="mt-2 flex items-center gap-1"><span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 rounded text-[10px]">{t("advisor.scoreBadge", { score: 72 })}</span><span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-[10px]">{t("advisor.reviewNeeded")}</span></div>
                       </button>
-                      <button onClick={() => setUploadedFile(new File([""], "techmaster-fair-contract.pdf", { type: "application/pdf" }))} className="group p-4 rounded-xl border-2 border-white bg-white hover:border-green-400 hover:shadow-md transition-all text-left">
-                        <div className="flex items-center gap-3 mb-2"><div className="w-10 h-10 rounded-lg bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center text-white group-hover:scale-110 transition-transform"><CheckCircle className="w-5 h-5" /></div><div><h4 className="font-bold text-sm">{t("advisor.sampleFair")}</h4><p className="text-xs text-green-600">TechMaster Pro</p></div></div>
+                      <button onClick={() => setUploadedFile(new File([""], "techmaster-fair-contract.pdf", { type: "application/pdf" }))} className="group p-4 rounded-xl border-2 border-line bg-paper hover:border-green-400 transition-all text-left">
+                        <div className="flex items-center gap-3 mb-2"><div className="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center text-cream group-hover:scale-110 transition-transform"><CheckCircle className="w-5 h-5" /></div><div><h4 className="font-bold text-sm">{t("advisor.sampleFair")}</h4><p className="text-xs text-green-600">TechMaster Pro</p></div></div>
                         <p className="text-xs text-neutral-600">{t("advisor.sampleFairDesc")}</p>
                         <div className="mt-2 flex items-center gap-1"><span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-[10px]">{t("advisor.scoreBadge", { score: 88 })}</span><span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-[10px]">{t("advisor.fairDeal")}</span></div>
                       </button>
-                      <button onClick={() => setUploadedFile(new File([""], "fastfashion-concerning-contract.pdf", { type: "application/pdf" }))} className="group p-4 rounded-xl border-2 border-white bg-white hover:border-red-400 hover:shadow-md transition-all text-left">
-                        <div className="flex items-center gap-3 mb-2"><div className="w-10 h-10 rounded-lg bg-gradient-to-br from-red-400 to-rose-500 flex items-center justify-center text-white group-hover:scale-110 transition-transform"><AlertTriangle className="w-5 h-5" /></div><div><h4 className="font-bold text-sm">{t("advisor.sampleConcerning")}</h4><p className="text-xs text-red-600">Fast Fashion Co</p></div></div>
+                      <button onClick={() => setUploadedFile(new File([""], "fastfashion-concerning-contract.pdf", { type: "application/pdf" }))} className="group p-4 rounded-xl border-2 border-line bg-paper hover:border-red-400 transition-all text-left">
+                        <div className="flex items-center gap-3 mb-2"><div className="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center text-cream group-hover:scale-110 transition-transform"><AlertTriangle className="w-5 h-5" /></div><div><h4 className="font-bold text-sm">{t("advisor.sampleConcerning")}</h4><p className="text-xs text-red-600">Fast Fashion Co</p></div></div>
                         <p className="text-xs text-neutral-600">{t("advisor.sampleConcerningDesc")}</p>
                         <div className="mt-2 flex items-center gap-1"><span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">{t("advisor.scoreBadge", { score: 45 })}</span><span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-[10px]">{t("advisor.highRisk")}</span></div>
                       </button>
                     </div>
                   </div>
-                  <div className="bg-white rounded-2xl shadow-lg border p-8">
+                  <div className="bg-paper rounded-lg border p-8">
                     <div className="text-center mb-8">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white mx-auto mb-4"><Shield className="w-8 h-8" /></div>
-                      <h2 className="text-2xl font-bold mb-2">{t("advisor.tabs.contract")}</h2>
+                      <div className="w-16 h-16 rounded-lg bg-primary flex items-center justify-center text-cream mx-auto mb-4"><Shield className="w-8 h-8" /></div>
+                      <h2 className="text-2xl font-bold mb-2"><span className="text-accent">✦</span> {t("advisor.tabs.contract")}</h2>
                       <p className="text-neutral-600">{t("advisor.contractDesc")}</p>
                     </div>
-                    <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-orange-400 transition-colors">
+                    <label className="block mb-3">
+                      <span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "01" })}</span>
+                      <span className="uppercase tracking-widest text-xs text-ink-soft"> {t("advisor.tabs.contract")}</span>
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition-colors">
                       {uploadedFile ? (
                         <div className="flex items-center justify-center gap-3">
-                          <FileText className="w-8 h-8 text-orange-500" />
+                          <FileText className="w-8 h-8 text-primary" />
                           <div className="text-left"><p className="font-medium">{uploadedFile.name}</p><p className="text-sm text-neutral-500">{(uploadedFile.size / 1024).toFixed(1)} KB</p></div>
                           <button onClick={() => setUploadedFile(null)} className="p-2 hover:bg-gray-100 rounded-lg"><X className="w-5 h-5 text-gray-400" /></button>
                         </div>
@@ -586,12 +593,12 @@ export default function MarketAdvisorPage() {
                       <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                       <p className="text-sm text-amber-800"><strong>{t("advisor.privacyLabel")}</strong> {t("advisor.privacyText")}</p>
                     </div>
-                    <Button onClick={analyzeContract} disabled={loading || !uploadedFile} className="w-full mt-6 bg-gradient-to-r from-orange-500 to-amber-500 py-3 h-auto">{loading ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("analyzing")}</>) : (<><Shield className="w-5 h-5 mr-2" />{t("advisor.scanButton")}</>)}</Button>
+                    <Button onClick={analyzeContract} disabled={loading || !uploadedFile} className="w-full mt-6 py-3 h-auto">{loading ? (<><Loader2 className="w-5 h-5 mr-2 animate-spin" />{t("analyzing")}</>) : (<><Shield className="w-5 h-5 mr-2" />{t("advisor.scanButton")}</>)}</Button>
                   </div>
                 </div>
               ) : (
-                <div className="grid lg:grid-cols-2 gap-6">
-                  <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                <div className="grid lg:grid-cols-2 gap-6 relative"><div className="absolute -top-3 right-4 pointer-events-none rotate-[8deg] rounded border-2 border-primary/50 text-primary/70 px-3 py-1 font-quote uppercase tracking-widest text-xs z-10">{t("stampGenerated")}</div>
+                  <div className="bg-paper rounded-lg border overflow-hidden">
                     <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
                       <div className="flex items-center gap-3"><FileText className="w-5 h-5 text-neutral-500" /><span className="font-medium">{uploadedFile?.name || "contract.pdf"}</span></div>
                       <button onClick={() => setContractResult(null)} className="p-1 hover:bg-gray-200 rounded"><X className="w-4 h-4 text-gray-400" /></button>
@@ -625,25 +632,25 @@ export default function MarketAdvisorPage() {
                     </div>
                   </div>
                   <div className="space-y-4">
-                    <div className="bg-white rounded-2xl border shadow-sm p-6">
+                    <div className="bg-paper rounded-lg border-t-2 border-ink/40 p-6">
                       <div className="flex items-center justify-between">
                         <div><h3 className="text-lg font-medium text-neutral-600 mb-1">{t("advisor.fairnessScore")}</h3><p className="text-5xl font-bold">{contractResult.overallScore}/100</p></div>
                         <div className="text-right"><span className={`px-4 py-2 rounded-full text-sm font-bold ${getFairnessColor(contractResult.fairness)}`}>{contractResult.fairness === "fair" ? t("advisor.fairBadge") : contractResult.fairness === "neutral" ? t("advisor.reviewBadge") : t("advisor.riskyBadge")}</span></div>
                       </div>
                     </div>
                     {contractResult.redFlags.length > 0 && (
-                      <div className="bg-red-50 rounded-2xl p-5 border border-red-100">
+                      <div className="bg-red-50 rounded-lg p-5 border border-red-100">
                         <h3 className="font-bold mb-3 flex items-center gap-2 text-red-800"><AlertTriangle className="w-5 h-5" />{t("advisor.redFlags", { count: contractResult.redFlags.length })}</h3>
                         <ul className="space-y-2">{contractResult.redFlags.map((flag, i) => (<li key={i} className="flex items-start gap-2 text-sm text-red-700"><span className="w-1.5 h-1.5 rounded-full bg-red-500 mt-1.5 flex-shrink-0" />{flag}</li>))}</ul>
                       </div>
                     )}
-                    <div className="bg-yellow-50 rounded-2xl p-5 border border-yellow-100">
+                    <div className="bg-yellow-50 rounded-lg p-5 border border-yellow-100">
                       <h3 className="font-bold mb-3 flex items-center gap-2 text-yellow-800"><AlertTriangle className="w-5 h-5" />{t("advisor.potentialRisks")}</h3>
                       <ul className="space-y-2">{contractResult.risks.map((risk, i) => (<li key={i} className="flex items-start gap-2 text-sm text-yellow-700"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500 mt-1.5 flex-shrink-0" />{risk}</li>))}</ul>
                     </div>
-                    <div className="bg-blue-50 rounded-2xl p-5 border border-blue-100">
-                      <h3 className="font-bold mb-3 flex items-center gap-2 text-blue-800"><Lightbulb className="w-5 h-5" />{t("advisor.recommendedChanges")}</h3>
-                      <ul className="space-y-2">{contractResult.recommendations.map((rec, i) => (<li key={i} className="flex items-start gap-2 text-sm text-blue-700"><span className="w-5 h-5 rounded-full bg-blue-200 text-blue-700 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">{i + 1}</span>{rec}</li>))}</ul>
+                    <div className="bg-primary-soft/50 rounded-lg p-5 border border-primary/20">
+                      <h3 className="font-bold mb-3 flex items-center gap-2 text-primary"><Lightbulb className="w-5 h-5" />{t("advisor.recommendedChanges")}</h3>
+                      <ul className="space-y-2">{contractResult.recommendations.map((rec, i) => (<li key={i} className="flex items-start gap-2 text-sm text-ink-soft"><span className="w-5 h-5 rounded-full bg-primary-soft text-primary flex items-center justify-center text-xs flex-shrink-0 mt-0.5">{i + 1}</span>{rec}</li>))}</ul>
                     </div>
                     <Button variant="outline" onClick={() => setContractResult(null)} className="w-full"><RefreshCw className="w-4 h-4 mr-2" />{t("advisor.scanAnother")}</Button>
                   </div>
@@ -655,7 +662,13 @@ export default function MarketAdvisorPage() {
 
         {/* Generation History */}
         <div className="mt-8">
-          <AiGenerationHistory types={["quote", "message", "planner", "rate"]} refreshKey={historyKey} />
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="uppercase tracking-widest text-xs text-ink-soft">{t("archiveLabel")} —</span>
+            <h3 className="font-quote text-lg text-ink">{t("historyTitle")}</h3>
+          </div>
+          <div className="[&_div:has(>h3)]:hidden">
+            <AiGenerationHistory types={["quote", "message", "planner", "rate"]} refreshKey={historyKey} />
+          </div>
         </div>
       </div>
       </main>

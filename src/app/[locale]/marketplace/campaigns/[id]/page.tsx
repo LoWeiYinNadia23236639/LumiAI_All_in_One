@@ -6,10 +6,6 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
-  DollarSign,
-  Clock,
-  Briefcase,
-  Users,
   Megaphone,
   Send,
   CheckCircle,
@@ -202,10 +198,10 @@ function CampaignDetailPage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-white via-pink-50/30 to-white pt-24 pb-16">
+      <main className="min-h-screen bg-cream pt-24 pb-16">
         <div className="max-w-4xl mx-auto px-4">
           <Skeleton className="w-32 h-9 mb-4" />
-          <div className="bg-white rounded-2xl p-6 md:p-8 border shadow-sm mb-6 space-y-4">
+          <div className="bg-paper rounded-lg p-6 md:p-8 border border-line mb-6 space-y-4">
             <div className="flex items-start gap-3">
               <Skeleton className="w-12 h-12 rounded-xl" />
               <div className="flex-1 space-y-2 pt-1">
@@ -222,7 +218,7 @@ function CampaignDetailPage() {
               <Skeleton className="h-4" />
             </div>
           </div>
-          <div className="bg-white rounded-2xl p-6 md:p-8 border shadow-sm space-y-4">
+          <div className="bg-paper rounded-lg p-6 md:p-8 border border-line space-y-4">
             <Skeleton className="w-48 h-6" />
             <ListRowSkeleton />
             <ListRowSkeleton />
@@ -234,7 +230,7 @@ function CampaignDetailPage() {
 
   if (loadError || !campaign) {
     return (
-      <main className="min-h-screen bg-gradient-to-b from-white via-pink-50/30 to-white pt-24 pb-16">
+      <main className="min-h-screen bg-cream pt-24 pb-16">
         <div className="max-w-4xl mx-auto px-4">
           <ErrorState />
         </div>
@@ -243,7 +239,7 @@ function CampaignDetailPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-pink-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-4xl mx-auto px-4">
         <Link href="/marketplace/campaigns">
           <Button variant="ghost" size="sm" className="mb-4">
@@ -255,11 +251,16 @@ function CampaignDetailPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl p-6 md:p-8 border shadow-sm mb-6"
+          className="bg-paper rounded-lg p-6 md:p-8 border border-line mb-6"
         >
+          {campaign.niche && (
+            <div className="mb-4">
+              <span className="oval-label">{campaign.niche.toUpperCase()}</span>
+            </div>
+          )}
           <div className="flex items-start gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-pink-500 to-violet-500 flex items-center justify-center shrink-0">
-              <Megaphone className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center shrink-0">
+              <Megaphone className="w-6 h-6 text-cream" />
             </div>
             <div className="min-w-0">
               <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 break-words">
@@ -268,7 +269,7 @@ function CampaignDetailPage() {
               <p className="text-neutral-500">
                 {campaign.profiles?.name ?? "—"}
                 {campaign.niche && (
-                  <span className="ml-2 px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">
+                  <span className="ml-2 px-2 py-0.5 bg-primary-soft text-primary text-xs rounded-full">
                     {campaign.niche}
                   </span>
                 )}
@@ -280,57 +281,70 @@ function CampaignDetailPage() {
             {campaign.description}
           </p>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="flex items-center gap-2 text-sm">
-              <DollarSign className="w-4 h-4 text-green-500" />
-              <span className="font-medium">
-                {campaign.budget != null ? `$${campaign.budget.toLocaleString()}` : "—"}
-              </span>
+          {/* Spec sheet */}
+          <div className="border-t border-line">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-b border-line">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-ink-soft">
+                  {t("specBudget")}
+                </p>
+                <p className="font-quote text-xl mt-1">
+                  {campaign.budget != null
+                    ? `$${campaign.budget.toLocaleString()}`
+                    : "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-widest text-ink-soft">
+                  {t("specDeadline")}
+                </p>
+                <p className="mt-1 flex flex-wrap items-center gap-2">
+                  <span className="font-medium text-neutral-900">
+                    {campaign.deadline
+                      ? formatDate(campaign.deadline, locale)
+                      : t("noDeadline")}
+                  </span>
+                  <DeadlineChip deadline={campaign.deadline} />
+                </p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-widest text-ink-soft">
+                  {t("specPosted")}
+                </p>
+                <p className="mt-1 font-medium text-neutral-900">
+                  {formatDate(campaign.created_at, locale)}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-widest text-ink-soft">
+                  {t("applicantsTitle")}
+                </p>
+                <p className="font-quote text-xl mt-1">{applicants.length}</p>
+              </div>
             </div>
-            <div className="flex items-center gap-2 text-sm text-neutral-600">
-              <Clock className="w-4 h-4 text-orange-500" />
-              <span>
-                {campaign.deadline
-                  ? formatDate(campaign.deadline, locale)
-                  : t("noDeadline")}
-              </span>
-              <DeadlineChip deadline={campaign.deadline} />
-            </div>
-            <div className="flex items-center gap-2 text-sm text-neutral-600">
-              <Briefcase className="w-4 h-4 text-violet-500" />
-              <span>
-                {t("posted")}{" "}
-                {formatDate(campaign.created_at, locale)}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 text-sm text-neutral-600">
-              <Users className="w-4 h-4 text-blue-500" />
-              <span>{t("applicantsCount", { count: applicants.length })}</span>
-            </div>
+            {campaign.requirements && (
+              <div className="py-4 border-b border-line">
+                <p className="text-xs uppercase tracking-widest text-ink-soft flex items-center gap-1.5">
+                  <ClipboardList className="w-3.5 h-3.5 text-primary" />
+                  {t("specRequirements")}
+                </p>
+                <p className="text-sm text-neutral-700 mt-2 whitespace-pre-line">
+                  {campaign.requirements}
+                </p>
+              </div>
+            )}
+            {campaign.deliverables && (
+              <div className="py-4 border-b border-line">
+                <p className="text-xs uppercase tracking-widest text-ink-soft flex items-center gap-1.5">
+                  <Package className="w-3.5 h-3.5 text-primary" />
+                  {t("specDeliverables")}
+                </p>
+                <p className="text-sm text-neutral-700 mt-2 whitespace-pre-line">
+                  {campaign.deliverables}
+                </p>
+              </div>
+            )}
           </div>
-
-          {campaign.requirements && (
-            <div className="bg-gray-50 rounded-xl p-4 mb-4">
-              <div className="flex items-center gap-2 mb-2">
-                <ClipboardList className="w-4 h-4 text-pink-500" />
-                <h3 className="font-bold">{t("requirements")}</h3>
-              </div>
-              <p className="text-sm text-neutral-600 whitespace-pre-line">
-                {campaign.requirements}
-              </p>
-            </div>
-          )}
-          {campaign.deliverables && (
-            <div className="bg-gray-50 rounded-xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Package className="w-4 h-4 text-violet-500" />
-                <h3 className="font-bold">{t("deliverables")}</h3>
-              </div>
-              <p className="text-sm text-neutral-600 whitespace-pre-line">
-                {campaign.deliverables}
-              </p>
-            </div>
-          )}
         </motion.div>
 
         {/* Creator view: apply form or own application status */}
@@ -338,11 +352,30 @@ function CampaignDetailPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl p-6 md:p-8 border shadow-sm"
+            className="relative bg-paper rounded-lg p-6 md:p-8 border border-line"
           >
             {myApplication ? (
               <div>
                 <h3 className="font-bold text-lg mb-3">{t("yourApplication")}</h3>
+                {(myApplication.status === "accepted" ||
+                  myApplication.status === "rejected" ||
+                  myApplication.status === "pending") && (
+                  <span
+                    className={`absolute top-3 right-3 -rotate-[8deg] rounded-full border border-dashed px-2 py-0.5 text-[10px] uppercase tracking-widest ${
+                      myApplication.status === "accepted"
+                        ? "border-green-600 text-green-600"
+                        : myApplication.status === "rejected"
+                          ? "border-stone-400 text-stone-400"
+                          : "border-accent text-accent"
+                    }`}
+                  >
+                    {myApplication.status === "accepted"
+                      ? t("stampAccepted")
+                      : myApplication.status === "rejected"
+                        ? t("stampDeclined")
+                        : t("stampUnderReview")}
+                  </span>
+                )}
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium ${statusBadgeClass(myApplication.status)}`}
                 >
@@ -367,7 +400,7 @@ function CampaignDetailPage() {
                   value={pitch}
                   onChange={(e) => setPitch(e.target.value)}
                   placeholder={t("pitchPlaceholder")}
-                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-pink-500 ${
+                  className={`w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary ${
                     pitchInvalid ? "border-red-400" : ""
                   }`}
                 />
@@ -395,7 +428,6 @@ function CampaignDetailPage() {
                   type="submit"
                   isLoading={isSubmitting}
                   disabled={pitchLength < 20}
-                  className="bg-gradient-to-r from-pink-500 to-violet-500 text-white"
                 >
                   <Send className="w-4 h-4 mr-2" />
                   {t("applySubmit")}
@@ -410,7 +442,7 @@ function CampaignDetailPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl p-6 md:p-8 border shadow-sm"
+            className="bg-paper rounded-lg p-6 md:p-8 border border-line"
           >
             <h3 className="font-bold text-lg mb-4">
               {t("applicantsTitle")}
@@ -427,19 +459,38 @@ function CampaignDetailPage() {
                 {applicants.map((app) => (
                   <div
                     key={app.id}
-                    className="p-4 rounded-xl border border-gray-100"
+                    className="relative p-4 rounded-xl border border-gray-100"
                   >
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                    {(app.status === "accepted" || app.status === "rejected") && (
+                      <span
+                        className={`absolute top-3 right-3 -rotate-[8deg] rounded-full border border-dashed px-2 py-0.5 text-[10px] uppercase tracking-widest ${
+                          app.status === "accepted"
+                            ? "border-green-600 text-green-600"
+                            : "border-stone-400 text-stone-400"
+                        }`}
+                      >
+                        {app.status === "accepted"
+                          ? t("stampAccepted")
+                          : t("stampDeclined")}
+                      </span>
+                    )}
+                    <div
+                      className={`flex flex-wrap items-center gap-2 mb-2 ${
+                        app.status === "accepted" || app.status === "rejected"
+                          ? "mt-5"
+                          : ""
+                      }`}
+                    >
                       <span className="font-bold">
                         {app.profiles?.name ?? "—"}
                       </span>
                       {app.profiles?.niche && (
-                        <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">
+                        <span className="px-2 py-0.5 bg-primary-soft text-primary text-xs rounded-full">
                           {app.profiles.niche}
                         </span>
                       )}
                       {app.profiles?.follower_count != null && (
-                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                        <span className="px-2 py-0.5 bg-primary-soft text-primary text-xs rounded-full">
                           {t("followersBadge", {
                             count: app.profiles.follower_count.toLocaleString(),
                           })}

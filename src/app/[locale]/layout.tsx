@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { AnimationProvider } from "@/components/animation-provider";
 import { Navbar } from "@/components/navbar";
@@ -12,7 +11,11 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
 
-const inter = Inter({ subsets: ["latin"] });
+// Type system (fonts self-hosted in /public/fonts, declared via @font-face in globals.css):
+//   Headings (h1-h3) = Playfair Display Black Italic 900
+//   Slogans / quotes / card titles = Instrument Serif Regular 400
+//   Body / nav / buttons / tables = Montserrat Medium 500
+//   Chinese glyphs fall through to FZY3K in every stack.
 
 export async function generateMetadata({
   params,
@@ -45,14 +48,14 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale}>
-      <body className={inter.className}>
+      <body className="font-sans">
         <NextIntlClientProvider messages={messages}>
           <AuthProvider>
             <NotificationsProvider>
               <SavedListsProvider>
                 <AnimationProvider>
                   <ToastProvider>
-                    <div className="min-h-screen bg-gradient-to-br from-violet-50 via-pink-50 to-orange-50">
+                    <div className="min-h-screen bg-cream">
                       <Navbar />
                       {children}
                     </div>

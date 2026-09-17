@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
+import { MarqueeBanner } from "@/components/marquee-banner";
 import { CampaignCardSkeleton } from "@/components/ui/skeleton";
 import { ErrorState } from "@/components/ui/error-state";
 import { useSavedLists } from "@/contexts/saved-lists-context";
@@ -23,6 +24,13 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/format";
 import { daysUntil } from "@/lib/relative-time";
 import { useTranslations, useLocale } from "next-intl";
+
+function isNewCampaign(createdAt: string | null | undefined): boolean {
+  if (!createdAt) return false;
+  const created = new Date(createdAt).getTime();
+  if (Number.isNaN(created)) return false;
+  return Date.now() - created < 7 * 24 * 60 * 60 * 1000;
+}
 
 function DeadlineChip({ deadline }: { deadline: string | null }) {
   const tc = useTranslations("common");
@@ -81,6 +89,7 @@ function CampaignsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const { isCampaignSaved, toggleCampaign } = useSavedLists();
+  const tc = useTranslations("common");
 
   const loadCampaigns = useCallback(async () => {
     const supabase = getSupabaseClient();
@@ -129,29 +138,40 @@ function CampaignsPage() {
   const appliedCount = (c: CampaignRow) => c.applications?.[0]?.count ?? 0;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-pink-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16 overflow-x-clip">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-pink-100 to-violet-100 text-pink-700 text-sm font-semibold mb-4">
-            <Briefcase className="w-4 h-4" />
-            {t("badge")}
+        <div className="relative overflow-hidden text-center mb-10">
+          <span aria-hidden className="bg-outline-word top-[-0.22em]">
+            DEALS
+          </span>
+          <div className="relative">
+            <span className="oval-label">{t("kicker")}</span>
+            <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 my-4">
+              {t("heading")}
+            </h1>
+            <p className="font-quote text-xl text-ink-soft">{t("subheading")}</p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
-            {t("heading")}
-          </h1>
-          <p className="text-lg text-neutral-600">{t("subheading")}</p>
         </div>
+      </div>
+
+      {/* Marquee band */}
+      <MarqueeBanner
+        items={t.raw("marqueeItems") as string[]}
+        className="relative left-1/2 -translate-x-1/2 w-screen mb-10"
+      />
+
+      <div className="max-w-7xl mx-auto px-4">
 
         {/* Search & Filters */}
-        <div className="bg-white rounded-2xl shadow-sm border p-6 mb-8">
+        <div className="bg-paper rounded-lg border border-line p-6 mb-8">
           <div className="flex gap-4 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
               <input
                 type="text"
                 placeholder={t("searchPlaceholder")}
-                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-pink-500"
+                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -165,8 +185,8 @@ function CampaignsPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   selectedCategory === cat
-                    ? "bg-pink-500 text-white"
-                    : "bg-neutral-100 text-neutral-700 hover:bg-pink-100"
+                    ? "bg-primary text-cream"
+                    : "bg-neutral-100 text-neutral-700 hover:bg-primary-soft"
                 }`}
               >
                 {cat === "All" ? t("categoryAll") : cat}
@@ -191,13 +211,13 @@ function CampaignsPage() {
 
         {/* Empty state */}
         {!isLoading && !loadError && campaigns.length === 0 && (
-          <div className="bg-white rounded-2xl p-12 border shadow-sm text-center">
+          <div className="bg-paper rounded-lg p-12 border border-line text-center">
             <Megaphone className="w-14 h-14 text-neutral-300 mx-auto mb-4" />
             <p className="font-medium text-neutral-700 mb-1">{t("emptyTitle")}</p>
             <p className="text-sm text-neutral-500 mb-6">{t("emptyDesc")}</p>
             {(user?.role === "company" || user?.role === "admin") && (
               <Link href="/marketplace/campaigns/new">
-                <Button className="bg-gradient-to-r from-pink-500 to-violet-500 text-white">
+                <Button>
                   {t("emptyCtaBrand")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -215,18 +235,29 @@ function CampaignsPage() {
 
         {/* Campaigns List */}
         <div className="space-y-4">
-          {filteredCampaigns.map((campaign, index) => (
+          {filteredCampaigns.map((campaign, index) => {
+            const daysLeft = daysUntil(campaign.deadline);
+            const closingSoon = daysLeft !== null && daysLeft >= 0 && daysLeft <= 3;
+            return (
             <motion.div
               key={campaign.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="bg-white rounded-2xl p-6 border shadow-sm hover:shadow-lg transition-all"
+              className="relative bg-paper rounded-lg p-6 border border-line transition-all"
             >
+              {closingSoon && (
+                <span className="tag-dashed absolute top-3 right-3">
+                  {t("closingSoon")}
+                </span>
+              )}
               <div className="flex flex-col lg:flex-row gap-6">
                 {/* Applications count */}
                 <div className="lg:w-24 flex lg:flex-col items-center gap-2 lg:gap-1">
-                  <div className="w-16 h-16 rounded-2xl bg-blue-500 flex items-center justify-center text-white">
+                  <span className="font-quote text-sm text-ink-soft">
+                    {tc("noPrefix")}{String(index + 1).padStart(2, "0")}
+                  </span>
+                  <div className="w-16 h-16 rounded-lg bg-primary flex items-center justify-center text-cream">
                     <Users className="w-7 h-7" />
                   </div>
                   <span className="text-lg font-bold text-neutral-900">
@@ -239,18 +270,21 @@ function CampaignsPage() {
 
                 {/* Content */}
                 <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className={`flex items-center gap-3 mb-2 ${closingSoon ? "mt-3" : ""}`}>
                     <h3 className="font-bold text-lg">{campaign.profiles?.name ?? "—"}</h3>
                     {campaign.niche && (
-                      <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">
+                      <span className="rounded-full border border-primary px-3 py-0.5 text-xs uppercase tracking-wider text-primary">
                         {campaign.niche}
                       </span>
+                    )}
+                    {isNewCampaign(campaign.created_at) && (
+                      <span className="tag-dashed">{t("newTag")}</span>
                     )}
                     <button
                       onClick={() => toggleCampaign(campaign.id)}
                       className={`ml-auto p-2 rounded-full transition-colors ${
                         isCampaignSaved(campaign.id)
-                          ? "bg-pink-100 text-pink-600"
+                          ? "bg-primary-soft text-primary"
                           : "hover:bg-gray-100 text-gray-400"
                       }`}
                     >
@@ -258,8 +292,8 @@ function CampaignsPage() {
                     </button>
                   </div>
 
-                  <Link href={`/marketplace/campaigns/${campaign.id}`}>
-                    <h4 className="text-xl font-bold text-neutral-900 mb-2 hover:text-pink-600 transition-colors">
+                  <Link href={`/marketplace/campaigns/${campaign.id}`} className="group">
+                    <h4 className="title-underline text-xl font-bold text-neutral-900 mb-2 hover:text-primary transition-colors">
                       {campaign.title}
                     </h4>
                   </Link>
@@ -269,9 +303,9 @@ function CampaignsPage() {
 
                   {/* Details Grid */}
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                    <div className="flex items-center gap-2 text-sm">
-                      <DollarSign className="w-4 h-4 text-green-500" />
-                      <span className="font-medium">
+                    <div className="flex items-baseline gap-1 text-sm">
+                      <DollarSign className="w-4 h-4 self-center text-green-500" />
+                      <span className="font-quote text-lg">
                         {campaign.budget != null
                           ? `$${campaign.budget.toLocaleString()}`
                           : "—"}
@@ -287,7 +321,7 @@ function CampaignsPage() {
                       <DeadlineChip deadline={campaign.deadline} />
                     </div>
                     <div className="flex items-center gap-2 text-sm text-neutral-600">
-                      <Briefcase className="w-4 h-4 text-violet-500" />
+                      <Briefcase className="w-4 h-4 text-primary" />
                       <span>
                         {t("posted")}{" "}
                         {formatDate(campaign.created_at, locale, { dateStyle: "medium" })}
@@ -310,7 +344,7 @@ function CampaignsPage() {
                     </div>
                   </div>
                   <Link href={`/marketplace/campaigns/${campaign.id}`}>
-                    <Button className="w-full bg-gradient-to-r from-pink-500 to-violet-500 text-white">
+                    <Button className="w-full">
                       {t("viewDetails")}
                       <ArrowRight className="w-4 h-4 ml-2" />
                     </Button>
@@ -318,7 +352,8 @@ function CampaignsPage() {
                 </div>
               </div>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </main>

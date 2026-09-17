@@ -565,12 +565,12 @@ function AdminPanel() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <div className="flex items-center gap-2 text-violet-600 mb-1">
+            <div className="flex items-center gap-2 text-primary mb-1">
               <Shield className="w-5 h-5" />
               <span className="font-medium">{t("panelTitle")}</span>
               <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full font-medium">
@@ -607,12 +607,12 @@ function AdminPanel() {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 top-full mt-2 w-80 bg-white rounded-2xl border shadow-xl z-50 overflow-hidden"
+                    className="absolute right-0 top-full mt-2 w-80 bg-paper rounded-lg border shadow-xl z-50 overflow-hidden"
                   >
                     <div className="p-4 border-b flex items-center justify-between">
                       <h4 className="font-bold">{t("notifications")}</h4>
                       {unreadNotifications > 0 && (
-                        <button onClick={markAllNotificationsRead} className="text-xs text-violet-600 hover:underline">
+                        <button onClick={markAllNotificationsRead} className="text-xs text-primary hover:underline">
                           {t("markAllAsRead")}
                         </button>
                       )}
@@ -625,9 +625,9 @@ function AdminPanel() {
                         </div>
                       ) : (
                         notifications.slice(0, 20).map(n => (
-                          <div key={n.id} className={`p-4 border-b last:border-b-0 hover:bg-gray-50 ${!n.read ? "bg-violet-50/30" : ""}`}>
+                          <div key={n.id} className={`p-4 border-b last:border-b-0 hover:bg-gray-50 ${!n.read ? "bg-primary-soft/40" : ""}`}>
                             <div className="flex items-start gap-3">
-                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${n.auto ? "bg-green-100 text-green-600" : "bg-violet-100 text-violet-600"}`}>
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${n.auto ? "bg-green-100 text-green-600" : "bg-primary-soft text-primary"}`}>
                                 <Mail className="w-4 h-4" />
                               </div>
                               <div className="flex-1 min-w-0">
@@ -635,7 +635,7 @@ function AdminPanel() {
                                 <p className="text-xs text-neutral-500 truncate">{t("emailTo")} {n.recipient}</p>
                                 <p className="text-xs text-neutral-400 mt-1">{n.sentAt}</p>
                               </div>
-                              {!n.read && <div className="w-2 h-2 rounded-full bg-violet-500 mt-1" />}
+                              {!n.read && <div className="w-2 h-2 rounded-full bg-primary mt-1" />}
                             </div>
                           </div>
                         ))
@@ -648,7 +648,7 @@ function AdminPanel() {
 
             {user && (
               <div className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-xl">
-                <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${user.avatarColor} flex items-center justify-center text-white text-sm font-bold`}>
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-cream text-sm font-bold">
                   {user.avatar}
                 </div>
                 <div className="text-sm">
@@ -669,7 +669,7 @@ function AdminPanel() {
           {[
             { label: t("pendingVerifications"), value: pendingVerifications, icon: Users, color: "text-orange-500", bg: "bg-orange-50", alert: pendingVerifications > 0 },
             { label: t("autoVerifiedToday"), value: autoVerifiedToday, icon: CheckCircle, color: "text-green-500", bg: "bg-green-50" },
-            { label: t("totalUsers"), value: initialMockData.stats.totalUsers.toLocaleString(), icon: Users, color: "text-violet-500", bg: "bg-violet-50" },
+            { label: t("totalUsers"), value: initialMockData.stats.totalUsers.toLocaleString(), icon: Users, color: "text-primary", bg: "bg-primary-soft" },
             { label: t("openDisputes"), value: openDisputes, icon: AlertTriangle, color: "text-red-500", bg: "bg-red-50", alert: openDisputes > 0 },
           ].map((stat, i) => (
             <motion.div
@@ -677,7 +677,7 @@ function AdminPanel() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
-              className="bg-white rounded-2xl p-5 border shadow-sm"
+              className="bg-paper rounded-lg p-5 border"
             >
               <div className="flex items-center justify-between mb-3">
                 <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color}`}>
@@ -709,14 +709,14 @@ function AdminPanel() {
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
-                  ? "bg-white text-violet-600 shadow-sm"
+                  ? "bg-paper text-primary shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900"
               }`}
             >
               {tab.label}
               {tab.count !== undefined && (
                 <span className={`ml-1.5 px-1.5 py-0.5 rounded text-xs ${
-                  activeTab === tab.id ? "bg-violet-100" : "bg-gray-200"
+                  activeTab === tab.id ? "bg-primary-soft" : "bg-gray-200"
                 }`}>
                   {tab.count}
                 </span>
@@ -734,7 +734,7 @@ function AdminPanel() {
               exit={{ opacity: 0, height: 0 }}
               className="mb-6 overflow-hidden"
             >
-              <div className={`rounded-2xl p-5 border ${lastRunResult.processed > 0 ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-200"}`}>
+              <div className={`rounded-lg p-5 border ${lastRunResult.processed > 0 ? "bg-green-50 border-green-200" : "bg-gray-50 border-gray-200"}`}>
                 <div className="flex items-start gap-3">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${lastRunResult.processed > 0 ? "bg-green-500 text-white" : "bg-gray-400 text-white"}`}>
                     {lastRunResult.processed > 0 ? <Sparkles className="w-5 h-5" /> : <Bot className="w-5 h-5" />}
@@ -771,18 +771,18 @@ function AdminPanel() {
         {/* Content */}
         {activeTab === "verifications" && (
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 text-white">
+            <div className="bg-primary rounded-lg p-6 text-cream">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-lg bg-cream/20 flex items-center justify-center">
                   <Bot className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold mb-1">{t("autoVerificationActive")}</h3>
-                  <p className="text-white/90 text-sm max-w-2xl">{t("autoVerificationDesc")}</p>
+                  <p className="text-cream/90 text-sm max-w-2xl">{t("autoVerificationDesc")}</p>
                 </div>
                 <div className="text-right hidden sm:block">
                   <p className="text-2xl font-bold">{autoVerifiedToday}</p>
-                  <p className="text-xs text-white/80">{t("autoApprovedToday")}</p>
+                  <p className="text-xs text-cream/80">{t("autoApprovedToday")}</p>
                 </div>
               </div>
             </div>
@@ -796,8 +796,8 @@ function AdminPanel() {
                   onClick={() => setRiskFilter(level)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                     riskFilter === level
-                      ? "bg-violet-100 text-violet-700"
-                      : "bg-white border text-neutral-600 hover:bg-gray-50"
+                      ? "bg-primary-soft text-primary"
+                      : "bg-paper border text-neutral-600 hover:bg-gray-50"
                   }`}
                 >
                   {level === "all" ? t("allRisks") : level === "high" ? t("riskHigh") : level === "medium" ? t("riskMedium") : t("riskLow")}
@@ -805,7 +805,7 @@ function AdminPanel() {
               ))}
             </div>
 
-            <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+            <div className="bg-paper rounded-lg border overflow-hidden">
               <div className="p-4 border-b flex items-center justify-between">
                 <h3 className="font-bold">{t("exceptionsTitle")}</h3>
                 <div className="flex items-center gap-2">
@@ -814,7 +814,7 @@ function AdminPanel() {
                     <input 
                       type="text"
                       placeholder={tc("search")}
-                      className="pl-9 pr-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      className="pl-9 pr-4 py-2 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <Button variant="outline" size="sm">
@@ -841,8 +841,8 @@ function AdminPanel() {
                     <div key={item.id} className="p-4 hover:bg-gray-50 transition-colors">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold ${
-                            item.type === "creator" ? "bg-gradient-to-br from-pink-400 to-rose-500" : "bg-gradient-to-br from-blue-400 to-blue-600"
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-cream font-bold ${
+                            item.type === "creator" ? "bg-primary" : "bg-neutral-500"
                           }`}>
                             {item.name.charAt(0)}
                           </div>
@@ -850,7 +850,7 @@ function AdminPanel() {
                             <div className="flex items-center gap-2 flex-wrap">
                               <h4 className="font-medium">{item.name}</h4>
                               <span className={`px-2 py-0.5 rounded-full text-xs ${
-                                item.type === "creator" ? "bg-pink-100 text-pink-700" : "bg-blue-100 text-blue-700"
+                                item.type === "creator" ? "bg-primary-soft text-primary" : "bg-gray-100 text-neutral-600"
                               }`}>
                                 {item.type === "creator" ? t("creator") : t("company")}
                               </span>
@@ -916,8 +916,8 @@ function AdminPanel() {
                   onClick={() => setRiskFilter(level)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                     riskFilter === level
-                      ? "bg-violet-100 text-violet-700"
-                      : "bg-white border text-neutral-600 hover:bg-gray-50"
+                      ? "bg-primary-soft text-primary"
+                      : "bg-paper border text-neutral-600 hover:bg-gray-50"
                   }`}
                 >
                   {level === "all" ? t("allRisks") : level === "high" ? t("riskHigh") : level === "medium" ? t("riskMedium") : t("riskLow")}
@@ -931,7 +931,7 @@ function AdminPanel() {
                 .filter(d => riskFilter === "all" || getDisputeRisk(d) === riskFilter);
               if (items.length === 0) {
                 return (
-                  <div className="bg-white rounded-2xl border shadow-sm p-8 text-center text-neutral-500">
+                  <div className="bg-paper rounded-lg border p-8 text-center text-neutral-500">
                     <CheckCircle className="w-12 h-12 mx-auto mb-3 text-green-500" />
                     <p className="font-medium">{t("noItemsToProcess")}</p>
                     <p className="text-sm text-neutral-400 mt-1">{t("escalatedItemsDesc")}</p>
@@ -943,7 +943,7 @@ function AdminPanel() {
                   key={item.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl p-6 border shadow-sm"
+                  className="bg-paper rounded-lg p-6 border"
                 >
                   <div className="flex flex-col lg:flex-row gap-6">
                     <div className="flex-1">
@@ -954,14 +954,14 @@ function AdminPanel() {
                       </div>
                       <p className="text-sm text-neutral-500 mb-3">{item.parties} • {t("openedAt", { time: item.openedAt })}</p>
                       
-                      <div className="bg-violet-50 rounded-xl p-4 border border-violet-100">
+                      <div className="bg-primary-soft/50 rounded-xl p-4 border border-primary/20">
                         <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-violet-500 flex items-center justify-center flex-shrink-0">
-                            <Bot className="w-4 h-4 text-white" />
+                          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+                            <Bot className="w-4 h-4 text-cream" />
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-violet-900 mb-1">{t("aiSuggestion")}</p>
-                            <p className="text-sm text-violet-800">{item.aiSuggestion}</p>
+                            <p className="text-sm font-semibold text-primary mb-1">{t("aiSuggestion")}</p>
+                            <p className="text-sm text-ink-soft">{item.aiSuggestion}</p>
                           </div>
                         </div>
                       </div>
@@ -1014,8 +1014,8 @@ function AdminPanel() {
                   onClick={() => setRiskFilter(level)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
                     riskFilter === level
-                      ? "bg-violet-100 text-violet-700"
-                      : "bg-white border text-neutral-600 hover:bg-gray-50"
+                      ? "bg-primary-soft text-primary"
+                      : "bg-paper border text-neutral-600 hover:bg-gray-50"
                   }`}
                 >
                   {level === "all" ? t("allRisks") : level === "high" ? t("riskHigh") : level === "medium" ? t("riskMedium") : t("riskLow")}
@@ -1029,7 +1029,7 @@ function AdminPanel() {
                 .filter(i => riskFilter === "all" || getInspectionRisk(i) === riskFilter);
               if (items.length === 0) {
                 return (
-                  <div className="bg-white rounded-2xl border shadow-sm p-8 text-center text-neutral-500">
+                  <div className="bg-paper rounded-lg border p-8 text-center text-neutral-500">
                     <CheckCircle className="w-12 h-12 mx-auto mb-3 text-green-500" />
                     <p className="font-medium">{t("noItemsToProcess")}</p>
                     <p className="text-sm text-neutral-400 mt-1">{t("escalatedItemsDesc")}</p>
@@ -1041,7 +1041,7 @@ function AdminPanel() {
                   key={item.id}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl p-6 border shadow-sm"
+                  className="bg-paper rounded-lg p-6 border"
                 >
                   <div className="flex flex-col lg:flex-row gap-6">
                     <div className="flex-1">
@@ -1052,14 +1052,14 @@ function AdminPanel() {
                       </div>
                       <p className="text-sm text-neutral-500 mb-3">{t("rentedBy", { renter: item.renter, lister: item.lister, date: item.returnDate })}</p>
                       
-                      <div className="bg-violet-50 rounded-xl p-4 border border-violet-100">
+                      <div className="bg-primary-soft/50 rounded-xl p-4 border border-primary/20">
                         <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-violet-500 flex items-center justify-center flex-shrink-0">
-                            <Bot className="w-4 h-4 text-white" />
+                          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+                            <Bot className="w-4 h-4 text-cream" />
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-violet-900 mb-1">{t("aiInspectionSuggestion")}</p>
-                            <p className="text-sm text-violet-800">{item.aiSuggestion}</p>
+                            <p className="text-sm font-semibold text-primary mb-1">{t("aiInspectionSuggestion")}</p>
+                            <p className="text-sm text-ink-soft">{item.aiSuggestion}</p>
                           </div>
                         </div>
                       </div>
@@ -1105,10 +1105,10 @@ function AdminPanel() {
         {activeTab === "automation" && (
           <div className="space-y-6">
             {/* Scan control card */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border p-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center">
+                  <div className="w-12 h-12 rounded-xl bg-primary-soft text-primary flex items-center justify-center">
                     <ScanLine className="w-6 h-6" />
                   </div>
                   <div>
@@ -1128,7 +1128,6 @@ function AdminPanel() {
                     setNextScanIn(30);
                   }} 
                   disabled={processing}
-                  className="bg-violet-600 hover:bg-violet-700"
                 >
                   {processing ? (
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -1140,7 +1139,7 @@ function AdminPanel() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border p-6">
               <div className="flex items-start justify-between gap-4 mb-6">
                 <div>
                   <h3 className="text-xl font-bold text-neutral-900">{t("automationSettings")}</h3>
@@ -1152,7 +1151,6 @@ function AdminPanel() {
                     setLastScanAt(new Date().toLocaleTimeString());
                   }} 
                   disabled={processing}
-                  className="bg-violet-600 hover:bg-violet-700"
                 >
                   {processing ? (
                     <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
@@ -1169,8 +1167,8 @@ function AdminPanel() {
                   return (
                     <div 
                       key={card.key}
-                      className={`p-5 rounded-2xl border transition-all cursor-pointer ${
-                        enabled ? "bg-violet-50/50 border-violet-200" : "bg-white border-gray-200 hover:border-gray-300"
+                      className={`p-5 rounded-lg border transition-all cursor-pointer ${
+                        enabled ? "bg-primary-soft/50 border-primary/30" : "bg-paper border-gray-200 hover:border-gray-300"
                       }`}
                       onClick={() => {
                         setAutomation(prev => ({ ...prev, [card.key]: !prev[card.key] }));
@@ -1179,7 +1177,7 @@ function AdminPanel() {
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                           <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                            enabled ? "bg-violet-500 text-white" : "bg-gray-100 text-gray-500"
+                            enabled ? "bg-primary text-cream" : "bg-gray-100 text-gray-500"
                           }`}>
                             <card.icon className="w-5 h-5" />
                           </div>
@@ -1190,7 +1188,7 @@ function AdminPanel() {
                             </p>
                           </div>
                         </div>
-                        <div className="text-violet-600">
+                        <div className="text-primary">
                           {enabled ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8 text-gray-400" />}
                         </div>
                       </div>
@@ -1204,34 +1202,34 @@ function AdminPanel() {
             </div>
 
             {/* Simulation control card */}
-            <div className="bg-gradient-to-r from-indigo-500 to-blue-600 rounded-2xl p-6 text-white">
+            <div className="bg-primary rounded-lg p-6 text-cream">
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-cream/20 flex items-center justify-center">
                       <Dice5 className="w-5 h-5" />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold">{t("simulationMode")}</h3>
-                      <p className={`text-sm font-medium ${simulationEnabled ? "text-green-300" : "text-white/70"}`}>
+                      <p className={`text-sm font-medium ${simulationEnabled ? "text-green-300" : "text-cream/70"}`}>
                         {simulationEnabled ? t("enabled") : t("disabled")}
                       </p>
                     </div>
                   </div>
-                  <p className="text-white/90 text-sm max-w-2xl">{t("simulationDesc")}</p>
-                  
+                  <p className="text-cream/90 text-sm max-w-2xl">{t("simulationDesc")}</p>
+
                   <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                    <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
-                      <span className="text-sm text-white/80">{t("interval")}</span>
+                    <div className="flex items-center gap-2 bg-cream/10 rounded-lg px-3 py-2">
+                      <span className="text-sm text-cream/80">{t("interval")}</span>
                       <input
                         type="number"
                         min={5}
                         max={300}
                         value={simInterval}
                         onChange={(e) => setSimInterval(Math.max(5, Math.min(300, parseInt(e.target.value) || 15)))}
-                        className="w-16 bg-white/20 rounded px-2 py-1 text-sm text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/40"
+                        className="w-16 bg-cream/20 rounded px-2 py-1 text-sm text-cream placeholder-cream/50 focus:outline-none focus:ring-2 focus:ring-cream/40"
                       />
-                      <span className="text-sm text-white/80">{t("seconds")}</span>
+                      <span className="text-sm text-cream/80">{t("seconds")}</span>
                     </div>
                     <Button
                       onClick={() => setSimulationEnabled(s => !s)}
@@ -1243,7 +1241,7 @@ function AdminPanel() {
                     <Button
                       onClick={() => injectMockCase(true)}
                       disabled={generating}
-                      className="bg-white/20 hover:bg-white/30 text-white border-0"
+                      className="bg-cream/20 hover:bg-cream/30 text-cream border-0"
                     >
                       {generating ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Plus className="w-4 h-4 mr-2" />}
                       {generating ? t("generating") : t("generateCaseNow")}
@@ -1252,20 +1250,20 @@ function AdminPanel() {
                 </div>
                 <div className="md:text-right">
                   <p className="text-3xl font-bold">{verifications.length + disputes.length + inspections.length}</p>
-                  <p className="text-xs text-white/80">{t("totalSimulatedCases")}</p>
+                  <p className="text-xs text-cream/80">{t("totalSimulatedCases")}</p>
                 </div>
               </div>
             </div>
 
             {/* Impact Summary */}
-            <div className="bg-gradient-to-r from-violet-500 to-purple-600 rounded-2xl p-6 text-white">
+            <div className="bg-primary rounded-lg p-6 text-cream">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-lg bg-cream/20 flex items-center justify-center">
                   <Zap className="w-6 h-6" />
                 </div>
                 <div>
                   <h4 className="text-lg font-bold">{t("aiImpactTitle")}</h4>
-                  <p className="text-white/90 text-sm">
+                  <p className="text-cream/90 text-sm">
                     {t("aiImpactDesc", {
                       verified: autoVerifiedToday,
                       resolved: disputes.filter(d => d.autoResolved).length,
@@ -1279,7 +1277,7 @@ function AdminPanel() {
         )}
 
         {activeTab === "activity" && (
-          <div className="bg-white rounded-2xl border shadow-sm p-6">
+          <div className="bg-paper rounded-lg border p-6">
             <h3 className="font-bold mb-4">{t("activityLog")}</h3>
             <div className="space-y-3">
               {activities.map((activity, i) => (
@@ -1288,7 +1286,7 @@ function AdminPanel() {
                   onClick={() => setSelectedActivity(activity)}
                   className="w-full flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-colors text-left"
                 >
-                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${activity.auto ? "bg-green-500" : "bg-violet-500"}`} />
+                  <div className={`w-2 h-2 rounded-full flex-shrink-0 ${activity.auto ? "bg-green-500" : "bg-primary"}`} />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate">{activity.action}</p>
                     <p className="text-sm text-neutral-500 truncate">{activity.target}</p>
@@ -1321,15 +1319,15 @@ function AdminPanel() {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl max-h-[85vh] overflow-y-auto"
+              className="bg-paper rounded-lg p-6 max-w-lg w-full shadow-2xl max-h-[85vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-3">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                    selectedActivity.category === "verification" ? "bg-pink-100 text-pink-600" :
-                    selectedActivity.category === "dispute" ? "bg-violet-100 text-violet-600" :
-                    selectedActivity.category === "inspection" ? "bg-blue-100 text-blue-600" :
+                    selectedActivity.category === "verification" ? "bg-primary-soft text-primary" :
+                    selectedActivity.category === "dispute" ? "bg-primary-soft text-primary" :
+                    selectedActivity.category === "inspection" ? "bg-primary-soft text-primary" :
                     "bg-gray-100 text-gray-600"
                   }`}>
                     {selectedActivity.category === "verification" ? <FileCheck className="w-5 h-5" /> :
@@ -1359,18 +1357,18 @@ function AdminPanel() {
                 {selectedActivity.category === "verification" && (
                   <div className="bg-gray-50 rounded-xl p-4 border space-y-3">
                     <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-                      <FileCheck className="w-4 h-4 text-pink-500" />
+                      <FileCheck className="w-4 h-4 text-primary" />
                       {t("verificationDetails")}
                     </div>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       {typeof selectedActivity.documents === "number" && (
-                        <div className="bg-white rounded-lg p-3 border">
+                        <div className="bg-paper rounded-lg p-3 border">
                           <p className="text-xs text-neutral-500">{t("documents")}</p>
                           <p className="font-semibold text-neutral-900">{selectedActivity.documents}</p>
                         </div>
                       )}
                       {selectedActivity.riskLevel && (
-                        <div className="bg-white rounded-lg p-3 border">
+                        <div className="bg-paper rounded-lg p-3 border">
                           <p className="text-xs text-neutral-500">{t("riskScore")}</p>
                           <span className={`inline-block mt-0.5 px-2 py-0.5 rounded-full text-xs font-medium ${
                             selectedActivity.riskLevel === "high" ? "bg-red-100 text-red-700" :
@@ -1383,7 +1381,7 @@ function AdminPanel() {
                       )}
                     </div>
                     {selectedActivity.missingDocs && selectedActivity.missingDocs.length > 0 && (
-                      <div className="bg-white rounded-lg p-3 border">
+                      <div className="bg-paper rounded-lg p-3 border">
                         <p className="text-xs text-neutral-500 mb-1">{t("missing")}</p>
                         <ul className="list-disc list-inside text-sm text-neutral-800">
                           {selectedActivity.missingDocs.map((m, idx) => <li key={idx}>{m}</li>)}
@@ -1391,7 +1389,7 @@ function AdminPanel() {
                       </div>
                     )}
                     {selectedActivity.flag && (
-                      <div className="bg-white rounded-lg p-3 border">
+                      <div className="bg-paper rounded-lg p-3 border">
                         <p className="text-xs text-neutral-500 mb-1">{t("flag")}</p>
                         <p className="text-sm text-red-700">{selectedActivity.flag}</p>
                       </div>
@@ -1402,26 +1400,26 @@ function AdminPanel() {
                 {selectedActivity.category === "dispute" && (
                   <div className="bg-gray-50 rounded-xl p-4 border space-y-3">
                     <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-                      <Scale className="w-4 h-4 text-violet-500" />
+                      <Scale className="w-4 h-4 text-primary" />
                       {t("disputeDetails")}
                     </div>
                     {selectedActivity.parties && (
-                      <div className="bg-white rounded-lg p-3 border">
+                      <div className="bg-paper rounded-lg p-3 border">
                         <p className="text-xs text-neutral-500 mb-1">{t("parties")}</p>
                         <p className="text-sm text-neutral-800">{selectedActivity.parties}</p>
                       </div>
                     )}
                     {selectedActivity.aiReason && (
-                      <div className="bg-violet-50 rounded-lg p-3 border border-violet-100">
+                      <div className="bg-primary-soft/50 rounded-lg p-3 border border-primary/20">
                         <div className="flex items-center gap-2 mb-1">
-                          <Bot className="w-4 h-4 text-violet-600" />
-                          <p className="text-xs text-violet-700 font-semibold">{t("aiSuggestion")}</p>
+                          <Bot className="w-4 h-4 text-primary" />
+                          <p className="text-xs text-primary font-semibold">{t("aiSuggestion")}</p>
                         </div>
-                        <p className="text-sm text-violet-900">{selectedActivity.aiReason}</p>
+                        <p className="text-sm text-ink-soft">{selectedActivity.aiReason}</p>
                       </div>
                     )}
                     {selectedActivity.riskLevel && (
-                      <div className="bg-white rounded-lg p-3 border">
+                      <div className="bg-paper rounded-lg p-3 border">
                         <p className="text-xs text-neutral-500">{t("riskScore")}</p>
                         <span className={`inline-block mt-0.5 px-2 py-0.5 rounded-full text-xs font-medium ${
                           selectedActivity.riskLevel === "high" ? "bg-red-100 text-red-700" :
@@ -1438,46 +1436,46 @@ function AdminPanel() {
                 {selectedActivity.category === "inspection" && (
                   <div className="bg-gray-50 rounded-xl p-4 border space-y-3">
                     <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
-                      <Camera className="w-4 h-4 text-blue-500" />
+                      <Camera className="w-4 h-4 text-primary" />
                       {t("inspectionDetails")}
                     </div>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       {selectedActivity.renter && (
-                        <div className="bg-white rounded-lg p-3 border">
+                        <div className="bg-paper rounded-lg p-3 border">
                           <p className="text-xs text-neutral-500">{t("renter")}</p>
                           <p className="font-medium text-neutral-900">{selectedActivity.renter}</p>
                         </div>
                       )}
                       {selectedActivity.lister && (
-                        <div className="bg-white rounded-lg p-3 border">
+                        <div className="bg-paper rounded-lg p-3 border">
                           <p className="text-xs text-neutral-500">{t("lister")}</p>
                           <p className="font-medium text-neutral-900">{selectedActivity.lister}</p>
                         </div>
                       )}
                       {selectedActivity.deposit && (
-                        <div className="bg-white rounded-lg p-3 border">
+                        <div className="bg-paper rounded-lg p-3 border">
                           <p className="text-xs text-neutral-500">{t("deposit")}</p>
                           <p className="font-medium text-neutral-900">{selectedActivity.deposit}</p>
                         </div>
                       )}
                       {selectedActivity.condition && (
-                        <div className="bg-white rounded-lg p-3 border">
+                        <div className="bg-paper rounded-lg p-3 border">
                           <p className="text-xs text-neutral-500">{t("condition")}</p>
                           <p className="font-medium text-neutral-900 capitalize">{selectedActivity.condition}</p>
                         </div>
                       )}
                     </div>
                     {selectedActivity.aiReason && (
-                      <div className="bg-violet-50 rounded-lg p-3 border border-violet-100">
+                      <div className="bg-primary-soft/50 rounded-lg p-3 border border-primary/20">
                         <div className="flex items-center gap-2 mb-1">
-                          <Bot className="w-4 h-4 text-violet-600" />
-                          <p className="text-xs text-violet-700 font-semibold">{t("aiSuggestion")}</p>
+                          <Bot className="w-4 h-4 text-primary" />
+                          <p className="text-xs text-primary font-semibold">{t("aiSuggestion")}</p>
                         </div>
-                        <p className="text-sm text-violet-900">{selectedActivity.aiReason}</p>
+                        <p className="text-sm text-ink-soft">{selectedActivity.aiReason}</p>
                       </div>
                     )}
                     {selectedActivity.riskLevel && (
-                      <div className="bg-white rounded-lg p-3 border">
+                      <div className="bg-paper rounded-lg p-3 border">
                         <p className="text-xs text-neutral-500">{t("riskScore")}</p>
                         <span className={`inline-block mt-0.5 px-2 py-0.5 rounded-full text-xs font-medium ${
                           selectedActivity.riskLevel === "high" ? "bg-red-100 text-red-700" :
@@ -1521,7 +1519,7 @@ function AdminPanel() {
                   {selectedActivity.auto ? (
                     <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium">{t("auto")}</span>
                   ) : (
-                    <span className="px-2 py-0.5 bg-violet-100 text-violet-700 text-xs rounded-full font-medium">{t("manual")}</span>
+                    <span className="px-2 py-0.5 bg-primary-soft text-primary text-xs rounded-full font-medium">{t("manual")}</span>
                   )}
                   <span className="text-sm text-neutral-400">{selectedActivity.time}</span>
                 </div>

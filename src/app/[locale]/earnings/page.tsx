@@ -108,7 +108,7 @@ export default function EarningsPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(1);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-orange-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -120,7 +120,7 @@ export default function EarningsPage() {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <div className="flex items-center gap-2 text-orange-600 mb-1">
+              <div className="flex items-center gap-2 text-primary mb-1">
                 <DollarSign className="w-5 h-5" />
                 <span className="font-medium">Earnings Center</span>
               </div>
@@ -133,9 +133,8 @@ export default function EarningsPage() {
               <Download className="w-4 h-4 mr-2" />
               Export Report
             </Button>
-            <Button 
-              size="sm" 
-              className="bg-green-500 hover:bg-green-600"
+            <Button
+              size="sm"
               onClick={() => setShowWithdrawModal(true)}
             >
               <Wallet className="w-4 h-4 mr-2" />
@@ -146,29 +145,29 @@ export default function EarningsPage() {
 
         {/* Balance Cards */}
         <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gradient-to-br from-orange-500 to-amber-500 rounded-2xl p-6 text-white">
+          <div className="bg-primary rounded-lg p-6 text-cream">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-cream/20 flex items-center justify-center">
                 <Wallet className="w-5 h-5" />
               </div>
-              <span className="text-xs bg-white/20 px-2 py-1 rounded-full">Available</span>
+              <span className="text-xs bg-cream/20 px-2 py-1 rounded-full">Available</span>
             </div>
             <p className="text-3xl font-bold">{earningsData.summary.availableBalance}</p>
-            <p className="text-sm text-white/80">Available for withdrawal</p>
+            <p className="text-sm text-cream/80">Available for withdrawal</p>
           </div>
 
-          <div className="bg-white rounded-2xl border shadow-sm p-6">
+          <div className="bg-paper rounded-lg border border-line p-6">
             <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-xl bg-primary-soft flex items-center justify-center">
+                <Clock className="w-5 h-5 text-primary" />
               </div>
-              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Pending</span>
+              <span className="text-xs bg-primary-soft text-primary px-2 py-1 rounded-full">Pending</span>
             </div>
             <p className="text-3xl font-bold text-neutral-900">{earningsData.summary.pendingPayout}</p>
             <p className="text-sm text-neutral-500">Processing payouts</p>
           </div>
 
-          <div className="bg-white rounded-2xl border shadow-sm p-6">
+          <div className="bg-paper rounded-lg border border-line p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
                 <Shield className="w-5 h-5 text-amber-600" />
@@ -179,7 +178,7 @@ export default function EarningsPage() {
             <p className="text-sm text-neutral-500">Security deposits held</p>
           </div>
 
-          <div className="bg-white rounded-2xl border shadow-sm p-6">
+          <div className="bg-paper rounded-lg border border-line p-6">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
                 <TrendingUp className="w-5 h-5 text-green-600" />
@@ -207,7 +206,7 @@ export default function EarningsPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
-                  ? "bg-white text-orange-600 shadow-sm"
+                  ? "bg-paper text-primary shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900"
               }`}
             >
@@ -221,22 +220,22 @@ export default function EarningsPage() {
         {activeTab === "overview" && (
           <div className="space-y-6">
             <div className="grid md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-2xl border p-5">
+              <div className="bg-paper rounded-lg border border-line p-5">
                 <p className="text-sm text-neutral-500 mb-1">Total Bookings</p>
                 <p className="text-2xl font-bold">{earningsData.stats.totalBookings}</p>
                 <p className="text-xs text-green-600 mt-1">+8 this month</p>
               </div>
-              <div className="bg-white rounded-2xl border p-5">
+              <div className="bg-paper rounded-lg border border-line p-5">
                 <p className="text-sm text-neutral-500 mb-1">Avg. Booking Value</p>
                 <p className="text-2xl font-bold">{earningsData.stats.avgBookingValue}</p>
                 <p className="text-xs text-neutral-400 mt-1">After platform fees</p>
               </div>
-              <div className="bg-white rounded-2xl border p-5">
+              <div className="bg-paper rounded-lg border border-line p-5">
                 <p className="text-sm text-neutral-500 mb-1">Repeat Customers</p>
                 <p className="text-2xl font-bold">{earningsData.stats.repeatCustomerRate}</p>
                 <p className="text-xs text-green-600 mt-1">+5% vs last year</p>
               </div>
-              <div className="bg-white rounded-2xl border p-5">
+              <div className="bg-paper rounded-lg border border-line p-5">
                 <p className="text-sm text-neutral-500 mb-1">Your Rating</p>
                 <p className="text-2xl font-bold">{earningsData.stats.avgRating}</p>
                 <p className="text-xs text-neutral-400 mt-1">Out of 5.0</p>
@@ -244,7 +243,7 @@ export default function EarningsPage() {
             </div>
 
             <div className="grid lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 bg-white rounded-2xl border shadow-sm p-6">
+              <div className="lg:col-span-2 bg-paper rounded-lg border border-line p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-bold">Earnings Trend</h3>
                   <select 
@@ -260,7 +259,7 @@ export default function EarningsPage() {
                   {earningsData.monthlyData.map((month, i) => (
                     <div key={i} className="flex-1 flex flex-col items-center gap-2">
                       <div 
-                        className="w-full bg-orange-500 rounded-t-lg"
+                        className="w-full bg-primary rounded-t-lg"
                         style={{ height: `${(month.earnings / 3000) * 200}px` }}
                       />
                       <span className="text-xs text-neutral-500">{month.month}</span>
@@ -269,7 +268,7 @@ export default function EarningsPage() {
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl border shadow-sm p-6">
+              <div className="bg-paper rounded-lg border border-line p-6">
                 <h3 className="font-bold mb-4">Top Performing Gear</h3>
                 <div className="space-y-4">
                   {earningsData.gearPerformance.map((gear, i) => (
@@ -292,7 +291,7 @@ export default function EarningsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold">Recent Transactions</h3>
                 <Button variant="ghost" size="sm" onClick={() => setActiveTab("transactions")}>
@@ -303,8 +302,8 @@ export default function EarningsPage() {
                 {earningsData.transactions.map((txn) => (
                   <div key={txn.id} className="py-3 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5 text-green-600" />
+                      <div className="w-10 h-10 rounded-xl bg-primary-soft flex items-center justify-center">
+                        <TrendingUp className="w-5 h-5 text-primary" />
                       </div>
                       <div>
                         <p className="font-medium text-sm">{txn.description}</p>
@@ -328,7 +327,7 @@ export default function EarningsPage() {
 
         {/* Transactions Tab */}
         {activeTab === "transactions" && (
-          <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+          <div className="bg-paper rounded-lg border border-line overflow-hidden">
             <div className="p-4 border-b flex items-center gap-3">
               <div className="relative flex-1 max-w-sm">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -382,7 +381,7 @@ export default function EarningsPage() {
         {/* Analytics Tab */}
         {activeTab === "analytics" && (
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <h3 className="font-bold mb-4">Gear Performance Analysis</h3>
               <table className="w-full">
                 <thead className="bg-gray-50 border-b">
@@ -411,7 +410,7 @@ export default function EarningsPage() {
         {/* Payouts Tab */}
         {activeTab === "payouts" && (
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold">Payment Methods</h3>
                 <Button size="sm" variant="outline">
@@ -424,18 +423,16 @@ export default function EarningsPage() {
                   <div 
                     key={method.id}
                     className={`p-4 rounded-xl border-2 ${
-                      method.default ? "border-orange-500 bg-orange-50" : "border-gray-100"
+                      method.default ? "border-primary bg-primary-soft" : "border-line"
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                          method.type === "bank" ? "bg-green-100" : "bg-blue-100"
-                        }`}>
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-primary-soft`}>
                           {method.type === "bank" ? (
-                            <Landmark className="w-5 h-5 text-green-600" />
+                            <Landmark className="w-5 h-5 text-primary" />
                           ) : (
-                            <Wallet className="w-5 h-5 text-blue-600" />
+                            <Wallet className="w-5 h-5 text-primary" />
                           )}
                         </div>
                         <div>
@@ -460,7 +457,7 @@ export default function EarningsPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+            <div className="bg-paper rounded-lg border border-line overflow-hidden">
               <div className="p-4 border-b">
                 <h3 className="font-bold">Payout History</h3>
               </div>
@@ -497,7 +494,7 @@ export default function EarningsPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl w-full max-w-md p-6"
+            className="bg-paper rounded-lg w-full max-w-md p-6"
           >
             <h3 className="font-bold text-lg mb-4">Withdraw Funds</h3>
             
@@ -529,18 +526,16 @@ export default function EarningsPage() {
                     onClick={() => setSelectedPaymentMethod(method.id)}
                     className={`w-full p-3 rounded-xl border-2 text-left ${
                       selectedPaymentMethod === method.id 
-                        ? "border-orange-500 bg-orange-50" 
-                        : "border-gray-100"
+                        ? "border-primary bg-primary-soft"
+                        : "border-line"
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                        method.type === "bank" ? "bg-green-100" : "bg-blue-100"
-                      }`}>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-primary-soft`}>
                         {method.type === "bank" ? (
-                          <Landmark className="w-5 h-5 text-green-600" />
+                          <Landmark className="w-5 h-5 text-primary" />
                         ) : (
-                          <Wallet className="w-5 h-5 text-blue-600" />
+                          <Wallet className="w-5 h-5 text-primary" />
                         )}
                       </div>
                       <div>
@@ -561,8 +556,8 @@ export default function EarningsPage() {
               >
                 Cancel
               </Button>
-              <Button 
-                className="flex-1 bg-green-500 hover:bg-green-600"
+              <Button
+                className="flex-1"
                 disabled={!withdrawAmount || parseInt(withdrawAmount) < 50}
                 onClick={() => {
                   alert(`Withdrawal of $${withdrawAmount} initiated!`);

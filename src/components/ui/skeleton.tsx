@@ -38,6 +38,32 @@ export function CampaignCardSkeleton() {
   );
 }
 
+/** Skeleton matching the equipment listing card layout. */
+export function EquipmentCardSkeleton() {
+  return (
+    <div className="bg-white rounded-2xl overflow-hidden border shadow-sm">
+      <Skeleton className="h-48 rounded-none" />
+      <div className="p-5 space-y-3">
+        <Skeleton className="w-2/3 h-6" />
+        <Skeleton className="w-40 h-4" />
+        <div className="flex gap-2">
+          <Skeleton className="w-16 h-5 rounded" />
+          <Skeleton className="w-24 h-5 rounded" />
+        </div>
+        <div className="flex gap-1">
+          <Skeleton className="w-14 h-5 rounded" />
+          <Skeleton className="w-14 h-5 rounded" />
+          <Skeleton className="w-14 h-5 rounded" />
+        </div>
+        <div className="flex items-center justify-between pt-4 border-t">
+          <Skeleton className="w-20 h-7" />
+          <Skeleton className="w-24 h-10 rounded-xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** Skeleton for a simple list row (applications, history, etc.). */
 export function ListRowSkeleton({ lines = 2 }: { lines?: number }) {
   return (

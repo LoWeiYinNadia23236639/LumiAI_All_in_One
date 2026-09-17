@@ -43,7 +43,7 @@ export function AiGenerationHistory({ types, refreshKey }: { types: string[]; re
   }, [types, refreshKey]);
 
   return (
-    <div className="bg-white rounded-2xl border shadow-sm p-6">
+    <div className="bg-paper rounded-lg border p-6">
       <div className="flex items-center gap-2 mb-4">
         <History className="w-5 h-5 text-neutral-500" />
         <h3 className="font-bold text-lg">{t("historyTitle")}</h3>

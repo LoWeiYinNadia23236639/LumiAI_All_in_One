@@ -24,11 +24,10 @@ import {
   CheckCircle,
   Camera,
   Plus,
-  Trash2,
-  ToggleLeft,
-  ToggleRight,
   Package,
-  ClipboardList
+  ClipboardList,
+  Pencil,
+  XCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ListRowSkeleton } from "@/components/ui/skeleton";
@@ -48,55 +47,107 @@ interface MyApplication {
   campaigns: { id: string; title: string; niche: string | null; profiles: { name: string } | null } | null;
 }
 
-interface UserGearItem {
+interface MyGear {
   id: string;
-  name: string;
+  title: string;
   category: string;
-  image: string;
-  brand: string;
-  location: string;
-  dailyRate: number;
-  weeklyRate: number;
-  monthlyRate: number;
-  rating: number;
-  reviews: number;
-  availability: string[];
-  condition: string;
-  includes: string[];
-  owner: string;
-  ownerVerified: boolean;
-  responseTime: string;
-  description: string;
-  ownerId: string;
-  available: boolean;
+  price_per_day: number | null;
+  description: string | null;
+  status: string;
+  created_at: string;
+}
+
+interface RentalRecord {
+  id: string;
+  status: string;
+  message: string | null;
+  start_date: string;
+  end_date: string;
+  created_at: string;
+  gears: { id: string; title: string } | null;
+  profiles?: { name: string } | null;
+}
+
+function gearStatusBadgeClass(status: string) {
+  switch (status) {
+    case "available":
+      return "bg-green-100 text-green-700";
+    case "rented":
+      return "bg-blue-100 text-blue-700";
+    default:
+      return "bg-neutral-200 text-neutral-500";
+  }
+}
+
+function rentalStatusBadgeClass(status: string) {
+  switch (status) {
+    case "accepted":
+      return "bg-green-100 text-green-700";
+    case "rejected":
+    case "returned":
+      return "bg-neutral-200 text-neutral-500";
+    case "completed":
+      return "bg-neutral-200 text-neutral-500";
+    default:
+      return "bg-yellow-100 text-yellow-700";
+  }
 }
 
 function InfluencerAnalytics() {
   const t = useTranslations("analytics");
   const tc = useTranslations("common");
+  const te = useTranslations("equipment");
   const locale = useLocale();
   const toast = useToast();
   const [activeTab, setActiveTab] = useState("analytics");
   const [timeRange, setTimeRange] = useState("7d");
   const { user, logout } = useAuth();
   const { savedCampaigns } = useSavedLists();
-  const [userGear, setUserGear] = useState<UserGearItem[]>([]);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [newGear, setNewGear] = useState({ name: "", dailyRate: "", condition: "Excellent", description: "" });
+  const [myGears, setMyGears] = useState<MyGear[]>([]);
+  const [myGearsLoading, setMyGearsLoading] = useState(true);
+  const [rentingIn, setRentingIn] = useState<RentalRecord[]>([]);
+  const [rentingOut, setRentingOut] = useState<RentalRecord[]>([]);
+  const [rentalsLoading, setRentalsLoading] = useState(true);
+  const [editTarget, setEditTarget] = useState<MyGear | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editPrice, setEditPrice] = useState("");
+  const [editDesc, setEditDesc] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
+  const [rejectTarget, setRejectTarget] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [myApplications, setMyApplications] = useState<MyApplication[]>([]);
   const [myAppsLoaded, setMyAppsLoaded] = useState(false);
-  const [gearToDelete, setGearToDelete] = useState<string | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("lumiai_user_gear");
-    if (stored) {
-      try { setUserGear(JSON.parse(stored)); } catch {}
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("lumiai_user_gear", JSON.stringify(userGear));
-  }, [userGear]);
+    if (!user) return;
+    const supabase = getSupabaseClient();
+    supabase
+      .from("gears")
+      .select("*")
+      .eq("owner_id", user.id)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        setMyGears((data ?? []) as unknown as MyGear[]);
+        setMyGearsLoading(false);
+      });
+    supabase
+      .from("rental_requests")
+      .select("*, gears(id, title)")
+      .eq("renter_id", user.id)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        setRentingIn((data ?? []) as unknown as RentalRecord[]);
+        setRentalsLoading(false);
+      });
+    supabase
+      .from("rental_requests")
+      .select("*, gears(id, title), profiles(name)")
+      .eq("owner_id", user.id)
+      .order("created_at", { ascending: false })
+      .then(({ data }) => {
+        setRentingOut((data ?? []) as unknown as RentalRecord[]);
+      });
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -112,43 +163,86 @@ function InfluencerAnalytics() {
       });
   }, [user]);
 
-  const handleAddGear = () => {
-    if (!newGear.name || !newGear.dailyRate || !(parseFloat(newGear.dailyRate) > 0) || !user) return;
-    const daily = parseFloat(newGear.dailyRate);
-    const item: UserGearItem = {
-      id: `user-gear-${Date.now()}`,
-      name: newGear.name,
-      category: "Accessories",
-      image: "📷",
-      brand: "User",
-      location: "User Location",
-      dailyRate: daily,
-      weeklyRate: Math.round(daily * 5),
-      monthlyRate: Math.round(daily * 20),
-      rating: 5,
-      reviews: 0,
-      availability: ["Apr 15", "Apr 16", "Apr 17", "Apr 18", "Apr 19"],
-      condition: newGear.condition,
-      includes: ["Item"],
-      owner: user.name,
-      ownerVerified: true,
-      responseTime: "< 1 hour",
-      description: newGear.description || newGear.name,
-      ownerId: user.id,
-      available: true,
-    };
-    setUserGear((prev) => [item, ...prev]);
-    setNewGear({ name: "", dailyRate: "", condition: "Excellent", description: "" });
-    setShowAddModal(false);
-    toast.success(tc("savedToast"));
+  const toggleGearStatus = async (gear: MyGear) => {
+    const next = gear.status === "available" ? "unlisted" : "available";
+    const { error } = await getSupabaseClient()
+      .from("gears")
+      .update({ status: next })
+      .eq("id", gear.id);
+    if (!error) {
+      setMyGears((prev) =>
+        prev.map((g) => (g.id === gear.id ? { ...g, status: next } : g))
+      );
+      toast.success(tc("savedToast"));
+    }
   };
 
-  const toggleAvailability = (id: string) => {
-    setUserGear((prev) => prev.map((g) => g.id === id ? { ...g, available: !g.available } : g));
+  const openEditModal = (gear: MyGear) => {
+    setEditTarget(gear);
+    setEditTitle(gear.title);
+    setEditPrice(gear.price_per_day != null ? String(gear.price_per_day) : "");
+    setEditDesc(gear.description ?? "");
   };
 
-  const deleteGear = (id: string) => {
-    setUserGear((prev) => prev.filter((g) => g.id !== id));
+  const titleError =
+    editTitle.trim().length > 0 && editTitle.trim().length < 3
+      ? te("newGear.validation.titleTooShort")
+      : null;
+  const priceError =
+    editPrice !== "" && !(parseFloat(editPrice) > 0)
+      ? te("newGear.validation.priceInvalid")
+      : null;
+  const editValid =
+    editTitle.trim().length >= 3 &&
+    editPrice !== "" &&
+    parseFloat(editPrice) > 0;
+
+  const saveGearEdit = async () => {
+    if (!editTarget || !editValid) return;
+    setEditSaving(true);
+    const { error } = await getSupabaseClient()
+      .from("gears")
+      .update({
+        title: editTitle.trim(),
+        price_per_day: parseFloat(editPrice),
+        description: editDesc.trim() || null,
+      })
+      .eq("id", editTarget.id);
+    setEditSaving(false);
+    if (!error) {
+      setMyGears((prev) =>
+        prev.map((g) =>
+          g.id === editTarget.id
+            ? {
+                ...g,
+                title: editTitle.trim(),
+                price_per_day: parseFloat(editPrice),
+                description: editDesc.trim() || null,
+              }
+            : g
+        )
+      );
+      setEditTarget(null);
+      toast.success(tc("savedToast"));
+    }
+  };
+
+  const handleRequestStatus = async (
+    reqId: string,
+    status: "accepted" | "rejected"
+  ) => {
+    setActionLoading(reqId);
+    const { error } = await getSupabaseClient()
+      .from("rental_requests")
+      .update({ status })
+      .eq("id", reqId);
+    if (!error) {
+      setRentingOut((prev) =>
+        prev.map((r) => (r.id === reqId ? { ...r, status } : r))
+      );
+      toast.success(tc("savedToast"));
+    }
+    setActionLoading(null);
   };
 
   const statusTooltip: Record<string, string> = {
@@ -165,11 +259,12 @@ function InfluencerAnalytics() {
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
+            <span className="oval-label inline-block mb-3">{t("creatorKicker")}</span>
             <h1 className="text-3xl font-bold text-neutral-900">{t("creatorAnalytics")}</h1>
             <p className="text-neutral-600">{t("trackGrowth")}</p>
           </div>
@@ -177,7 +272,7 @@ function InfluencerAnalytics() {
             <select 
               value={timeRange} 
               onChange={(e) => setTimeRange(e.target.value)}
-              className="px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="7d">{t("last7Days")}</option>
               <option value="30d">{t("last30Days")}</option>
@@ -197,18 +292,18 @@ function InfluencerAnalytics() {
 
         {/* User Info Card */}
         {user && (
-          <div className="bg-gradient-to-r from-violet-500 to-purple-600 rounded-2xl p-6 text-white mb-8">
+          <div className="bg-primary text-cream rounded-lg p-6 mb-8">
             <div className="flex items-center gap-4">
-              <div className={`w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-2xl font-bold`}>
+              <div className={`w-16 h-16 rounded-lg bg-white/20 flex items-center justify-center text-2xl font-bold`}>
                 {user.avatar}
               </div>
               <div>
                 <h2 className="text-2xl font-bold">{t("welcomeBack", { name: user.name })}</h2>
-                <p className="text-white/80">{user.email} • {t("creatorAccount")}</p>
+                <p className="text-cream/80">{user.email} • {t("creatorAccount")}</p>
               </div>
               <div className="ml-auto text-right">
                 <Link href="/analytics/public">
-                  <Button className="bg-white text-violet-600 hover:bg-gray-100">
+                  <Button className="bg-cream text-primary hover:bg-white">
                     {t("viewPublicProfile")}
                   </Button>
                 </Link>
@@ -221,20 +316,20 @@ function InfluencerAnalytics() {
         <div className="flex gap-2 mb-8 p-1 bg-gray-100 rounded-xl w-fit">
           {[
             { id: "analytics", label: t("analytics") },
-            { id: "gear", label: t("myGear"), count: userGear.length },
+            { id: "gear", label: t("myGear"), count: myGears.length },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === tab.id
-                  ? "bg-white text-violet-600 shadow-sm"
+                  ? "bg-paper text-primary shadow-sm"
                   : "text-neutral-600 hover:text-neutral-900"
               }`}
             >
               {tab.label}
               {tab.count !== undefined && (
-                <span className={`ml-1.5 px-1.5 py-0.5 rounded text-xs ${activeTab === tab.id ? "bg-violet-100" : "bg-gray-200"}`}>
+                <span className={`ml-1.5 px-1.5 py-0.5 rounded text-xs ${activeTab === tab.id ? "bg-primary-soft" : "bg-gray-200"}`}>
                   {tab.count}
                 </span>
               )}
@@ -247,25 +342,25 @@ function InfluencerAnalytics() {
         {/* Overview Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: t("totalFollowers"), key: "followers", icon: Users, color: "text-blue-500", bg: "bg-blue-50", href: "/ai-hub" },
-            { label: t("engagementRate"), key: "engagement", icon: Heart, color: "text-pink-500", bg: "bg-pink-50", href: "/marketplace/campaigns" },
-            { label: t("totalViews"), key: "views", icon: Eye, color: "text-violet-500", bg: "bg-violet-50", href: "/marketplace/campaigns" },
-            { label: t("revenue"), key: "revenue", icon: DollarSign, color: "text-green-500", bg: "bg-green-50", href: "/marketplace/campaigns" },
+            { label: t("totalFollowers"), key: "followers", icon: Users, color: "text-primary", bg: "bg-primary-soft", href: "/ai-hub" },
+            { label: t("engagementRate"), key: "engagement", icon: Heart, color: "text-primary", bg: "bg-primary-soft", href: "/marketplace/campaigns" },
+            { label: t("totalViews"), key: "views", icon: Eye, color: "text-primary", bg: "bg-primary-soft", href: "/marketplace/campaigns" },
+            { label: t("revenue"), key: "revenue", icon: DollarSign, color: "text-primary", bg: "bg-primary-soft", href: "/marketplace/campaigns" },
           ].map((stat) => {
             return (
               <motion.div
                 key={stat.key}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl p-5 border shadow-sm"
+                className="bg-paper rounded-lg p-5 border border-t border-ink/60 transition hover:-translate-y-0.5 hover:border-t-primary"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color}`}>
                     <stat.icon className="w-5 h-5" />
                   </div>
-                  <p className="text-sm text-neutral-500">{stat.label}</p>
+                  <p className="uppercase tracking-widest text-xs text-ink-soft">{stat.label}</p>
                 </div>
-                <p className="text-sm font-medium text-neutral-500 mb-3">
+                <p className="font-quote text-xl text-neutral-700 mb-3">
                   {t(`statHints.${stat.key}.title`)}
                 </p>
                 <Link href={stat.href}>
@@ -279,17 +374,17 @@ function InfluencerAnalytics() {
         </div>
 
         {/* AI Insights Banner — empty state CTA */}
-        <div className="bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 rounded-2xl p-6 text-white mb-8">
+        <div className="bg-primary text-cream rounded-lg p-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
             <div className="flex items-center gap-2 flex-1">
               <Zap className="w-5 h-5 flex-shrink-0" />
               <div>
                 <h3 className="font-bold">{t("creatorEmptyTitle")}</h3>
-                <p className="text-sm text-white/80">{t("creatorEmptyDesc")}</p>
+                <p className="text-sm text-cream/80">{t("creatorEmptyDesc")}</p>
               </div>
             </div>
             <Link href="/ai-hub" className="flex-shrink-0">
-              <Button className="bg-white text-violet-600 hover:bg-gray-100">
+              <Button className="bg-cream text-primary hover:bg-white">
                 {t("creatorEmptyCta")}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -299,9 +394,9 @@ function InfluencerAnalytics() {
 
         {/* My Applications */}
         {activeTab === "analytics" && (
-          <div className="bg-white rounded-2xl p-6 border shadow-sm mb-8">
+          <div className="bg-paper rounded-lg p-6 border mb-8">
             <div className="flex items-center gap-2 mb-4">
-              <ClipboardList className="w-5 h-5 text-violet-600" />
+              <ClipboardList className="w-5 h-5 text-primary" />
               <h3 className="font-bold text-lg">{t("myAppsTitle")}</h3>
             </div>
             {!myAppsLoaded ? (
@@ -311,24 +406,32 @@ function InfluencerAnalytics() {
                 ))}
               </div>
             ) : myApplications.length === 0 ? (
-              <p className="text-sm text-neutral-500">{t("myAppsEmpty")}</p>
+              <div className="relative">
+                <span aria-hidden className="absolute -top-2 right-0 font-quote text-6xl text-ink/10 leading-none select-none">
+                  &ldquo;
+                </span>
+                <p className="text-sm text-neutral-500">{t("myAppsEmpty")}</p>
+              </div>
             ) : (
-              <div className="space-y-3">
-                {myApplications.map((app) => (
+              <div>
+                {myApplications.map((app, i) => (
                   <div
                     key={app.id}
-                    className="flex flex-wrap items-center gap-3 p-3 rounded-xl border border-gray-100"
+                    className={`flex flex-wrap items-center gap-3 py-3 ${i > 0 ? "border-t border-line" : ""}`}
                   >
+                    <span className="font-quote w-10 shrink-0 text-ink/30">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
                     <div className="flex-1 min-w-[200px]">
                       <div className="flex flex-wrap items-center gap-2">
                         <Link
                           href={`/marketplace/campaigns/${app.campaigns?.id}`}
-                          className="font-medium text-neutral-900 hover:text-violet-600 transition-colors"
+                          className="font-medium text-neutral-900 hover:text-primary transition-colors underline-offset-4 decoration-primary/40 hover:underline"
                         >
                           {app.campaigns?.title ?? "—"}
                         </Link>
                         {app.campaigns?.niche && (
-                          <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">
+                          <span className="px-2 py-0.5 bg-primary-soft text-primary text-xs rounded-full">
                             {app.campaigns.niche}
                           </span>
                         )}
@@ -339,7 +442,7 @@ function InfluencerAnalytics() {
                       </p>
                     </div>
                     <span
-                      className={`relative group px-3 py-1 rounded-full text-xs font-medium ${
+                      className={`relative group rounded-full px-3 py-0.5 text-xs uppercase tracking-wider font-medium ${
                         app.status === "accepted"
                           ? "bg-green-100 text-green-700"
                           : app.status === "rejected"
@@ -349,11 +452,21 @@ function InfluencerAnalytics() {
                     >
                       {t(`appStatus.${app.status}`)}
                       {statusTooltip[app.status] && (
-                        <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 hidden group-hover:block bg-neutral-900 text-white text-xs font-normal rounded-lg px-2.5 py-1.5 w-48 text-center z-20 pointer-events-none">
+                        <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 hidden group-hover:block bg-neutral-900 text-white text-xs font-normal normal-case tracking-normal rounded-lg px-2.5 py-1.5 w-48 text-center z-20 pointer-events-none">
                           {statusTooltip[app.status]}
                         </span>
                       )}
                     </span>
+                    {app.status === "accepted" && (
+                      <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-green-600 text-green-600 uppercase tracking-widest">
+                        {tc("stampAccepted")}
+                      </span>
+                    )}
+                    {app.status === "rejected" && (
+                      <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-stone-400 text-stone-400 uppercase tracking-widest">
+                        {tc("stampDeclined")}
+                      </span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -363,7 +476,7 @@ function InfluencerAnalytics() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Content Performance */}
-          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border shadow-sm">
+          <div className="lg:col-span-2 bg-paper rounded-lg p-6 border">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold text-lg">{t("topPerformingContent")}</h3>
               <Button variant="ghost" size="sm">
@@ -376,7 +489,7 @@ function InfluencerAnalytics() {
               <p className="font-medium text-neutral-700 mb-1">{t("noDataYet")}</p>
               <p className="text-sm text-neutral-500 mb-6">{t("creatorEmptyDesc")}</p>
               <Link href="/ai-hub">
-                <Button className="bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 text-white">
+                <Button>
                   {t("creatorEmptyCta")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -387,9 +500,9 @@ function InfluencerAnalytics() {
           {/* Side Panel */}
           <div className="space-y-6">
             {/* {t("verificationProgress")} */}
-            <div className="bg-white rounded-2xl p-6 border shadow-sm">
+            <div className="bg-paper rounded-lg p-6 border">
               <div className="flex items-center gap-2 mb-4">
-                <Shield className="w-5 h-5 text-violet-600" />
+                <Shield className="w-5 h-5 text-primary" />
                 <h3 className="font-bold text-lg">{t("verificationProgress")}</h3>
               </div>
               <div className="space-y-3">
@@ -405,10 +518,10 @@ function InfluencerAnalytics() {
             </div>
 
             {/* {t("myRentals")} */}
-            <div className="bg-white rounded-2xl p-6 border shadow-sm">
+            <div className="bg-paper rounded-lg p-6 border">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Package className="w-5 h-5 text-orange-500" />
+                  <Package className="w-5 h-5 text-primary" />
                   <h3 className="font-bold text-lg">{t("myRentals")}</h3>
                 </div>
               </div>
@@ -423,13 +536,13 @@ function InfluencerAnalytics() {
             </div>
 
             {/* {t("savedCampaigns")} */}
-            <div className="bg-white rounded-2xl p-6 border shadow-sm">
+            <div className="bg-paper rounded-lg p-6 border">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Bookmark className="w-5 h-5 text-pink-500" />
+                  <Bookmark className="w-5 h-5 text-primary" />
                   <h3 className="font-bold text-lg">{t("savedCampaigns")}</h3>
                 </div>
-                <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">{savedCampaigns.length}</span>
+                <span className="px-2 py-0.5 bg-primary-soft text-primary text-xs rounded-full">{savedCampaigns.length}</span>
               </div>
               {savedCampaigns.length === 0 ? (
                 <p className="text-sm text-neutral-500">{t("noSavedCampaigns")}</p>
@@ -450,28 +563,28 @@ function InfluencerAnalytics() {
             </div>
 
             {/* Brand Deals */}
-            <div className="bg-white rounded-2xl p-6 border shadow-sm">
+            <div className="bg-paper rounded-lg p-6 border">
               <h3 className="font-bold text-lg mb-4">{t("recentBrandDeals")}</h3>
               <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
             </div>
 
             {/* Audience Insights */}
-            <div className="bg-white rounded-2xl p-6 border shadow-sm">
+            <div className="bg-paper rounded-lg p-6 border">
               <h3 className="font-bold text-lg mb-4">{t("audienceInsights")}</h3>
               <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
             </div>
 
             {/* {t("creatorScore")} */}
-            <div className="bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl p-6 text-white">
+            <div className="bg-primary text-cream rounded-lg p-6">
               <div className="flex items-center gap-2 mb-2">
                 <Award className="w-5 h-5" />
                 <h3 className="font-bold">{t("creatorScore")}</h3>
               </div>
               <div className="flex items-end gap-2">
                 <p className="text-5xl font-bold">—</p>
-                <p className="text-white/80 mb-2">/100</p>
+                <p className="text-cream/80 mb-2">/100</p>
               </div>
-              <p className="text-sm text-white/90 mt-2">
+              <p className="text-sm text-cream/90 mt-2">
                 {t("noDataYet")}
               </p>
             </div>
@@ -482,163 +595,353 @@ function InfluencerAnalytics() {
 
         {activeTab === "gear" && (
           <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">{t("myGear")}</h2>
-              <Button onClick={() => setShowAddModal(true)} className="bg-gradient-to-r from-orange-500 to-amber-500">
-                <Plus className="w-4 h-4 mr-2" />
-                {t("addGear")}
-              </Button>
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-2xl font-bold">{t("gearTab.myGearTitle")}</h2>
+              <Link href="/equipment/new">
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" />
+                  {t("addGear")}
+                </Button>
+              </Link>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-white rounded-2xl p-5 border shadow-sm text-center">
-                <p className="text-3xl font-bold text-neutral-900">{userGear.length}</p>
+              <div className="bg-paper rounded-lg p-5 border text-center">
+                <p className="text-3xl font-bold text-neutral-900">{myGears.length}</p>
                 <p className="text-sm text-neutral-500">{t("totalListings")}</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 border shadow-sm text-center">
-                <p className="text-3xl font-bold text-green-600">{userGear.filter(g => g.available).length}</p>
+              <div className="bg-paper rounded-lg p-5 border text-center">
+                <p className="text-3xl font-bold text-green-600">{myGears.filter(g => g.status === "available").length}</p>
                 <p className="text-sm text-neutral-500">{t("available")}</p>
               </div>
-              <div className="bg-white rounded-2xl p-5 border shadow-sm text-center">
+              <div className="bg-paper rounded-lg p-5 border text-center">
                 <p className="text-3xl font-bold text-neutral-400">—</p>
                 <p className="text-sm text-neutral-500">{t("lifetimeEarnings")}</p>
               </div>
             </div>
-            {userGear.length === 0 ? (
-              <div className="bg-white rounded-2xl p-12 border shadow-sm text-center">
-                <Camera className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
-                <h3 className="text-xl font-bold mb-2">{t("noGearListed")}</h3>
-                <p className="text-neutral-600 mb-6">{t("listSubtitle")}</p>
-                <Button onClick={() => setShowAddModal(true)} className="bg-gradient-to-r from-orange-500 to-amber-500">
-                  <Plus className="w-4 h-4 mr-2" />
-                  {t("listFirstItem")}
-                </Button>
-              </div>
-            ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {userGear.map((item) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-2xl p-5 border shadow-sm"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="text-4xl">{item.image}</div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => toggleAvailability(item.id)}
-                          className="p-1 hover:bg-gray-100 rounded-lg"
-                          title={item.available ? t("markUnavailable") : t("markAvailable")}
+
+            <div className="bg-paper rounded-lg p-6 border">
+              {myGearsLoading ? (
+                <div className="space-y-3">
+                  <ListRowSkeleton />
+                  <ListRowSkeleton />
+                </div>
+              ) : myGears.length === 0 ? (
+                <div className="py-12 text-center relative">
+                  <span aria-hidden className="absolute top-0 right-0 font-quote text-6xl text-ink/10 leading-none select-none">
+                    &ldquo;
+                  </span>
+                  <Camera className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
+                  <p className="text-neutral-600 mb-6">{t("gearTab.emptyGear")}</p>
+                  <Link href="/equipment/new">
+                    <Button>
+                      <Plus className="w-4 h-4 mr-2" />
+                      {t("listFirstItem")}
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {myGears.map((gear) => (
+                    <div
+                      key={gear.id}
+                      className="flex flex-wrap items-center gap-3 p-3 rounded-xl border border-line relative"
+                    >
+                      <div className="flex-1 min-w-[200px]">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Link
+                            href={`/equipment/${gear.id}`}
+                            className="font-medium text-neutral-900 hover:text-primary transition-colors truncate"
+                          >
+                            {gear.title}
+                          </Link>
+                          <span className="px-2 py-0.5 bg-primary-soft text-primary text-xs rounded-full">
+                            {te(`category.${gear.category}`)}
+                          </span>
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-xs font-medium ${gearStatusBadgeClass(gear.status)}`}
+                          >
+                            {te(`status.${gear.status}`)}
+                          </span>
+                          {gear.status === "rented" && (
+                            <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-green-600 text-green-600 uppercase tracking-widest">
+                              {te("stampRentedOut")}
+                            </span>
+                          )}
+                          {gear.status === "unlisted" && (
+                            <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-stone-400 text-stone-400 uppercase tracking-widest">
+                              {te("stampOffShelf")}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-neutral-500 truncate">
+                          ${gear.price_per_day != null ? gear.price_per_day : "—"}{" "}
+                          {te("perDay")} • {formatDate(gear.created_at, locale)}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {gear.status !== "rented" && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => toggleGearStatus(gear)}
+                          >
+                            {gear.status === "available"
+                              ? t("gearTab.unlistAction")
+                              : t("gearTab.listAction")}
+                          </Button>
+                        )}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openEditModal(gear)}
                         >
-                          {item.available ? <ToggleRight className="w-5 h-5 text-green-500" /> : <ToggleLeft className="w-5 h-5 text-gray-400" />}
-                        </button>
-                        <button
-                          onClick={() => setGearToDelete(item.id)}
-                          className="p-1 hover:bg-red-50 rounded-lg text-red-500"
-                          title={tc("delete")}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                          <Pencil className="w-4 h-4 mr-1" />
+                          {t("gearTab.editAction")}
+                        </Button>
                       </div>
                     </div>
-                    <h3 className="font-bold text-lg">{item.name}</h3>
-                    <p className="text-sm text-neutral-500 mb-2">{item.condition}</p>
-                    <p className="text-sm text-neutral-600 line-clamp-2 mb-3">{item.description}</p>
-                    <div className="flex items-center justify-between pt-3 border-t">
-                      <p className="text-xl font-bold text-neutral-900">${item.dailyRate}<span className="text-xs font-normal text-neutral-500">{t("perDay")}</span></p>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${item.available ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
-                        {item.available ? t("available") : t("unavailable")}
-                      </span>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
 
-            {/* {t("myRentals")} in Gear Tab */}
-            <div className="bg-white rounded-2xl p-6 border shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Package className="w-5 h-5 text-orange-500" />
-                  <h3 className="font-bold text-lg">{t("gearIRented")}</h3>
-                </div>
-                <Link href="/equipment">
-                  <Button variant="outline" size="sm">{t("browseGear")}</Button>
-                </Link>
+            {/* Rental Records */}
+            <div className="bg-paper rounded-lg p-6 border">
+              <h3 className="font-bold text-lg mb-4">{t("gearTab.rentalRecordsTitle")}</h3>
+
+              <div className="mb-6">
+                <h4 className="text-sm font-semibold text-neutral-700 mb-3">
+                  {t("gearTab.rentingIn")}
+                </h4>
+                {rentalsLoading ? (
+                  <div className="space-y-3">
+                    <ListRowSkeleton />
+                    <ListRowSkeleton />
+                  </div>
+                ) : rentingIn.length === 0 ? (
+                  <p className="text-sm text-neutral-500">{t("gearTab.emptyRentingIn")}</p>
+                ) : (
+                  <div className="space-y-3">
+                    {rentingIn.map((req) => (
+                      <div
+                        key={req.id}
+                        className="flex flex-wrap items-center gap-3 p-3 rounded-xl border border-line"
+                      >
+                        <div className="flex-1 min-w-[200px]">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Link
+                              href={req.gears ? `/equipment/${req.gears.id}` : "/equipment"}
+                              className="font-medium text-neutral-900 hover:text-primary transition-colors truncate"
+                            >
+                              {req.gears?.title ?? "—"}
+                            </Link>
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${rentalStatusBadgeClass(req.status)}`}
+                            >
+                              {te(`status.${req.status}`)}
+                            </span>
+                            {req.status === "pending" && (
+                              <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-accent text-accent uppercase tracking-widest">
+                                {te("stampAwaitingOwner")}
+                              </span>
+                            )}
+                            {req.status === "accepted" && (
+                              <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-green-600 text-green-600 uppercase tracking-widest">
+                                {te("stampApproved")}
+                              </span>
+                            )}
+                            {(req.status === "rejected" || req.status === "returned") && (
+                              <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-stone-400 text-stone-400 uppercase tracking-widest">
+                                {te("stampDeclined")}
+                              </span>
+                            )}
+                            {(req.status === "completed") && (
+                              <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-primary text-primary uppercase tracking-widest">
+                                {te("stampCompleted")}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-neutral-500">
+                            {t("gearTab.dateRange", {
+                              start: formatDate(req.start_date, locale),
+                              end: formatDate(req.end_date, locale),
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              <div className="grid md:grid-cols-3 gap-4">
-                <div className="md:col-span-3 p-4 bg-gray-50 rounded-xl text-sm text-neutral-500 text-center">
-                  {t("noDataYet")}
-                </div>
+
+              <div>
+                <h4 className="text-sm font-semibold text-neutral-700 mb-3">
+                  {t("gearTab.rentingOut")}
+                </h4>
+                {rentalsLoading ? (
+                  <div className="space-y-3">
+                    <ListRowSkeleton />
+                    <ListRowSkeleton />
+                  </div>
+                ) : rentingOut.length === 0 ? (
+                  <p className="text-sm text-neutral-500">{t("gearTab.emptyRentingOut")}</p>
+                ) : (
+                  <div className="space-y-3">
+                    {rentingOut.map((req) => (
+                      <div
+                        key={req.id}
+                        className="flex flex-wrap items-center gap-3 p-3 rounded-xl border border-line"
+                      >
+                        <div className="flex-1 min-w-[200px]">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Link
+                              href={req.gears ? `/equipment/${req.gears.id}` : "/equipment"}
+                              className="font-medium text-neutral-900 hover:text-primary transition-colors truncate"
+                            >
+                              {req.gears?.title ?? "—"}
+                            </Link>
+                            <span
+                              className={`px-2 py-0.5 rounded-full text-xs font-medium ${rentalStatusBadgeClass(req.status)}`}
+                            >
+                              {te(`status.${req.status}`)}
+                            </span>
+                            {req.status === "pending" && (
+                              <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-accent text-accent uppercase tracking-widest">
+                                {te("stampAwaitingOwner")}
+                              </span>
+                            )}
+                            {req.status === "accepted" && (
+                              <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-green-600 text-green-600 uppercase tracking-widest">
+                                {te("stampApproved")}
+                              </span>
+                            )}
+                            {(req.status === "rejected" || req.status === "returned") && (
+                              <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-stone-400 text-stone-400 uppercase tracking-widest">
+                                {te("stampDeclined")}
+                              </span>
+                            )}
+                            {(req.status === "completed") && (
+                              <span className="text-[9px] px-1.5 py-0 rounded-full border border-dashed border-primary text-primary uppercase tracking-widest">
+                                {te("stampCompleted")}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-neutral-500 truncate">
+                            {req.profiles?.name ?? "—"} •{" "}
+                            {t("gearTab.dateRange", {
+                              start: formatDate(req.start_date, locale),
+                              end: formatDate(req.end_date, locale),
+                            })}
+                          </p>
+                          {req.message && (
+                            <p className="text-xs text-neutral-500 truncate mt-0.5">
+                              {req.message}
+                            </p>
+                          )}
+                        </div>
+                        {req.status === "pending" && (
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Button
+                              size="sm"
+                              isLoading={actionLoading === req.id}
+                              disabled={actionLoading !== null}
+                              onClick={() => handleRequestStatus(req.id, "accepted")}
+                              className="bg-green-500 text-white hover:bg-green-600"
+                            >
+                              <CheckCircle className="w-4 h-4 mr-1" />
+                              {t("accept")}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={actionLoading !== null}
+                              onClick={() => setRejectTarget(req.id)}
+                              className="text-neutral-600"
+                            >
+                              <XCircle className="w-4 h-4 mr-1" />
+                              {t("reject")}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* Add Gear Modal */}
-        {showAddModal && (
+        {/* Edit Gear Modal */}
+        {editTarget && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-2xl p-6 w-full max-w-md"
+              className="bg-paper rounded-lg p-6 w-full max-w-md"
             >
-              <h3 className="text-xl font-bold mb-4">{t("listNewGear")}</h3>
+              <h3 className="text-xl font-bold mb-4">{t("gearTab.editModalTitle")}</h3>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-1">
-                    {t("itemName")} <span className="text-red-500">*</span>
+                    {t("gearTab.fieldTitle")} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    value={newGear.name}
-                    onChange={(e) => setNewGear({ ...newGear, name: e.target.value })}
-                    placeholder={t("gearNamePlaceholder")}
-                    className="w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className={`w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary ${
+                      titleError ? "border-red-400" : ""
+                    }`}
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">
-                    {t("dailyRate")} <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    value={newGear.dailyRate}
-                    onChange={(e) => setNewGear({ ...newGear, dailyRate: e.target.value })}
-                    placeholder="75"
-                    className="w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  />
-                  {newGear.dailyRate && !(parseFloat(newGear.dailyRate) > 0) && (
-                    <p className="text-xs text-red-500 mt-1">{t("rateInvalid")}</p>
+                  {titleError && (
+                    <p className="text-xs text-red-500 mt-1">{titleError}</p>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">{t("conditionLabel")}</label>
-                  <select
-                    value={newGear.condition}
-                    onChange={(e) => setNewGear({ ...newGear, condition: e.target.value })}
-                    className="w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500"
-                  >
-                    <option value="Excellent">{t("conditionOptions.excellent")}</option>
-                    <option value="Good">{t("conditionOptions.good")}</option>
-                    <option value="Fair">{t("conditionOptions.fair")}</option>
-                  </select>
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    {t("gearTab.fieldPrice")} <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    value={editPrice}
+                    onChange={(e) => setEditPrice(e.target.value)}
+                    className={`w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary ${
+                      priceError ? "border-red-400" : ""
+                    }`}
+                  />
+                  {priceError && (
+                    <p className="text-xs text-red-500 mt-1">{priceError}</p>
+                  )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">{t("description")}</label>
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">
+                    {t("gearTab.fieldDescription")}
+                  </label>
                   <textarea
-                    value={newGear.description}
-                    onChange={(e) => setNewGear({ ...newGear, description: e.target.value })}
-                    placeholder={t("gearDescPlaceholder")}
-                    className="w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
+                    value={editDesc}
+                    onChange={(e) => setEditDesc(e.target.value)}
                     rows={3}
+                    className="w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                   />
                 </div>
                 <div className="flex gap-3 pt-2">
-                  <Button variant="outline" className="flex-1" onClick={() => setShowAddModal(false)}>{tc("cancel")}</Button>
-                  <Button className="flex-1 bg-gradient-to-r from-orange-500 to-amber-500" onClick={handleAddGear} disabled={!newGear.name || !newGear.dailyRate || !(parseFloat(newGear.dailyRate) > 0)}>
-                    {t("listGear")}
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setEditTarget(null)}
+                    disabled={editSaving}
+                  >
+                    {tc("cancel")}
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    isLoading={editSaving}
+                    disabled={!editValid}
+                    onClick={saveGearEdit}
+                  >
+                    {t("gearTab.save")}
                   </Button>
                 </div>
               </div>
@@ -646,20 +949,17 @@ function InfluencerAnalytics() {
           </div>
         )}
 
-        {/* Delete Gear Confirm */}
+        {/* Reject Rental Request Confirm */}
         <ConfirmDialog
-          open={gearToDelete !== null}
+          open={rejectTarget !== null}
           danger
-          title={t("deleteGearTitle")}
-          description={t("deleteGearDesc")}
+          title={t("gearTab.confirmRejectTitle")}
+          description={t("gearTab.confirmRejectDesc")}
           onConfirm={() => {
-            if (gearToDelete) {
-              deleteGear(gearToDelete);
-              toast.success(tc("deletedToast"));
-            }
-            setGearToDelete(null);
+            if (rejectTarget) handleRequestStatus(rejectTarget, "rejected");
+            setRejectTarget(null);
           }}
-          onCancel={() => setGearToDelete(null)}
+          onCancel={() => setRejectTarget(null)}
         />
       </div>
     </main>

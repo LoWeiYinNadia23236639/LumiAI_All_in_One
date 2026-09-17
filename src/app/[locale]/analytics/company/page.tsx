@@ -124,11 +124,12 @@ function CompanyAnalytics() {
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
+            <span className="oval-label inline-block mb-3">{t("brandKicker")}</span>
             <h1 className="text-3xl font-bold text-neutral-900">{t("companyDashboard")}</h1>
             <p className="text-neutral-600">{t("trackCampaigns")}</p>
           </div>
@@ -136,7 +137,7 @@ function CompanyAnalytics() {
             <select 
               value={timeRange} 
               onChange={(e) => setTimeRange(e.target.value)}
-              className="px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="7d">{t("last7Days")}</option>
               <option value="30d">{t("last30Days")}</option>
@@ -156,18 +157,18 @@ function CompanyAnalytics() {
 
         {/* User Info Card */}
         {user && (
-          <div className="bg-gradient-to-r from-blue-500 to-violet-600 rounded-2xl p-6 text-white mb-8">
+          <div className="bg-primary text-cream rounded-lg p-6 mb-8">
             <div className="flex items-center gap-4">
-              <div className={`w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-2xl font-bold`}>
+              <div className={`w-16 h-16 rounded-lg bg-white/20 flex items-center justify-center text-2xl font-bold`}>
                 {user.avatar}
               </div>
               <div>
                 <h2 className="text-2xl font-bold">{t("welcomeBackName", { name: user.name })}</h2>
-                <p className="text-white/80">{user.email} • {t("companyAccount")}</p>
+                <p className="text-cream/80">{user.email} • {t("companyAccount")}</p>
               </div>
               <div className="ml-auto text-right">
                 <Link href="/marketplace/campaigns">
-                  <Button className="bg-white text-blue-600 hover:bg-gray-100">
+                  <Button className="bg-cream text-primary hover:bg-white">
                     <Briefcase className="w-4 h-4 mr-2" />
                     {t("postCampaign")}
                   </Button>
@@ -180,25 +181,25 @@ function CompanyAnalytics() {
         {/* Overview Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: t("activeCampaigns"), key: "campaigns", icon: Briefcase, color: "text-blue-500", bg: "bg-blue-50", href: "/marketplace/campaigns/new" },
-            { label: t("totalSpent"), key: "spent", icon: DollarSign, color: "text-green-500", bg: "bg-green-50", href: "/marketplace/campaigns/new" },
-            { label: t("roi"), key: "roi", icon: TrendingUp, color: "text-violet-500", bg: "bg-violet-50", href: "/marketplace/talent" },
-            { label: t("totalReach"), key: "reach", icon: Users, color: "text-orange-500", bg: "bg-orange-50", href: "/marketplace/talent" },
+            { label: t("activeCampaigns"), key: "campaigns", icon: Briefcase, color: "text-primary", bg: "bg-primary-soft", href: "/marketplace/campaigns/new" },
+            { label: t("totalSpent"), key: "spent", icon: DollarSign, color: "text-primary", bg: "bg-primary-soft", href: "/marketplace/campaigns/new" },
+            { label: t("roi"), key: "roi", icon: TrendingUp, color: "text-primary", bg: "bg-primary-soft", href: "/marketplace/talent" },
+            { label: t("totalReach"), key: "reach", icon: Users, color: "text-primary", bg: "bg-primary-soft", href: "/marketplace/talent" },
           ].map((stat) => {
             return (
               <motion.div
                 key={stat.key}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl p-5 border shadow-sm"
+                className="bg-paper rounded-lg p-5 border border-t border-ink/60 transition hover:-translate-y-0.5 hover:border-t-primary"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className={`w-10 h-10 rounded-xl ${stat.bg} flex items-center justify-center ${stat.color}`}>
                     <stat.icon className="w-5 h-5" />
                   </div>
-                  <p className="text-sm text-neutral-500">{stat.label}</p>
+                  <p className="uppercase tracking-widest text-xs text-ink-soft">{stat.label}</p>
                 </div>
-                <p className="text-sm font-medium text-neutral-500 mb-3">
+                <p className="font-quote text-xl text-neutral-700 mb-3">
                   {t(`statHintsBrand.${stat.key}.title`)}
                 </p>
                 <Link href={stat.href}>
@@ -213,7 +214,7 @@ function CompanyAnalytics() {
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Active Campaigns */}
-          <div className="lg:col-span-2 bg-white rounded-2xl p-6 border shadow-sm">
+          <div className="lg:col-span-2 bg-paper rounded-lg p-6 border">
             <div className="flex items-center justify-between mb-6">
               <h3 className="font-bold text-lg">{t("activeCampaigns")}</h3>
               <Button variant="ghost" size="sm">
@@ -226,7 +227,7 @@ function CompanyAnalytics() {
               <p className="font-medium text-neutral-700 mb-1">{t("noDataYet")}</p>
               <p className="text-sm text-neutral-500 mb-6">{t("brandEmptyDesc")}</p>
               <Link href="/marketplace/campaigns/new">
-                <Button className="bg-gradient-to-r from-blue-500 to-violet-600 text-white">
+                <Button>
                   {t("brandEmptyCta")}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -237,9 +238,9 @@ function CompanyAnalytics() {
           {/* Side Panel */}
           <div className="space-y-6">
             {/* Verification Progress */}
-            <div className="bg-white rounded-2xl p-6 border shadow-sm">
+            <div className="bg-paper rounded-lg p-6 border">
               <div className="flex items-center gap-2 mb-4">
-                <Shield className="w-5 h-5 text-blue-600" />
+                <Shield className="w-5 h-5 text-primary" />
                 <h3 className="font-bold text-lg">{t("verificationProgress")}</h3>
               </div>
               <div className="space-y-3">
@@ -255,13 +256,13 @@ function CompanyAnalytics() {
             </div>
 
             {/* Saved Creators */}
-            <div className="bg-white rounded-2xl p-6 border shadow-sm">
+            <div className="bg-paper rounded-lg p-6 border">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Bookmark className="w-5 h-5 text-pink-500" />
+                  <Bookmark className="w-5 h-5 text-primary" />
                   <h3 className="font-bold text-lg">{t("savedCreators")}</h3>
                 </div>
-                <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">{savedCreators.length}</span>
+                <span className="px-2 py-0.5 bg-primary-soft text-primary text-xs rounded-full">{savedCreators.length}</span>
               </div>
               {savedCreators.length === 0 ? (
                 <p className="text-sm text-neutral-500">{t("noSavedCreators")}</p>
@@ -282,7 +283,7 @@ function CompanyAnalytics() {
             </div>
 
             {/* New Applications */}
-            <div className="bg-white rounded-2xl p-6 border shadow-sm">
+            <div className="bg-paper rounded-lg p-6 border">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-bold text-lg">{t("receivedAppsTitle")}</h3>
               </div>
@@ -293,78 +294,101 @@ function CompanyAnalytics() {
                   ))}
                 </div>
               ) : receivedApps.length === 0 ? (
-                <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
+                <div className="relative">
+                  <span aria-hidden className="absolute -top-2 right-0 font-quote text-6xl text-ink/10 leading-none select-none">
+                    &ldquo;
+                  </span>
+                  <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
+                </div>
               ) : (
-                <div className="space-y-3">
-                  {receivedApps.map((app) => (
-                    <div key={app.id} className="p-3 rounded-xl border border-gray-100">
-                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                        <span className="font-medium text-sm">{app.creatorName}</span>
-                        {app.creatorNiche && (
-                          <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">
-                            {app.creatorNiche}
-                          </span>
-                        )}
-                        {app.creatorFollowers != null && (
-                          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
-                            {t("followersBadge", { count: app.creatorFollowers.toLocaleString() })}
-                          </span>
-                        )}
-                        <span
-                          className={`relative group px-2 py-0.5 rounded-full text-xs font-medium ${
-                            app.status === "accepted"
-                              ? "bg-green-100 text-green-700"
-                              : app.status === "rejected"
-                                ? "bg-neutral-200 text-neutral-500"
-                                : "bg-yellow-100 text-yellow-700"
-                          }`}
-                        >
-                          {t(`appStatus.${app.status}`)}
-                          {statusTooltip[app.status] && (
-                            <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 hidden group-hover:block bg-neutral-900 text-white text-xs font-normal rounded-lg px-2.5 py-1.5 w-48 text-center z-20 pointer-events-none">
-                              {statusTooltip[app.status]}
+                <div>
+                  {receivedApps.map((app, i) => (
+                    <div
+                      key={app.id}
+                      className={`flex gap-3 py-3 ${i > 0 ? "border-t border-line" : ""}`}
+                    >
+                      <span className="font-quote w-10 shrink-0 text-ink/30">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                          <span className="font-medium text-sm">{app.creatorName}</span>
+                          {app.creatorNiche && (
+                            <span className="px-2 py-0.5 bg-primary-soft text-primary text-xs rounded-full">
+                              {app.creatorNiche}
                             </span>
                           )}
-                        </span>
-                      </div>
-                      <Link
-                        href={`/marketplace/campaigns/${app.campaignId}`}
-                        className="text-xs text-blue-600 hover:underline"
-                      >
-                        {app.campaignTitle}
-                      </Link>
-                      {app.message && (
-                        <p className="text-xs text-neutral-600 mt-1.5 line-clamp-3 whitespace-pre-line">
-                          {app.message}
-                        </p>
-                      )}
-                      <p className="text-xs text-neutral-400 mt-1">
-                        {formatDate(app.created_at, locale)} · {formatRelativeTime(app.created_at, locale)}
-                      </p>
-                      {app.status === "pending" && (
-                        <div className="flex gap-2 mt-2">
-                          <Button
-                            size="sm"
-                            isLoading={actionLoading === app.id}
-                            disabled={actionLoading !== null}
-                            onClick={() => handleStatusUpdate(app.id, "accepted")}
-                            className="bg-green-500 text-white hover:bg-green-600 h-7 px-3 text-xs"
+                          {app.creatorFollowers != null && (
+                            <span className="px-2 py-0.5 bg-primary-soft text-primary text-xs rounded-full">
+                              {t("followersBadge", { count: app.creatorFollowers.toLocaleString() })}
+                            </span>
+                          )}
+                          <span
+                            className={`relative group rounded-full px-3 py-0.5 text-xs uppercase tracking-wider font-medium ${
+                              app.status === "accepted"
+                                ? "bg-green-100 text-green-700"
+                                : app.status === "rejected"
+                                  ? "bg-neutral-200 text-neutral-500"
+                                  : "bg-yellow-100 text-yellow-700"
+                            }`}
                           >
-                            <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
-                            {t("accept")}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            disabled={actionLoading !== null}
-                            onClick={() => setRejectAppId(app.id)}
-                            className="text-neutral-600 h-7 px-3 text-xs"
-                          >
-                            <XCircle className="w-3.5 h-3.5 mr-1" />
-                            {t("reject")}
-                          </Button>
+                            {t(`appStatus.${app.status}`)}
+                            {statusTooltip[app.status] && (
+                              <span className="absolute top-full left-1/2 -translate-x-1/2 mt-1.5 hidden group-hover:block bg-neutral-900 text-white text-xs font-normal normal-case tracking-normal rounded-lg px-2.5 py-1.5 w-48 text-center z-20 pointer-events-none">
+                                {statusTooltip[app.status]}
+                              </span>
+                            )}
+                          </span>
+                          {app.status === "accepted" && (
+                            <span className="inline-flex items-center rounded-full border border-dashed border-green-600 text-green-600 px-1.5 py-0 text-[9px] uppercase tracking-widest -rotate-3">
+                              {tc("stampAccepted")}
+                            </span>
+                          )}
+                          {app.status === "rejected" && (
+                            <span className="inline-flex items-center rounded-full border border-dashed border-stone-400 text-stone-400 px-1.5 py-0 text-[9px] uppercase tracking-widest -rotate-3">
+                              {tc("stampDeclined")}
+                            </span>
+                          )}
                         </div>
-                      )}
+                        <Link
+                          href={`/marketplace/campaigns/${app.campaignId}`}
+                          className="text-xs text-primary underline-offset-4 decoration-primary/40 hover:underline"
+                        >
+                          {app.campaignTitle}
+                        </Link>
+                        {app.message && (
+                          <p className="text-xs text-neutral-600 mt-1.5 line-clamp-3 whitespace-pre-line">
+                            {app.message}
+                          </p>
+                        )}
+                        <p className="text-xs text-neutral-400 mt-1">
+                          {formatDate(app.created_at, locale)} · {formatRelativeTime(app.created_at, locale)}
+                        </p>
+                        {app.status === "pending" && (
+                          <div className="flex gap-2 mt-2">
+                            <Button
+                              size="sm"
+                              isLoading={actionLoading === app.id}
+                              disabled={actionLoading !== null}
+                              onClick={() => handleStatusUpdate(app.id, "accepted")}
+                              className="bg-green-500 text-white hover:bg-green-600 h-7 px-3 text-xs"
+                            >
+                              <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                              {t("accept")}
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              disabled={actionLoading !== null}
+                              onClick={() => setRejectAppId(app.id)}
+                              className="text-neutral-600 h-7 px-3 text-xs"
+                            >
+                              <XCircle className="w-3.5 h-3.5 mr-1" />
+                              {t("reject")}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -372,18 +396,18 @@ function CompanyAnalytics() {
             </div>
 
             {/* Top Performing Creators */}
-            <div className="bg-white rounded-2xl p-6 border shadow-sm">
+            <div className="bg-paper rounded-lg p-6 border">
               <h3 className="font-bold text-lg mb-4">{t("topPerformers")}</h3>
               <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
             </div>
 
             {/* AI Recommendations */}
-            <div className="bg-gradient-to-br from-blue-500 to-violet-600 rounded-2xl p-6 text-white">
+            <div className="bg-primary text-cream rounded-lg p-6">
               <div className="flex items-center gap-2 mb-3">
                 <Zap className="w-5 h-5" />
                 <h3 className="font-bold">{t("aiSuggestions")}</h3>
               </div>
-              <p className="text-sm text-white/80">{t("noDataYet")}</p>
+              <p className="text-sm text-cream/80">{t("noDataYet")}</p>
             </div>
           </div>
         </div>

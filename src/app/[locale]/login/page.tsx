@@ -68,7 +68,7 @@ function LoginForm() {
               required
               autoComplete="email"
               placeholder={t("emailPlaceholder")}
-              className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             />
@@ -84,7 +84,7 @@ function LoginForm() {
               required
               autoComplete="current-password"
               placeholder="••••••••"
-              className="w-full pl-12 pr-12 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full pl-12 pr-12 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
@@ -99,7 +99,7 @@ function LoginForm() {
         </div>
 
         <div className="flex items-center justify-end text-sm">
-          <Link href="/forgot-password" className="text-violet-600 hover:underline">
+          <Link href="/forgot-password" className="text-primary hover:underline">
             {t("forgotPassword")}
           </Link>
         </div>
@@ -107,7 +107,7 @@ function LoginForm() {
         <Button
           type="submit"
           disabled={submitting}
-          className="w-full bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 text-white py-3 h-auto text-lg"
+          className="w-full py-3 h-auto text-lg"
         >
           {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : t("signIn")}
           {!submitting && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -116,7 +116,7 @@ function LoginForm() {
 
       <p className="mt-6 text-center text-sm text-neutral-600">
         {t("noAccount")}{" "}
-        <Link href="/signup" className="text-violet-600 hover:underline font-medium">
+        <Link href="/signup" className="text-primary hover:underline font-medium">
           {t("createAccount")}
         </Link>
       </p>
@@ -131,7 +131,7 @@ export default function LoginPage() {
       <Suspense
         fallback={
           <div className="min-h-[300px] flex items-center justify-center">
-            <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         }
       >

@@ -197,11 +197,11 @@ function TalentPage() {
   });
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-100 to-purple-100 text-violet-700 text-sm font-semibold mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-soft text-primary text-sm font-semibold mb-4">
             <Users className="w-4 h-4" />
             {t("discoverCreators")}
           </div>
@@ -223,9 +223,9 @@ function TalentPage() {
             { value: "95%", label: t("statAvgEngagement"), icon: BarChart3 },
             { value: "4.8", label: t("statCreatorRating"), icon: Star },
           ].map((stat, i) => (
-            <div key={i} className="bg-white rounded-xl p-4 border border-gray-100 shadow-sm flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
-                <stat.icon className="w-5 h-5 text-violet-600" />
+            <div key={i} className="bg-paper rounded-lg p-4 border border-line flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary-soft flex items-center justify-center">
+                <stat.icon className="w-5 h-5 text-primary" />
               </div>
               <div>
                 <p className="text-xl font-bold text-neutral-900">{stat.value}</p>
@@ -236,14 +236,14 @@ function TalentPage() {
         </div>
 
         {/* Search & Filters */}
-        <div className="bg-white rounded-2xl shadow-sm border p-6 mb-8">
+        <div className="bg-paper rounded-lg border border-line p-6 mb-8">
           <div className="flex gap-4 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
               <input 
                 type="text"
                 placeholder={t("searchCreatorsPlaceholder")}
-                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -261,8 +261,8 @@ function TalentPage() {
                 onClick={() => setSelectedNiche(niche.value)}
                 className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                   selectedNiche === niche.value
-                    ? "bg-violet-500 text-white"
-                    : "bg-neutral-100 text-neutral-700 hover:bg-violet-100"
+                    ? "bg-primary text-cream"
+                    : "bg-neutral-100 text-neutral-700 hover:bg-primary-soft"
                 }`}
               >
                 {niche.label}
@@ -279,12 +279,12 @@ function TalentPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="bg-white rounded-2xl p-6 border shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group"
+              className="bg-paper rounded-lg p-6 border border-line hover:-translate-y-1 transition-all group"
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className={`w-14 h-14 rounded-full bg-gradient-to-br ${influencer.avatarColor} flex items-center justify-center text-white text-lg font-bold`}>
+                  <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-cream text-lg font-bold">
                     {influencer.avatar}
                   </div>
                   <div>
@@ -307,7 +307,7 @@ function TalentPage() {
 
               {/* Niche & Location */}
               <div className="flex flex-wrap gap-2 mb-3">
-                <span className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-medium">
+                <span className="px-3 py-1 bg-primary-soft text-primary rounded-full text-xs font-medium">
                   {influencer.niche}
                 </span>
                 <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium flex items-center gap-1">
@@ -321,16 +321,16 @@ function TalentPage() {
 
               {/* Stats */}
               <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="text-center p-3 bg-gray-50 rounded-xl">
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <p className="font-bold text-neutral-900">{influencer.followers}</p>
                   <p className="text-xs text-neutral-500">{t("followers")}</p>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-xl">
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
                   <p className="font-bold text-green-600">{influencer.engagement}</p>
                   <p className="text-xs text-neutral-500">{t("engagement")}</p>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-xl">
-                  <p className="font-bold text-violet-600">{influencer.avgViews}</p>
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <p className="font-bold text-primary">{influencer.avgViews}</p>
                   <p className="text-xs text-neutral-500">{t("avgViews")}</p>
                 </div>
               </div>
@@ -340,11 +340,11 @@ function TalentPage() {
                 <p className="text-xs text-neutral-500 mb-2">{t("recentWork")}</p>
                 <div className="grid grid-cols-3 gap-2">
                   {influencer.recentWork.map((work, i) => (
-                    <div key={i} className="relative aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center group/work cursor-pointer overflow-hidden">
+                    <div key={i} className="relative aspect-square bg-gray-100 rounded-lg flex items-center justify-center group/work cursor-pointer overflow-hidden">
                       <span className="text-2xl">{work.thumbnail}</span>
                       {work.type === "video" && (
                         <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover/work:opacity-100 transition-opacity">
-                          <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center">
+                          <div className="w-8 h-8 rounded-full bg-paper/80 flex items-center justify-center">
                             <Play className="w-4 h-4 text-neutral-900 ml-0.5" />
                           </div>
                         </div>
@@ -373,7 +373,7 @@ function TalentPage() {
                   <p className="font-bold text-neutral-900">{influencer.rateRange}</p>
                 </div>
                 <Link href={`/creators/${influencer.id}`}>
-                  <Button size="sm" className="bg-gradient-to-r from-violet-500 to-purple-600 text-white">
+                  <Button size="sm">
                     <ArrowUpRight className="w-4 h-4 mr-1" />
                     {tCommon("moreInfo")}
                   </Button>

@@ -170,7 +170,13 @@
       "documentation": "使用說明",
       "tutorials": "教學",
       "contactSupport": "聯絡支援"
-    }
+    },
+    "marqueeItems": [
+      "AI 工具",
+      "品牌合作",
+      "器材租借",
+      "創作者優先"
+    ]
   },
   "auth": {
     "welcomeBack": "歡迎回來",
@@ -335,7 +341,15 @@
       "posted": "發布於",
       "deadline": "截止日期",
       "noDeadline": "彈性",
-      "viewDetails": "查看詳情"
+      "viewDetails": "查看詳情",
+      "marqueeItems": [
+        "品牌合作",
+        "協作機會",
+        "付費 Campaign"
+      ],
+      "newTag": "全新",
+      "kicker": "品牌市集",
+      "closingSoon": "就快截止"
     },
     "campaignDetail": {
       "backToList": "返回 Campaign 列表",
@@ -371,7 +385,15 @@
         "title": "拒絕呢個申請？",
         "description": "創作者會見到自己嘅申請被拒絕，呢個操作冇得還原。",
         "confirm": "拒絕"
-      }
+      },
+      "specBudget": "預算",
+      "specDeadline": "截止日期",
+      "specRequirements": "需求",
+      "specDeliverables": "交付內容",
+      "specPosted": "發布日期",
+      "stampUnderReview": "審核中",
+      "stampAccepted": "已接受 ✓",
+      "stampDeclined": "已婉拒"
     },
     "creatorFeatureMatching": "AI 智能活動配對",
     "creatorFeatureBudget": "預算範圍透明",
@@ -473,7 +495,7 @@
     "good": "良好",
     "includes": "包含",
     "availableDates": "可租日期",
-    "perDay": "每日",
+    "perDay": "/日",
     "bookNow": "立即預訂",
     "listedByYou": "由你刊登",
     "listYourGear": "刊登你的器材",
@@ -509,7 +531,119 @@
     "serviceFee": "服務費",
     "total": "總計",
     "typeMessage": "輸入訊息...",
-    "review": "評價"
+    "review": "評價",
+    "category": {
+      "all": "全部器材",
+      "camera": "相機",
+      "lighting": "燈光",
+      "audio": "收音",
+      "drone": "無人機",
+      "accessory": "配件"
+    },
+    "conditionValue": {
+      "Like New": "接近全新",
+      "Excellent": "極佳",
+      "Good": "良好",
+      "Fair": "一般"
+    },
+    "status": {
+      "available": "可租借",
+      "rented": "已租出",
+      "unlisted": "已下架",
+      "pending": "待處理",
+      "accepted": "已接受",
+      "rejected": "已拒絕",
+      "completed": "已完成",
+      "returned": "已歸還"
+    },
+    "listing": {
+      "searchPlaceholder": "搜尋器材、描述或地點……",
+      "emptyTitle": "仲未有器材",
+      "emptyDesc": "仲未有器材上架，做第一個上架嘅創作者啦！",
+      "by": "由 {name} 提供",
+      "moreItems": "仲有 {count} 項",
+      "newTag": "全新",
+      "noPrefix": "No.",
+      "newListingTag": "全新上架"
+    },
+    "newGear": {
+      "title": "上架你嘅器材",
+      "subtitle": "將你嘅器材租俾其他創作者",
+      "back": "返回",
+      "fieldTitle": "器材名稱",
+      "fieldCategory": "分類",
+      "fieldPrice": "每日租金（USD）",
+      "fieldDeposit": "按金（可留空）",
+      "fieldLocation": "地點",
+      "fieldCondition": "新舊程度",
+      "fieldDescription": "描述",
+      "fieldIncludes": "包括嘅配件",
+      "placeholderTitle": "例如：Sony A7IV 全片幅相機",
+      "categoryPlaceholder": "請選擇分類",
+      "conditionPlaceholder": "請選擇新舊程度",
+      "placeholderPrice": "例如：75",
+      "placeholderDeposit": "例如：200",
+      "placeholderLocation": "例如：香港九龍",
+      "placeholderDescription": "介紹你嘅器材、使用狀況同租用人要留意嘅事項……",
+      "placeholderIncludes": "淨機身\n電池 x2\n充電器\n相機袋",
+      "includesHelp": "每行一項。",
+      "publishSuccess": "器材上架成功！",
+      "errorGeneric": "出現錯誤，請再試一次。",
+      "errorMissingColumns": "資料庫未準備好，請先執行 Gear Renting 嘅資料庫 SQL。",
+      "submit": "上架器材",
+      "validation": {
+        "titleTooShort": "名稱至少要 3 個字",
+        "priceInvalid": "租金一定要大過 0 嘅數字",
+        "depositInvalid": "按金唔可以細過 0"
+      },
+      "kicker": "上架你的器材"
+    },
+    "detail": {
+      "ownerLabel": "物主",
+      "depositValue": "按金：${amount}",
+      "noDeposit": "唔收按金",
+      "posted": "上架於",
+      "noDescription": "未有描述。",
+      "yourGear": "呢件係你嘅器材——承租人會喺呢度提交申請，你可以接受或者拒絕。",
+      "requestsTitle": "租借申請",
+      "noRequests": "仲未有租借申請。",
+      "accept": "接受",
+      "reject": "拒絕",
+      "confirmReject": {
+        "title": "拒絕呢個申請？",
+        "description": "承租人會收到通知，知道申請被拒絕。",
+        "confirm": "拒絕"
+      }
+    },
+    "rentalForm": {
+      "startDate": "提取日期",
+      "endDate": "歸還日期",
+      "messageLabel": "留言俾物主（可留空）",
+      "messagePlaceholder": "介紹吓自己，講吓你拍緊咩……",
+      "submit": "送出申請",
+      "successTitle": "申請已送出！",
+      "errorAuth": "你嘅登入已過期，請重新登入。",
+      "errorGeneric": "送出申請失敗，請再試一次。",
+      "validation": {
+        "startPast": "開始日期唔可以係過去",
+        "endBeforeStart": "結束日期一定要等於或遲過開始日期"
+      }
+    },
+    "marqueeItems": [
+      "相機",
+      "燈光",
+      "收音",
+      "無人機",
+      "配件"
+    ],
+    "kicker": "租用器材",
+    "includesBoxTitle": "交機清單",
+    "stampAwaitingOwner": "等待物主回覆",
+    "stampApproved": "已批准 ✓",
+    "stampDeclined": "已婉拒",
+    "stampCompleted": "已完成",
+    "stampRentedOut": "已租出",
+    "stampOffShelf": "已下架"
   },
   "analytics": {
     "analytics": "數據分析",
@@ -588,6 +722,26 @@
     "receivedAppsTitle": "收到嘅申請",
     "followersBadge": "{count} followers",
     "reject": "拒絕",
+    "gearTab": {
+      "myGearTitle": "我嘅器材",
+      "emptyGear": "你仲未上架任何器材",
+      "listAction": "上架",
+      "unlistAction": "下架",
+      "editAction": "編輯",
+      "editModalTitle": "編輯器材",
+      "fieldTitle": "名稱",
+      "fieldPrice": "每日租金（USD）",
+      "fieldDescription": "描述",
+      "save": "儲存",
+      "rentalRecordsTitle": "租賃紀錄",
+      "rentingIn": "租入",
+      "rentingOut": "租出",
+      "emptyRentingIn": "你仲未租過任何器材",
+      "emptyRentingOut": "暫時未有人租你嘅器材",
+      "dateRange": "{start} – {end}",
+      "confirmRejectTitle": "拒絕呢個申請？",
+      "confirmRejectDesc": "租用人會收到通知，知道申請被拒絕。"
+    },
     "appStatus": {
       "pending": "等待中",
       "accepted": "已接受",
@@ -687,7 +841,9 @@
       "fair": "一般"
     },
     "gearNamePlaceholder": "例如：Sony A7IV",
-    "gearDescPlaceholder": "簡單描述呢件物品..."
+    "gearDescPlaceholder": "簡單描述呢件物品...",
+    "creatorKicker": "創作者儀表板",
+    "brandKicker": "品牌儀表板"
   },
   "admin": {
     "panelTitle": "管理員面板",
@@ -909,7 +1065,11 @@
       "description": "你想睇嘅頁面唔存在或者已經搬咗。",
       "backHome": "返回首頁",
       "goBack": "返回上一頁"
-    }
+    },
+    "noPrefix": "No.",
+    "stampUnderReview": "審核中",
+    "stampAccepted": "已接受 ✓",
+    "stampDeclined": "已婉拒"
   },
   "help": {
     "helpCenter": "說明中心",
@@ -983,7 +1143,11 @@
     "relatedArticles": "相關文章",
     "wasThisHelpful": "這篇文章有幫助嗎？",
     "yes": "有",
-    "no": "沒有"
+    "no": "沒有",
+    "kicker": "幫助中心",
+    "introQuote": "答案如剪報，整齊排好在編輯桌上。",
+    "faqQuote": "仲有疑問？下一個答案可能就屬於你。",
+    "ctaQuestion": "仲有其他問題？"
   },
   "adminOverview": {
     "title": "管理員總覽",
@@ -1507,6 +1671,18 @@
       "lightingLabel": "燈光：",
       "equipmentLabel": "器材：",
       "tipsLabel": "貼士："
-    }
+    },
+    "kicker": "AI 工具箱",
+    "marqueeItems": [
+      "分鏡 AI",
+      "文案生成器",
+      "品牌顧問"
+    ],
+    "stampGenerated": "AI ✦ 生成",
+    "storyboardKicker": "工具 01 — 分鏡",
+    "captionKicker": "工具 02 — 文案",
+    "advisorKicker": "工具 03 — 顧問",
+    "stepLabel": "步驟 {num}",
+    "archiveLabel": "紀錄"
   }
 }

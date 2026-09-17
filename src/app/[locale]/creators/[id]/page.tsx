@@ -158,7 +158,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
   const [showWorkModal, setShowWorkModal] = useState<typeof creatorData.portfolio[0] | null>(null);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4">
         {/* Back Link */}
         <Link href="/marketplace/talent">
@@ -169,12 +169,12 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
         </Link>
 
         {/* Profile Header */}
-        <div className="bg-white rounded-3xl shadow-xl border overflow-hidden mb-8">
-          <div className="h-48 bg-gradient-to-r from-pink-400 via-violet-500 to-purple-600" />
+        <div className="bg-paper rounded-xl border border-line overflow-hidden mb-8">
+          <div className="h-48 bg-primary" />
           
           <div className="px-8 pb-8">
             <div className="flex flex-col md:flex-row gap-6 -mt-16 mb-6">
-              <div className={`w-32 h-32 rounded-3xl bg-gradient-to-br ${creatorData.avatarColor} flex items-center justify-center text-white text-4xl font-bold border-4 border-white shadow-lg`}>
+              <div className="w-32 h-32 rounded-xl bg-primary flex items-center justify-center text-cream text-4xl font-bold border-4 border-paper">
                 {creatorData.avatar}
               </div>
               <div className="flex-1 pt-4 md:pt-16">
@@ -193,7 +193,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                     <MapPin className="w-4 h-4" />
                     {creatorData.location}
                   </span>
-                  <span className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-xs font-medium">
+                  <span className="px-3 py-1 bg-primary-soft text-primary rounded-full text-xs font-medium">
                     {creatorData.niche}
                   </span>
                 </div>
@@ -212,7 +212,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                     <Mail className="w-4 h-4 mr-2" />
                     {tc("contact")}
                   </Button>
-                  <Button className="bg-gradient-to-r from-violet-500 to-pink-500">
+                  <Button>
                     <MessageSquare className="w-4 h-4 mr-2" />
                     {t("sendOffer")}
                   </Button>
@@ -261,7 +261,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                 href={`https://${creatorData.website}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm hover:bg-violet-200 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-primary-soft text-primary rounded-full text-sm hover:bg-line hover:text-ink transition-colors"
               >
                 <ExternalLink className="w-3 h-3" />
                 {t("creatorProfile.website")}
@@ -283,7 +283,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
           {/* Main Content */}
           <div className="lg:col-span-2">
             {/* Tabs */}
-            <div className="flex gap-4 border-b mb-6">
+            <div className="flex gap-4 border-b border-line mb-6">
               {[
                 { id: "portfolio", label: t("portfolio"), icon: Grid3X3 },
                 { id: "work", label: t("previousWork"), icon: FileText },
@@ -294,7 +294,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
                     activeTab === tab.id
-                      ? "border-violet-500 text-violet-600"
+                      ? "border-primary text-primary"
                       : "border-transparent text-neutral-500 hover:text-neutral-700"
                   }`}
                 >
@@ -314,12 +314,12 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
                     onClick={() => setShowWorkModal(item)}
-                    className="group relative bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl aspect-square flex items-center justify-center cursor-pointer overflow-hidden hover:shadow-lg transition-all"
+                    className="group relative bg-gray-100 rounded-lg aspect-square flex items-center justify-center cursor-pointer overflow-hidden transition-all"
                   >
                     <span className="text-6xl group-hover:scale-110 transition-transform">{item.thumbnail}</span>
                     {item.type === "video" && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-12 h-12 rounded-full bg-white/80 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-paper/80 flex items-center justify-center">
                           <Play className="w-6 h-6 text-neutral-900 ml-1" />
                         </div>
                       </div>
@@ -342,7 +342,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
             {activeTab === "work" && (
               <div className="space-y-4">
                 {creatorData.previousWork.map((work, i) => (
-                  <div key={i} className="p-4 bg-white rounded-xl border shadow-sm">
+                  <div key={i} className="p-4 bg-paper rounded-lg border border-line">
                     <div className="flex items-center justify-between mb-2">
                       <div>
                         <h4 className="font-bold">{work.brand}</h4>
@@ -364,7 +364,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
             {activeTab === "audience" && (
               <div className="space-y-6">
                 {/* Demographics */}
-                <div className="bg-white rounded-xl border p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h4 className="font-bold mb-4">{t("demographics")}</h4>
                   <div className="mb-4">
                     <p className="text-sm text-neutral-500 mb-2">{t("creatorProfile.gender")}</p>
@@ -381,14 +381,14 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                 </div>
 
                 {/* Top Locations */}
-                <div className="bg-white rounded-xl border p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h4 className="font-bold mb-4">{t("topLocations")}</h4>
                   <div className="space-y-2">
                     {creatorData.audience.topLocations.map((loc, i) => (
                       <div key={i} className="flex items-center gap-2">
                         <div className="w-full bg-gray-100 rounded-full h-2">
                           <div 
-                            className="bg-violet-500 h-2 rounded-full"
+                            className="bg-primary h-2 rounded-full"
                             style={{ width: `${100 - i * 20}%` }}
                           />
                         </div>
@@ -399,11 +399,11 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                 </div>
 
                 {/* Interests */}
-                <div className="bg-white rounded-xl border p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h4 className="font-bold mb-4">{t("interests")}</h4>
                   <div className="flex flex-wrap gap-2">
                     {creatorData.audience.interests.map((interest, i) => (
-                      <span key={i} className="px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-sm">
+                      <span key={i} className="px-3 py-1 bg-primary-soft text-primary rounded-full text-sm">
                         {interest}
                       </span>
                     ))}
@@ -416,26 +416,26 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Contact Card */}
-            <div className="bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl p-6 text-white">
+            <div className="bg-primary rounded-lg p-6 text-cream">
               <h3 className="font-bold text-lg mb-2">{t("creatorProfile.contactTitle")}</h3>
-              <p className="text-white/90 text-sm mb-4">
+              <p className="text-cream/80 text-sm mb-4">
                 {t("creatorProfile.responseLine", { name: creatorData.name })}
               </p>
               <Button 
-                className="w-full bg-white text-violet-600 hover:bg-gray-100 mb-2"
+                className="w-full bg-cream text-primary hover:bg-cream/90 mb-2"
                 onClick={() => setShowContactModal(true)}
               >
                 <Mail className="w-4 h-4 mr-2" />
                 {t("creatorProfile.sendMessage")}
               </Button>
-              <Button variant="outline" className="w-full border-white text-white hover:bg-white/10">
+              <Button variant="outline" className="w-full border-cream text-cream hover:bg-cream/10">
                 <Bookmark className="w-4 h-4 mr-2" />
                 {t("creatorProfile.saveToList")}
               </Button>
             </div>
 
             {/* Reviews */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <h3 className="font-bold mb-4">{t("brandReviews")}</h3>
               <div className="space-y-4">
                 {creatorData.reviews.map((review, i) => (
@@ -459,7 +459,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
             </div>
 
             {/* Content Types */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <h3 className="font-bold mb-4">{t("contentTypes")}</h3>
               <div className="flex flex-wrap gap-2">
                 {creatorData.contentTypes.map((type, i) => (
@@ -479,7 +479,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
+            className="bg-paper rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-lg">{showWorkModal.title}</h3>
@@ -491,7 +491,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
               </button>
             </div>
             
-            <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl h-64 flex items-center justify-center mb-4">
+            <div className="bg-gray-100 rounded-lg h-64 flex items-center justify-center mb-4">
               <span className="text-8xl">{showWorkModal.thumbnail}</span>
             </div>
 
@@ -504,7 +504,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                 <Heart className="w-4 h-4" />
                 {t("creatorProfile.likesCount", { count: showWorkModal.likes })}
               </span>
-              <span className="px-2 py-1 bg-violet-100 text-violet-700 rounded text-xs">
+              <span className="px-2 py-1 bg-primary-soft text-primary rounded text-xs">
                 {showWorkModal.brand}
               </span>
             </div>
@@ -520,7 +520,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                 {tc("close")}
               </Button>
               <Button 
-                className="flex-1 bg-gradient-to-r from-violet-500 to-pink-500"
+                className="flex-1"
                 onClick={() => {
                   setShowWorkModal(null);
                   setShowContactModal(true);
@@ -539,7 +539,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl p-6 w-full max-w-md"
+            className="bg-paper rounded-lg p-6 w-full max-w-md"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-lg">{t("creatorProfile.contactName", { name: creatorData.name })}</h3>
@@ -559,14 +559,14 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
             <input
               type="text"
               placeholder={t("creatorProfile.companyNamePlaceholder")}
-              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-primary"
             />
             <input
               type="email"
               placeholder={t("creatorProfile.yourEmailPlaceholder")}
-              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
+              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-primary"
             />
-            <select className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-violet-500">
+            <select className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-primary">
               <option>{t("creatorProfile.campaignTypePlaceholder")}</option>
               <option>{t("creatorProfile.campaignTypes.productReview")}</option>
               <option>{t("creatorProfile.campaignTypes.sponsoredPost")}</option>
@@ -575,7 +575,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
             </select>
             <textarea
               placeholder={t("creatorProfile.campaignGoalsPlaceholder")}
-              className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none mb-4"
+              className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none mb-4"
             />
 
             <div className="flex gap-3">
@@ -587,7 +587,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                 {tc("cancel")}
               </Button>
               <Button 
-                className="flex-1 bg-gradient-to-r from-violet-500 to-pink-500"
+                className="flex-1"
                 onClick={() => {
                   setShowContactModal(false);
                   alert(`Message sent to ${creatorData.name}! They will respond within 24 hours.`);

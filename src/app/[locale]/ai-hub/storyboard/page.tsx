@@ -163,7 +163,7 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
 
   return (
     <AuthGuard>
-    <main className="min-h-screen bg-gradient-to-b from-violet-50/50 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16 overflow-x-clip">
       <div className="max-w-5xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -175,21 +175,21 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
           </Link>
         </div>
 
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm font-semibold mb-4">
-            <Image className="w-4 h-4" />
-            {t("storyboardPage.badge")}
+        <div className="text-center mb-10 relative overflow-hidden">
+          <span className="absolute pointer-events-none select-none font-quote text-[12rem] leading-none text-ink/5 -right-8 -top-10">STORYBOARD</span>
+          <div className="relative z-10">
+            <div className="inline-flex items-center rounded-full border border-primary/40 text-primary px-4 py-1 text-xs uppercase tracking-widest mb-4">{t("storyboardKicker")}</div>
+            <h1 className="text-4xl md:text-5xl text-ink mb-4">
+              {t("storyboardPage.titleBefore")} <span className="text-ink">{t("storyboardPage.titleHighlight")}</span>
+            </h1>
+            <p className="font-quote text-xl text-ink-soft max-w-2xl mx-auto">
+              {t("storyboardPage.subtitle")}
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
-            {t("storyboardPage.titleBefore")} <span className="gradient-text">{t("storyboardPage.titleHighlight")}</span>
-          </h1>
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            {t("storyboardPage.subtitle")}
-          </p>
         </div>
 
         {/* Examples Section */}
-        <div className="bg-white rounded-2xl border shadow-sm overflow-hidden mb-8">
+        <div className="bg-paper rounded-lg border overflow-hidden mb-8">
           <button 
             onClick={() => setShowExamples(!showExamples)}
             className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
@@ -207,14 +207,14 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
                 <button
                   key={i}
                   onClick={() => loadExample(example.prompt)}
-                  className="text-left p-4 bg-gray-50 rounded-xl hover:bg-violet-50 transition-colors group"
+                  className="text-left p-4 bg-gray-50 rounded-xl hover:bg-primary-soft transition-colors group"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <Play className="w-4 h-4 text-violet-500" />
-                    <span className="font-medium group-hover:text-violet-600">{example.title}</span>
+                    <Play className="w-4 h-4 text-primary" />
+                    <span className="font-medium group-hover:text-primary">{example.title}</span>
                   </div>
                   <p className="text-sm text-neutral-500 mb-2 line-clamp-2">{example.prompt}</p>
-                  <p className="text-xs text-violet-600">{example.description}</p>
+                  <p className="text-xs text-primary">{example.description}</p>
                 </button>
               ))}
             </div>
@@ -222,29 +222,31 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
         </div>
 
         {/* Input Section */}
-        <div className="bg-white rounded-2xl shadow-lg border p-6 mb-8">
+        <div className="bg-paper rounded-lg border p-6 mb-8">
           <div className="flex items-center justify-between mb-3">
-            <label className="block text-sm font-medium text-neutral-700">
-              {t("storyboardPage.ideaLabel")}
+            <label className="block mb-3">
+              <span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "01" })}</span>
+              <span className="uppercase tracking-widest text-xs text-ink-soft"> {t("storyboardPage.ideaLabel")}</span>
             </label>
-            <Button variant="ghost" size="sm" onClick={fillExample}>
+            <Button variant="ghost" size="sm" onClick={fillExample} className="rounded-full border border-dashed border-primary/40 text-primary text-xs hover:border-solid">
               <Sparkles className="w-4 h-4 mr-2" />
               {tc("exampleButton")}
             </Button>
           </div>
           <textarea
             placeholder={t("storyboardPage.ideaPlaceholder")}
-            className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none mb-4"
+            className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none mb-4"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
-          <label className="block text-sm font-medium text-neutral-700 mb-3">
-            {t("storyboardPage.moodLabel")}
+          <label className="block mb-3">
+            <span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "02" })}</span>
+            <span className="uppercase tracking-widest text-xs text-ink-soft"> {t("storyboardPage.moodLabel")}</span>
           </label>
           <input
             type="text"
             placeholder={t("storyboardPage.moodPlaceholder")}
-            className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 mb-4"
+            className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary mb-4"
             value={mood}
             onChange={(e) => setMood(e.target.value)}
           />
@@ -266,7 +268,6 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
             <Button 
               onClick={generate}
               disabled={loading || !prompt.trim()}
-              className="bg-gradient-to-r from-violet-500 to-purple-600"
             >
               {loading ? (
                 <>
@@ -281,38 +282,42 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
               )}
             </Button>
           </div>
-          {loading && <AiLoadingText toolKey="storyboard" className="mt-3" />}
+          {loading && <div className="mt-3 bg-primary-soft rounded-lg"><AiLoadingText toolKey="storyboard" /></div>}
         </div>
 
         {/* Result Section */}
         {result && (
+          <div className="relative">
+            <div className="absolute -top-3 right-4 pointer-events-none rotate-[8deg] rounded border-2 border-primary/50 text-primary/70 px-3 py-1 font-quote uppercase tracking-widest text-xs z-10">
+              {t("stampGenerated")}
+            </div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl shadow-lg border overflow-hidden"
+            className="bg-paper rounded-lg border-t-2 border-ink/40 overflow-hidden"
           >
             {/* Result Header */}
-            <div className="bg-gradient-to-r from-violet-500 to-purple-600 p-6 text-white flex items-center justify-between flex-wrap gap-4">
+            <div className="bg-primary p-6 text-cream flex items-center justify-between flex-wrap gap-4">
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles className="w-5 h-5" />
                   <span className="text-sm font-medium opacity-90">{t("storyboardPage.resultBadge")}</span>
                 </div>
                 <h2 className="text-2xl font-bold">{prompt.slice(0, 60)}</h2>
-                <p className="text-white/80 flex items-center gap-4 mt-1">
+                <p className="text-cream/80 flex items-center gap-4 mt-1">
                   <span>{t("storyboardPage.scenesCount", { count: result.scenes.length })}</span>
                 </p>
               </div>
               <div className="flex gap-2">
                 <Button 
                   variant="outline" 
-                  className="border-white text-white hover:bg-white/20"
+                  className="border-cream text-cream hover:bg-cream/20"
                   onClick={copyToClipboard}
                 >
                   {copied ? <CheckCircle className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
                   {copied ? t("storyboardPage.copiedExcl") : tc("copy")}
                 </Button>
-                <Button className="bg-white text-violet-600 hover:bg-gray-100">
+                <Button className="bg-cream text-primary hover:bg-paper">
                   <Download className="w-4 h-4 mr-2" />
                   {t("storyboardPage.exportLabel")}
                 </Button>
@@ -328,21 +333,21 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex gap-4 p-4 bg-violet-50 rounded-xl border border-violet-100"
+                    className="flex gap-4 p-4 bg-paper rounded-lg border-t-2 border-ink/40"
                   >
-                    <div className="w-12 h-12 rounded-xl bg-violet-500 text-white flex items-center justify-center font-bold text-lg flex-shrink-0">
-                      {scene.scene_number}
+                    <div className="font-quote text-3xl text-ink/30 leading-none pt-1 flex-shrink-0">
+                      {String(scene.scene_number).padStart(2, "0")}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <h3 className="font-semibold text-violet-900 mb-1">{scene.shot_angle}</h3>
+                        <h3 className="font-semibold text-ink mb-1">{scene.shot_angle}</h3>
                         <Button variant="ghost" size="sm" className="h-8 w-8 p-0 flex-shrink-0" onClick={() => copyScene(scene)} aria-label={tc("copy")}>
                           {copiedScene === scene.scene_number ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                         </Button>
                       </div>
                       <p className="text-neutral-700 mb-2">{scene.description}</p>
                       <div className="flex flex-wrap gap-3 text-sm">
-                        <span className="flex items-center gap-1 text-neutral-600 bg-white px-2 py-1 rounded-lg">
+                        <span className="flex items-center gap-1 text-neutral-600 bg-paper px-2 py-1 rounded-lg">
                           <Sun className="w-4 h-4 text-amber-500" />
                           {scene.lighting}
                         </span>
@@ -356,7 +361,7 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
               <div className="bg-gray-50 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-semibold flex items-center gap-2">
-                    <Camera className="w-5 h-5 text-violet-500" />
+                    <Camera className="w-5 h-5 text-primary" />
                     {t("storyboardPage.equipment")}
                   </h4>
                   <Button variant="ghost" size="sm" onClick={copyLists}>
@@ -366,7 +371,7 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {result.equipment_checklist.map((item, i) => (
-                    <span key={i} className="px-3 py-1.5 bg-white border rounded-lg text-sm">
+                    <span key={i} className="px-3 py-1.5 bg-paper border rounded-lg text-sm">
                       {item}
                     </span>
                   ))}
@@ -375,15 +380,15 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
 
               {/* Pro Tips */}
               {result.pro_tips.length > 0 && (
-                <div className="bg-violet-50 rounded-xl p-4 mt-4">
+                <div className="bg-primary-soft rounded-xl p-4 mt-4">
                   <h4 className="font-semibold mb-3 flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-violet-500" />
+                    <Sparkles className="w-5 h-5 text-primary" />
                     {t("storyboardPage.directorsTips")}
                   </h4>
                   <ul className="space-y-2">
                     {result.pro_tips.map((tip, i) => (
                       <li key={i} className="text-sm text-neutral-700 flex items-start gap-2">
-                        <span className="text-violet-400 mt-0.5">•</span>
+                        <span className="text-primary mt-0.5">•</span>
                         {tip}
                       </li>
                     ))}
@@ -392,21 +397,28 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
               )}
             </div>
           </motion.div>
+          </div>
         )}
 
         {/* History */}
         <div className="mt-8">
-          <AiGenerationHistory types={["storyboard"]} refreshKey={historyKey} />
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="uppercase tracking-widest text-xs text-ink-soft">{t("archiveLabel")} —</span>
+            <h3 className="font-quote text-lg text-ink">{t("historyTitle")}</h3>
+          </div>
+          <div className="[&_div:has(>h3)]:hidden">
+            <AiGenerationHistory types={["storyboard"]} refreshKey={historyKey} />
+          </div>
         </div>
 
         {/* Tips Section */}
-        <div className="mt-12 bg-white rounded-2xl border shadow-sm overflow-hidden">
+        <div className="mt-12 bg-paper rounded-lg border overflow-hidden">
           <button 
             onClick={() => setShowTips(!showTips)}
             className="w-full flex items-center justify-between p-6 hover:bg-gray-50 transition-colors"
           >
             <h4 className="font-bold text-lg flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-violet-500" />
+              <Sparkles className="w-5 h-5 text-primary" />
               {t("storyboardPage.tipsTitle")}
             </h4>
             {showTips ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
@@ -416,7 +428,7 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
             <div className="px-6 pb-6 grid md:grid-cols-2 gap-4">
               {storyboardTips.map((tip, i) => (
                 <div key={i} className="p-4 bg-gray-50 rounded-xl">
-                  <h4 className="font-semibold mb-2 text-violet-900">{tip.title}</h4>
+                  <h4 className="font-semibold mb-2 text-primary">{tip.title}</h4>
                   <p className="text-sm text-neutral-600">{tip.content}</p>
                 </div>
               ))}

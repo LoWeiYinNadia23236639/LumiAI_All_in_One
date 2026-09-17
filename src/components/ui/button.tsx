@@ -14,12 +14,12 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", isLoading, leftIcon, rightIcon, children, ...props }, ref) => {
     const variants = {
-      primary: "bg-violet-600 text-white hover:bg-violet-700 shadow-lg shadow-violet-600/25",
-      secondary: "bg-pink-500 text-white hover:bg-pink-600 shadow-lg shadow-pink-500/25",
-      outline: "border-2 border-violet-600 text-violet-600 hover:bg-violet-50",
-      ghost: "text-gray-600 hover:bg-gray-100",
-      gradient: "bg-gradient-to-r from-violet-600 via-pink-500 to-orange-500 text-white hover:opacity-90 shadow-xl shadow-pink-500/25",
-      white: "bg-white text-gray-900 hover:bg-gray-100 shadow-lg",
+      primary: "bg-primary text-cream hover:bg-primary/90",
+      secondary: "bg-ink text-cream hover:bg-ink/85",
+      outline: "border border-ink text-ink hover:bg-ink hover:text-cream",
+      ghost: "text-ink-soft hover:bg-ink/5",
+      gradient: "bg-primary text-cream hover:bg-primary/90",
+      white: "bg-paper text-ink border border-line hover:bg-cream",
     };
 
     const sizes = {
@@ -32,7 +32,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed",
+          "inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed",
           variants[variant],
           sizes[size],
           className

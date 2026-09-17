@@ -75,8 +75,8 @@ export default function SignupPage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center py-8"
         >
-          <div className="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center mx-auto mb-6">
-            <MailCheck className="w-8 h-8 text-violet-600" />
+          <div className="w-16 h-16 rounded-lg bg-primary-soft flex items-center justify-center mx-auto mb-6">
+            <MailCheck className="w-8 h-8 text-primary" />
           </div>
           <p className="text-neutral-600 mb-8">{t("checkEmail", { email: verificationEmail })}</p>
           <Link href="/login">
@@ -103,8 +103,8 @@ export default function SignupPage() {
             <div className="grid grid-cols-2 gap-2">
               {(
                 [
-                  { value: "creator", label: t("creators"), icon: User, active: "bg-pink-50 ring-2 ring-offset-2 ring-pink-500", idle: "bg-gray-100 text-neutral-600 hover:bg-gray-200" },
-                  { value: "brand", label: t("brands"), icon: Building2, active: "bg-blue-50 ring-2 ring-offset-2 ring-blue-500", idle: "bg-gray-100 text-neutral-600 hover:bg-gray-200" },
+                  { value: "creator", label: t("creators"), icon: User, active: "bg-primary-soft ring-2 ring-offset-2 ring-primary", idle: "bg-gray-100 text-neutral-600 hover:bg-gray-200" },
+                  { value: "brand", label: t("brands"), icon: Building2, active: "bg-primary-soft ring-2 ring-offset-2 ring-primary", idle: "bg-gray-100 text-neutral-600 hover:bg-gray-200" },
                 ] as const
               ).map((option) => (
                 <button
@@ -131,7 +131,7 @@ export default function SignupPage() {
                 required
                 autoComplete="name"
                 placeholder={t("namePlaceholder")}
-                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
@@ -147,7 +147,7 @@ export default function SignupPage() {
                 required
                 autoComplete="email"
                 placeholder={t("emailPlaceholder")}
-                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               />
@@ -163,7 +163,7 @@ export default function SignupPage() {
                 required
                 autoComplete="new-password"
                 placeholder="••••••••"
-                className="w-full pl-12 pr-12 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full pl-12 pr-12 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               />
@@ -188,7 +188,7 @@ export default function SignupPage() {
                 required
                 autoComplete="new-password"
                 placeholder="••••••••"
-                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500"
+                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
                 value={formData.confirmPassword}
                 onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
               />
@@ -198,7 +198,7 @@ export default function SignupPage() {
           <Button
             type="submit"
             disabled={submitting}
-            className="w-full bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 text-white py-3 h-auto text-lg"
+            className="w-full py-3 h-auto text-lg"
           >
             {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : t("createAccount")}
             {!submitting && <ArrowRight className="w-5 h-5 ml-2" />}
@@ -207,7 +207,7 @@ export default function SignupPage() {
 
         <p className="mt-6 text-center text-sm text-neutral-600">
           {t("haveAccount")}{" "}
-          <Link href="/login" className="text-violet-600 hover:underline font-medium">
+          <Link href="/login" className="text-primary hover:underline font-medium">
             {t("signIn")}
           </Link>
         </p>

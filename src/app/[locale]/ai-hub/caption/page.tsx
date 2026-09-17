@@ -137,7 +137,7 @@ export default function CaptionAIPage() {
 
   return (
     <AuthGuard>
-    <main className="min-h-screen bg-gradient-to-b from-pink-50/50 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16 overflow-x-clip">
       <div className="max-w-5xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -149,21 +149,21 @@ export default function CaptionAIPage() {
           </Link>
         </div>
 
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-100 text-pink-700 text-sm font-semibold mb-4">
-            <MessageSquare className="w-4 h-4" />
-            {t("captionPage.badge")}
+        <div className="text-center mb-10 relative overflow-hidden">
+          <span className="absolute pointer-events-none select-none font-quote text-[12rem] leading-none text-ink/5 -left-8 -top-10">CAPTION</span>
+          <div className="relative z-10">
+            <div className="inline-flex items-center rounded-full border border-primary/40 text-primary px-4 py-1 text-xs uppercase tracking-widest mb-4">{t("captionKicker")}</div>
+            <h1 className="text-4xl md:text-5xl text-ink mb-4">
+              {t("captionPage.titleBefore")} <span className="text-ink">{t("captionPage.titleHighlight")}</span>
+            </h1>
+            <p className="font-quote text-xl text-ink-soft max-w-2xl mx-auto">
+              {t("captionPage.subtitle")}
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
-            {t("captionPage.titleBefore")} <span className="gradient-text">{t("captionPage.titleHighlight")}</span>
-          </h1>
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            {t("captionPage.subtitle")}
-          </p>
         </div>
 
         {/* Examples Section */}
-        <div className="bg-white rounded-2xl border shadow-sm overflow-hidden mb-8">
+        <div className="bg-paper rounded-lg border overflow-hidden mb-8">
           <button 
             onClick={() => setShowExamples(!showExamples)}
             className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
@@ -181,17 +181,17 @@ export default function CaptionAIPage() {
                 <button
                   key={i}
                   onClick={() => loadExample(example)}
-                  className="text-left p-4 bg-gray-50 rounded-xl hover:bg-pink-50 transition-colors group"
+                  className="text-left p-4 bg-gray-50 rounded-xl hover:bg-primary-soft transition-colors group"
                 >
                   <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium group-hover:text-pink-600">{example.title}</span>
-                    <span className="text-xs px-2 py-1 bg-white rounded-full text-neutral-500">
+                    <span className="font-medium group-hover:text-primary">{example.title}</span>
+                    <span className="text-xs px-2 py-1 bg-paper rounded-full text-neutral-500">
                       {platforms.find(p => p.id === example.platform)?.label}
                     </span>
                   </div>
                   <p className="text-sm text-neutral-500 mb-2 line-clamp-2">{example.prompt}</p>
                   <div className="flex gap-2">
-                    <span className="text-xs px-2 py-1 bg-pink-100 text-pink-700 rounded-full">
+                    <span className="text-xs px-2 py-1 bg-primary-soft text-primary rounded-full">
                       {tonesLocalized.find(t => t.id === example.tone)?.label} {t("captionPage.toneSuffix")}
                     </span>
                   </div>
@@ -202,10 +202,13 @@ export default function CaptionAIPage() {
         </div>
 
         {/* Input Section */}
-        <div className="bg-white rounded-2xl shadow-lg border p-6 mb-8">
+        <div className="bg-paper rounded-lg border p-6 mb-8">
           {/* Platform Selection */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-neutral-700 mb-3">{t("captionPage.platformLabel")}</label>
+            <label className="block mb-3">
+              <span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "01" })}</span>
+              <span className="uppercase tracking-widest text-xs text-ink-soft"> {t("captionPage.platformLabel")}</span>
+            </label>
             <div className="flex flex-wrap gap-2">
               {platforms.map((p) => (
                 <button
@@ -213,8 +216,8 @@ export default function CaptionAIPage() {
                   onClick={() => setPlatform(p.id)}
                   className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                     platform === p.id
-                      ? "bg-pink-500 text-white"
-                      : "bg-gray-100 text-neutral-700 hover:bg-pink-100"
+                      ? "bg-primary text-cream"
+                      : "bg-gray-100 text-neutral-700 hover:bg-primary-soft"
                   }`}
                 >
                   {p.label}
@@ -229,17 +232,18 @@ export default function CaptionAIPage() {
           {/* Content Input */}
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
-              <label className="block text-sm font-medium text-neutral-700">
-                {t("captionPage.topicLabel")}
+              <label className="block">
+                <span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "02" })}</span>
+                <span className="uppercase tracking-widest text-xs text-ink-soft"> {t("captionPage.topicLabel")}</span>
               </label>
-              <Button variant="ghost" size="sm" onClick={() => setPrompt(example.topic)}>
+              <Button variant="ghost" size="sm" onClick={() => setPrompt(example.topic)} className="rounded-full border border-dashed border-primary/40 text-primary text-xs hover:border-solid">
                 <Sparkles className="w-4 h-4 mr-2" />
                 {tc("exampleButton")}
               </Button>
             </div>
             <textarea
               placeholder={t("captionPage.promptPlaceholder")}
-              className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
+              className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
             />
@@ -247,7 +251,10 @@ export default function CaptionAIPage() {
 
           {/* Tone Selection */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-neutral-700 mb-3">{t("captionPage.toneLabel")}</label>
+            <label className="block mb-3">
+              <span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "03" })}</span>
+              <span className="uppercase tracking-widest text-xs text-ink-soft"> {t("captionPage.toneLabel")}</span>
+            </label>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {tonesLocalized.map((t) => (
                 <button
@@ -255,8 +262,8 @@ export default function CaptionAIPage() {
                   onClick={() => setTone(t.id)}
                   className={`p-3 rounded-xl text-left transition-all border ${
                     tone === t.id
-                      ? "border-pink-500 bg-pink-50"
-                      : "border-gray-200 hover:border-pink-200"
+                      ? "border-primary bg-primary-soft"
+                      : "border-gray-200 hover:border-primary/40"
                   }`}
                 >
                   <p className="font-medium text-sm">{t.label}</p>
@@ -265,9 +272,9 @@ export default function CaptionAIPage() {
               ))}
             </div>
             {tone && (
-              <div className="mt-3 p-3 bg-pink-50 rounded-xl flex items-start gap-2">
-                <Quote className="w-4 h-4 text-pink-500 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-pink-700 italic">
+              <div className="mt-3 p-3 bg-primary-soft rounded-xl flex items-start gap-2">
+                <Quote className="w-4 h-4 text-primary mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-primary italic">
                   {t("captionPage.examplePrefix")} {tonesLocalized.find(t => t.id === tone)?.example}
                 </p>
               </div>
@@ -289,7 +296,7 @@ export default function CaptionAIPage() {
           <Button 
             onClick={generate}
             disabled={loading || !prompt.trim()}
-            className="w-full bg-gradient-to-r from-pink-500 to-rose-500 py-3 h-auto"
+            className="w-full py-3 h-auto"
           >
             {loading ? (
               <>
@@ -303,11 +310,15 @@ export default function CaptionAIPage() {
               </>
             )}
           </Button>
-          {loading && <AiLoadingText toolKey="caption" className="mt-3 text-center" />}
+          {loading && <div className="mt-3 bg-primary-soft rounded-lg"><AiLoadingText toolKey="caption" className="text-center" /></div>}
         </div>
 
         {/* Results */}
         {results.length > 0 && (
+          <div className="relative pt-6">
+            <div className="absolute -top-3 right-4 pointer-events-none rotate-[8deg] rounded border-2 border-primary/50 text-primary/70 px-3 py-1 font-quote uppercase tracking-widest text-xs z-10">
+              {t("stampGenerated")}
+            </div>
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -327,14 +338,15 @@ export default function CaptionAIPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-2xl border shadow-sm overflow-hidden"
+                className="bg-paper rounded-lg border-t-2 border-ink/40"
               >
                 <div className="p-6">
+                  <span className="font-quote text-3xl text-ink/20 leading-none block mb-3">{i + 1}</span>
                   {/* Emoji + Top Pick */}
                   <div className="flex items-center gap-2 mb-4">
                     <span className="text-2xl leading-none">{caption.emoji}</span>
                     {i === 0 && (
-                      <span className="px-3 py-1 bg-pink-100 text-pink-700 text-xs rounded-full flex items-center gap-1">
+                      <span className="px-3 py-1 bg-primary-soft text-primary text-xs rounded-full flex items-center gap-1">
                         <Zap className="w-3 h-3" />
                         {t("captionPage.topPick")}
                       </span>
@@ -372,7 +384,7 @@ export default function CaptionAIPage() {
                         </>
                       )}
                     </Button>
-                    <Button size="sm" className="bg-pink-500 hover:bg-pink-600">
+                    <Button size="sm">
                       {t("captionPage.useThis")}
                     </Button>
                   </div>
@@ -380,34 +392,41 @@ export default function CaptionAIPage() {
               </motion.div>
             ))}
           </motion.div>
+          </div>
         )}
 
         {/* History */}
         <div className="mt-8">
-          <AiGenerationHistory types={["caption"]} refreshKey={historyKey} />
+          <div className="flex items-baseline gap-2 mb-3">
+            <span className="uppercase tracking-widest text-xs text-ink-soft">{t("archiveLabel")} —</span>
+            <h3 className="font-quote text-lg text-ink">{t("historyTitle")}</h3>
+          </div>
+          <div className="[&_div:has(>h3)]:hidden">
+            <AiGenerationHistory types={["caption"]} refreshKey={historyKey} />
+          </div>
         </div>
 
         {/* Tips */}
-        <div className="mt-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl p-6 text-white">
+        <div className="mt-12 bg-primary rounded-lg p-6 text-cream">
           <h4 className="font-bold text-lg mb-3 flex items-center gap-2">
             <Sparkles className="w-5 h-5" />
             {t("captionPage.tipsTitle")}
           </h4>
-          <ul className="space-y-2 text-white/90">
+          <ul className="space-y-2 text-cream/90">
             <li className="flex items-start gap-2">
-              <span className="text-white/60">•</span>
+              <span className="text-cream/60">•</span>
               {captionTips[0]}
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-white/60">•</span>
+              <span className="text-cream/60">•</span>
               {captionTips[1]}
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-white/60">•</span>
+              <span className="text-cream/60">•</span>
               {captionTips[2]}
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-white/60">•</span>
+              <span className="text-cream/60">•</span>
               {captionTips[3]}
             </li>
           </ul>

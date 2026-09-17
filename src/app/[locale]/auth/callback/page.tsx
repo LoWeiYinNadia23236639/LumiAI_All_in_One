@@ -38,7 +38,7 @@ export default function AuthCallbackPage() {
     <div className="min-h-screen flex items-center justify-center">
       <Suspense fallback={null}>
         <CallbackHandler />
-        <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </Suspense>
     </div>
   );

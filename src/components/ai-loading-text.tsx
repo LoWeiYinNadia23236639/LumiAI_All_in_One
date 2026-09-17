@@ -24,7 +24,7 @@ export function AiLoadingText({ toolKey, className = "" }: { toolKey: string; cl
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -4 }}
         transition={{ duration: 0.25 }}
-        className={`text-sm text-neutral-500 ${className}`}
+        className={`text-sm text-ink-soft ${className}`}
       >
         {messages[index % messages.length]}
       </motion.p>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { MarqueeBanner } from "@/components/marquee-banner";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -40,22 +41,26 @@ const heroFeatures = [
   { 
     icon: Brain, 
     labelKey: "aiPowered", 
-    color: "from-violet-500 to-purple-600",
-    bgColor: "bg-violet-100"
   },
   { 
     icon: Handshake, 
     labelKey: "brandDeals", 
-    color: "from-pink-500 to-rose-600",
-    bgColor: "bg-pink-100"
   },
   { 
     icon: Camera, 
     labelKey: "rentGear", 
-    color: "from-orange-500 to-amber-600",
-    bgColor: "bg-orange-100"
   },
 ];
+
+function SectionDivider() {
+  return (
+    <div aria-hidden className="flex items-center justify-center gap-4 py-1">
+      <span className="h-px w-16 bg-line" />
+      <span className="text-sm text-accent">✦</span>
+      <span className="h-px w-16 bg-line" />
+    </div>
+  );
+}
 
 export default function HomePage() {
   const t = useTranslations("home");
@@ -81,10 +86,6 @@ export default function HomePage() {
       title: t("aiHubTitle"),
       subtitle: t("aiHubSubtitle"),
       desc: t("aiHubDesc"),
-      color: "violet",
-      gradient: "from-violet-600 via-purple-600 to-indigo-600",
-      bgGradient: "from-violet-50 via-purple-50 to-indigo-50",
-      iconBg: "bg-violet-500",
       href: "/ai-hub",
       stats: t("supercharge.aiHubStats"),
       features: t.raw("supercharge.aiHubFeatures") as string[]
@@ -94,10 +95,6 @@ export default function HomePage() {
       title: t("marketplaceTitle"),
       subtitle: t("marketplaceSubtitle"),
       desc: t("marketplaceDesc"),
-      color: "pink",
-      gradient: "from-pink-500 via-rose-500 to-red-500",
-      bgGradient: "from-pink-50 via-rose-50 to-red-50",
-      iconBg: "bg-pink-500",
       href: "/marketplace",
       stats: t("supercharge.marketplaceStats"),
       features: t.raw("supercharge.marketplaceFeatures") as string[]
@@ -107,61 +104,57 @@ export default function HomePage() {
       title: t("rentalTitle"),
       subtitle: t("rentalSubtitle"),
       desc: t("rentalDesc"),
-      color: "orange",
-      gradient: "from-orange-500 via-amber-500 to-yellow-500",
-      bgGradient: "from-orange-50 via-amber-50 to-yellow-50",
-      iconBg: "bg-orange-500",
       href: "/equipment",
       stats: t("supercharge.rentalStats"),
       features: t.raw("supercharge.rentalFeatures") as string[]
     },
   ];
   return (
-    <div className="min-h-screen overflow-hidden">
-      {/* Animated Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-violet-50 via-white to-orange-50" />
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-300/30 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-300/30 rounded-full blur-3xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-300/20 rounded-full blur-3xl animate-pulse delay-500" />
-      </div>
-
+    <div className="min-h-screen overflow-hidden bg-cream">
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4">
-        <div className="max-w-6xl mx-auto text-center">
+      <section
+        className="relative pt-32 pb-20 px-4 bg-cover bg-center bg-fixed"
+        style={{ backgroundImage: "url(/images/hero-bg.jpg)" }}
+      >
+        {/* Scrim — brand-green gradient so text stays readable over the dark image */}
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(to bottom, rgba(27,67,50,0.55) 0%, rgba(27,67,50,0.35) 45%, rgba(27,67,50,0.75) 100%)",
+          }}
+        />
+        <div className="max-w-6xl mx-auto text-center relative z-10">
           <motion.div variants={containerVariants} initial="hidden" animate="visible">
-            {/* Badge */}
-            <motion.div variants={itemVariants} className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white shadow-lg border border-violet-100 mb-8">
-              <Sparkles className="w-5 h-5 text-violet-600" />
-              <span className="text-sm font-bold text-violet-900">{t("badge")}</span>
-              <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-violet-500 to-pink-500 text-white text-xs font-bold">{t("new")}</span>
+            {/* Kicker */}
+            <motion.div variants={itemVariants} className="mb-8 flex items-center justify-center gap-3 flex-wrap">
+              <span className="oval-label oval-label-cream">
+                <Sparkles className="w-3.5 h-3.5" />
+                {t("badge")}
+              </span>
+              <span className="tag-dashed tag-dashed-cream uppercase">{t("new")}</span>
             </motion.div>
             
             {/* Main Headline */}
-            <motion.h1 variants={itemVariants} className="text-6xl md:text-8xl font-black mb-6 tracking-tight">
-              <span className="bg-gradient-to-r from-violet-600 via-pink-500 to-orange-500 bg-clip-text text-transparent">
-                {t("headlineCreate")}
-              </span>{" "}
-              <span className="bg-gradient-to-r from-pink-500 via-orange-500 to-amber-500 bg-clip-text text-transparent">
-                {t("headlineConnect")}
-              </span>{" "}
-              <span className="bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
-                {t("headlineEarn")}
-              </span>
+            <motion.h1 variants={itemVariants} className="font-serif text-5xl md:text-7xl leading-[1.05] tracking-tight text-cream mb-6">
+              {t("headlineCreate")}{" "}
+              {t("headlineConnect")}{" "}
+              {t("headlineEarn")}
             </motion.h1>
             
-            <motion.p variants={itemVariants} className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <motion.p variants={itemVariants} className="font-quote text-2xl md:text-3xl text-cream/80 mb-8 max-w-3xl mx-auto leading-relaxed">
               {t("subheadline")}
             </motion.p>
 
             {/* Quick Feature Icons */}
             <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4 mb-10">
               {heroFeatures.map((feature, i) => (
-                <div key={i} className={`flex items-center gap-2 px-4 py-2 rounded-full ${feature.bgColor}`}>
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${feature.color} flex items-center justify-center`}>
-                    <feature.icon className="w-4 h-4 text-white" />
+                <div key={i} className="flex items-center gap-2 px-4 py-2 rounded-full border border-cream/30 text-cream/80 bg-cream/5 backdrop-blur-sm">
+                  <div className="w-8 h-8 rounded-lg bg-cream/15 flex items-center justify-center">
+                    <feature.icon className="w-4 h-4 text-cream" />
                   </div>
-                  <span className="text-sm font-semibold text-gray-700">{t(feature.labelKey as any)}</span>
+                  <span className="text-sm font-semibold">{t(feature.labelKey as any)}</span>
                 </div>
               ))}
             </motion.div>
@@ -169,21 +162,21 @@ export default function HomePage() {
             {/* CTA Buttons */}
             <motion.div variants={itemVariants} className="flex flex-wrap justify-center gap-4">
               <Link href="/ai-hub">
-                <Button size="lg" className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white px-8 py-6 text-lg shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 transition-all hover:-translate-y-1">
+                <Button size="lg" className="px-8 py-6 text-lg bg-cream text-primary hover:bg-white">
                   <Wand2 className="w-5 h-5 mr-2" />
                   {t("tryAiTools")}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
               <Link href="/marketplace/campaigns">
-                <Button size="lg" className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-6 text-lg shadow-xl shadow-pink-500/30 hover:shadow-pink-500/50 transition-all hover:-translate-y-1">
+                <Button size="lg" variant="outline" className="px-8 py-6 text-lg border-cream text-cream hover:bg-cream/10 hover:text-cream">
                   <ShoppingBag className="w-5 h-5 mr-2" />
                   {t("findBrandDeals")}
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
               <Link href="/equipment">
-                <Button size="lg" className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white px-8 py-6 text-lg shadow-xl shadow-orange-500/30 hover:shadow-orange-500/50 transition-all hover:-translate-y-1">
+                <Button size="lg" variant="outline" className="px-8 py-6 text-lg border-cream text-cream hover:bg-cream/10 hover:text-cream">
                   <Camera className="w-5 h-5 mr-2" />
                   {t("rentGear")}
                   <ArrowRight className="w-5 h-5 ml-2" />
@@ -195,19 +188,24 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Three Main Features - Color Coded */}
-      <section className="py-20 px-4">
-        <div className="max-w-7xl mx-auto">
+      {/* Marquee band */}
+      <MarqueeBanner items={t.raw("marqueeItems") as string[]} />
+
+      {/* Three Main Features - Editorial Columns */}
+      <section className="relative py-20 px-4 bg-paper overflow-hidden">
+        <span aria-hidden className="bg-outline-word top-[-0.22em]">CREATE</span>
+        <div className="max-w-7xl mx-auto relative z-10">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="mb-16"
           >
+            <p className="uppercase tracking-widest text-xs font-semibold text-accent mb-4">LumiAI</p>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               {t("supercharge.titleBefore")} <span className="gradient-text">{t("supercharge.titleHighlight")}</span> {t("supercharge.titleAfter")}
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-xl text-ink-soft max-w-2xl">
               {t("featuresSubtitle")}
             </p>
           </motion.div>
@@ -220,49 +218,41 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15 }}
+                className="border-t border-ink pt-6"
               >
-                <Link href={feature.href}>
-                  <div className={`group relative h-full bg-gradient-to-br ${feature.bgGradient} rounded-3xl p-1 overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-500 hover:-translate-y-2`}>
-                    <div className="bg-white/80 backdrop-blur-sm rounded-[22px] h-full p-8">
-                      {/* Icon */}
-                      <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center text-white mb-6 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-lg`}>
-                        <feature.icon className="w-10 h-10" />
-                      </div>
-                      
-                      {/* Color Badge */}
-                      <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-${feature.color}-100 text-${feature.color}-700 text-xs font-bold mb-4`}>
-                        <Zap className="w-3 h-3" />
-                        {feature.subtitle}
-                      </div>
-                      
-                      <h3 className="text-2xl font-bold mb-3 text-gray-900">{feature.title}</h3>
-                      <p className="text-gray-600 mb-6 leading-relaxed">{feature.desc}</p>
-                      
-                      {/* Features List */}
-                      <div className="space-y-2 mb-6">
-                        {feature.features.map((f, j) => (
-                          <div key={j} className="flex items-center gap-2 text-sm text-gray-700">
-                            <CheckCircle className={`w-4 h-4 text-${feature.color}-500`} />
-                            {f}
-                          </div>
-                        ))}
-                      </div>
-                      
-                      {/* Stats */}
-                      <div className={`p-3 rounded-xl bg-${feature.color}-50 mb-6`}>
-                        <p className={`text-sm font-semibold text-${feature.color}-700`}>{feature.stats}</p>
-                      </div>
-                      
-                      {/* CTA */}
-                      <div className={`flex items-center font-bold text-${feature.color}-600 group-hover:gap-3 transition-all`}>
-                        {t("supercharge.explore", { title: feature.title })}
-                        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                      </div>
+                <p className="oval-number mb-4">{String(i + 1).padStart(2, "0")}</p>
+                <div className="w-12 h-12 rounded-lg bg-primary flex items-center justify-center text-cream mb-5">
+                  <feature.icon className="w-6 h-6" />
+                </div>
+                
+                {/* Label */}
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary-soft text-primary text-xs font-bold mb-4">
+                  <Zap className="w-3 h-3" />
+                  {feature.subtitle}
+                </div>
+                
+                <h3 className="text-2xl font-bold mb-3 text-ink">{feature.title}</h3>
+                <p className="text-ink-soft mb-6 leading-relaxed">{feature.desc}</p>
+                
+                {/* Features List */}
+                <div className="space-y-2 mb-6">
+                  {feature.features.map((f, j) => (
+                    <div key={j} className="flex items-center gap-2 text-sm text-ink-soft">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                      {f}
                     </div>
-                    
-                    {/* Decorative Elements */}
-                    <div className={`absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br ${feature.gradient} opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity`} />
-                  </div>
+                  ))}
+                </div>
+                
+                {/* Stats */}
+                <div className="p-3 rounded-lg bg-primary-soft mb-6">
+                  <p className="text-sm font-semibold text-primary">{feature.stats}</p>
+                </div>
+                
+                {/* Link */}
+                <Link href={feature.href} className="group inline-flex items-center font-bold text-primary">
+                  {t("supercharge.explore", { title: feature.title })}
+                  <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </motion.div>
             ))}
@@ -270,25 +260,28 @@ export default function HomePage() {
         </div>
       </section>
 
+      <SectionDivider />
+
       {/* How It Works */}
-      <section className="py-20 px-4 bg-white/50">
-        <div className="max-w-6xl mx-auto">
+      <section className="relative py-20 px-4 bg-primary overflow-hidden">
+        <span aria-hidden className="bg-outline-word bg-outline-word-dark top-10">CONNECT</span>
+        <div className="max-w-6xl mx-auto relative z-10">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl font-bold mb-4">{t("howItWorks")}</h2>
-            <p className="text-xl text-gray-600">{t("howItWorksSubtitle")}</p>
+            <h2 className="text-4xl font-bold mb-4 text-cream">{t("howItWorks")}</h2>
+            <p className="text-xl text-cream/70">{t("howItWorksSubtitle")}</p>
           </motion.div>
 
           <div className="grid md:grid-cols-4 gap-8">
             {[
-              { step: "01", title: t("step1Title"), desc: t("step1Desc"), color: "violet", icon: Users },
-              { step: "02", title: t("step2Title"), desc: t("step2Desc"), color: "pink", icon: ArrowRight },
-              { step: "03", title: t("step3Title"), desc: t("step3Desc"), color: "orange", icon: Handshake },
-              { step: "04", title: t("step4Title"), desc: t("step4Desc"), color: "green", icon: TrendingUp },
+              { step: "01", title: t("step1Title"), desc: t("step1Desc"), icon: Users },
+              { step: "02", title: t("step2Title"), desc: t("step2Desc"), icon: ArrowRight },
+              { step: "03", title: t("step3Title"), desc: t("step3Desc"), icon: Handshake },
+              { step: "04", title: t("step4Title"), desc: t("step4Desc"), icon: TrendingUp },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -298,17 +291,19 @@ export default function HomePage() {
                 transition={{ delay: i * 0.1 }}
                 className="text-center group"
               >
-                <div className={`w-20 h-20 mx-auto mb-6 rounded-2xl bg-${item.color}-100 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <item.icon className={`w-8 h-8 text-${item.color}-600`} />
+                <div className="w-20 h-20 mx-auto mb-6 rounded-lg bg-cream/10 border border-cream/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <item.icon className="w-8 h-8 text-cream" />
                 </div>
-                <span className={`text-5xl font-black text-${item.color}-200 mb-2 block`}>{item.step}</span>
-                <h3 className="text-xl font-bold mb-2">{item.title}</h3>
-                <p className="text-gray-600">{item.desc}</p>
+                <span className="text-5xl font-black text-cream/40 mb-2 block">{item.step}</span>
+                <h3 className="text-xl font-bold mb-2 text-cream">{item.title}</h3>
+                <p className="text-cream/70">{item.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
+
+      <SectionDivider />
 
       {/* Closed Beta / Waitlist Section */}
       <section className="py-20 px-4">
@@ -317,12 +312,12 @@ export default function HomePage() {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 rounded-3xl p-8 md:p-12 text-center text-white relative overflow-hidden"
+            className="bg-primary rounded-xl p-8 md:p-12 text-center text-cream relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-20" />
             <div className="relative z-10">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">{t("closedBeta")}</h2>
-              <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
+              <p className="text-cream/80 mb-8 max-w-2xl mx-auto">
                 {t("closedBetaDesc")}
               </p>
               {waitlistState === "success" ? (
@@ -337,14 +332,14 @@ export default function HomePage() {
                     required
                     disabled={waitlistState === "loading"}
                     placeholder={t("waitlistPlaceholder")}
-                    className="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-500 disabled:opacity-50"
+                    className="flex-1 px-4 py-3 rounded-lg bg-cream/10 border border-cream/20 text-cream placeholder:text-cream/50 focus:outline-none focus:ring-2 focus:ring-cream disabled:opacity-50"
                     value={waitlistEmail}
                     onChange={(e) => setWaitlistEmail(e.target.value)}
                   />
                   <Button
                     type="submit"
                     disabled={waitlistState === "loading"}
-                    className="bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 text-white px-6"
+                    className="bg-cream text-primary hover:bg-cream/90 px-6"
                   >
                     {waitlistState === "loading" ? "…" : t("waitlistButton")}
                   </Button>
@@ -361,80 +356,78 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative bg-gradient-to-r from-violet-600 via-pink-500 to-orange-500 rounded-3xl p-12 text-center text-white overflow-hidden">
-            <div className="absolute inset-0 bg-black/10" />
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-            
-            <div className="relative z-10">
-              <h2 className="text-3xl md:text-5xl font-bold mb-4">
-                {t("ctaTitle")}
-              </h2>
-              <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                {t("ctaSubtitle")}
-              </p>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Link href="/signup">
-                  <Button size="lg" className="bg-white text-violet-600 hover:bg-gray-100 shadow-xl">
-                    {t("getStartedFree")}
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                </Link>
-                <Link href="/marketplace/talent">
-                  <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/20">
-                    {t("browseCreators")}
-                  </Button>
-                </Link>
-              </div>
-            </div>
+      <section className="relative py-20 px-4 bg-primary overflow-hidden">
+        <span aria-hidden className="bg-outline-word bg-outline-word-dark bottom-[-0.28em]">EARN</span>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="max-w-4xl mx-auto text-center text-cream relative z-10"
+        >
+          <h2 className="text-3xl md:text-5xl font-bold mb-4">
+            {t("ctaTitle")}
+          </h2>
+          <p className="text-xl text-cream/80 mb-8 max-w-2xl mx-auto">
+            {t("ctaSubtitle")}
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Link href="/signup">
+              <Button size="lg" className="bg-cream text-primary hover:bg-cream/90">
+                {t("getStartedFree")}
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+            <Link href="/marketplace/talent">
+              <Button size="lg" variant="outline" className="border-cream text-cream hover:bg-cream/10">
+                {t("browseCreators")}
+              </Button>
+            </Link>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 px-4 border-t bg-white">
+      <footer className="py-12 px-4 border-t border-line bg-cream">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 via-pink-500 to-orange-500 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-cream" />
                 </div>
                 <span className="text-2xl font-bold gradient-text">LumiAI</span>
               </div>
-              <p className="text-gray-600 text-sm">
+              <p className="text-ink-soft text-sm">
                 {t("footerTagline")}
               </p>
             </div>
             <div>
-              <h4 className="font-bold mb-4 text-gray-900">{t("footerPlatform")}</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/ai-hub" className="hover:text-violet-600 transition-colors">{t("footer.aiHub")}</Link></li>
-                <li><Link href="/marketplace" className="hover:text-pink-600 transition-colors">{t("footer.marketplace")}</Link></li>
-                <li><Link href="/equipment" className="hover:text-orange-600 transition-colors">{t("footer.rentGear")}</Link></li>
-                <li><Link href="/help" className="hover:text-violet-600 transition-colors">{t("footer.helpCenter")}</Link></li>
+              <h4 className="font-bold mb-4 text-ink">{t("footerPlatform")}</h4>
+              <ul className="space-y-2 text-sm text-ink-soft">
+                <li><Link href="/ai-hub" className="hover:text-primary transition-colors">{t("footer.aiHub")}</Link></li>
+                <li><Link href="/marketplace" className="hover:text-primary transition-colors">{t("footer.marketplace")}</Link></li>
+                <li><Link href="/equipment" className="hover:text-primary transition-colors">{t("footer.rentGear")}</Link></li>
+                <li><Link href="/help" className="hover:text-primary transition-colors">{t("footer.helpCenter")}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold mb-4 text-gray-900">{t("footerForUsers")}</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/login" className="hover:text-violet-600 transition-colors">{t("footer.creatorLogin")}</Link></li>
-                <li><Link href="/login" className="hover:text-pink-600 transition-colors">{t("footer.brandLogin")}</Link></li>
+              <h4 className="font-bold mb-4 text-ink">{t("footerForUsers")}</h4>
+              <ul className="space-y-2 text-sm text-ink-soft">
+                <li><Link href="/login" className="hover:text-primary transition-colors">{t("footer.creatorLogin")}</Link></li>
+                <li><Link href="/login" className="hover:text-primary transition-colors">{t("footer.brandLogin")}</Link></li>
 
               </ul>
             </div>
             <div>
-              <h4 className="font-bold mb-4 text-gray-900">{t("footerResources")}</h4>
-              <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/help" className="hover:text-violet-600 transition-colors">{t("footer.documentation")}</Link></li>
-                <li><Link href="/help" className="hover:text-violet-600 transition-colors">{t("footer.tutorials")}</Link></li>
-                <li><Link href="/help" className="hover:text-violet-600 transition-colors">{t("footer.contactSupport")}</Link></li>
+              <h4 className="font-bold mb-4 text-ink">{t("footerResources")}</h4>
+              <ul className="space-y-2 text-sm text-ink-soft">
+                <li><Link href="/help" className="hover:text-primary transition-colors">{t("footer.documentation")}</Link></li>
+                <li><Link href="/help" className="hover:text-primary transition-colors">{t("footer.tutorials")}</Link></li>
+                <li><Link href="/help" className="hover:text-primary transition-colors">{t("footer.contactSupport")}</Link></li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t text-center text-sm text-gray-500">
+          <div className="pt-8 border-t border-line text-center text-sm text-ink-soft">
             {t("copyright")}
           </div>
         </div>

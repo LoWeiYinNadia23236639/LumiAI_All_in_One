@@ -25,7 +25,7 @@ const ownerData = {
   handle: "@alexscameras",
   verified: true,
   avatar: "AC",
-  avatarColor: "from-orange-400 to-amber-500",
+  avatarColor: "",
   bio: "Professional camera rental service with 5+ years experience. All equipment maintained and cleaned after each rental.",
   location: "Los Angeles, CA",
   website: "alexscameras.com",
@@ -70,7 +70,7 @@ function OwnerProfilePage({ params }: { params: { id: string } }) {
     : ownerData.gear.filter(g => g.category === selectedCategory);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-orange-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4">
         <Link href="/equipment">
           <Button variant="ghost" className="mb-6">
@@ -80,18 +80,18 @@ function OwnerProfilePage({ params }: { params: { id: string } }) {
         </Link>
 
         {/* Profile Header */}
-        <div className="bg-white rounded-3xl shadow-xl border overflow-hidden mb-8">
-          <div className="h-48 bg-gradient-to-r from-orange-400 via-amber-400 to-yellow-400" />
+        <div className="bg-paper rounded-xl border border-line overflow-hidden mb-8">
+          <div className="h-48 bg-primary" />
           <div className="px-8 pb-8">
             <div className="flex flex-col md:flex-row gap-6 -mt-16 mb-6">
-              <div className={`w-32 h-32 rounded-3xl bg-gradient-to-br ${ownerData.avatarColor} flex items-center justify-center text-white text-4xl font-bold border-4 border-white shadow-lg`}>
+              <div className="w-32 h-32 rounded-xl bg-primary flex items-center justify-center text-cream text-4xl font-bold border-4 border-paper">
                 {ownerData.avatar}
               </div>
               <div className="flex-1 pt-4 md:pt-16">
                 <div className="flex items-center gap-3">
                   <h1 className="text-3xl font-bold text-neutral-900">{ownerData.name}</h1>
                   {ownerData.verified && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full flex items-center gap-1">
+                    <span className="px-2 py-1 bg-primary-soft text-primary text-xs font-bold rounded-full flex items-center gap-1">
                       <CheckCircle className="w-3 h-3" />
                       Verified Owner
                     </span>
@@ -115,7 +115,7 @@ function OwnerProfilePage({ params }: { params: { id: string } }) {
                   <Mail className="w-4 h-4 mr-2" />
                   Contact
                 </Button>
-                <Button className="bg-gradient-to-r from-orange-500 to-amber-500">
+                <Button>
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Message
                 </Button>
@@ -133,7 +133,7 @@ function OwnerProfilePage({ params }: { params: { id: string } }) {
                 { label: "Response Rate", value: ownerData.stats.responseRate },
                 { label: "Gear Items", value: ownerData.stats.gearItems },
               ].map((stat, i) => (
-                <div key={i} className="text-center p-4 bg-gray-50 rounded-2xl">
+                <div key={i} className="text-center p-4 bg-gray-50 rounded-lg">
                   <p className="text-xl font-bold text-neutral-900 flex items-center justify-center gap-1">
                     {stat.value}
                     {stat.icon && <stat.icon className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
@@ -156,8 +156,8 @@ function OwnerProfilePage({ params }: { params: { id: string } }) {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                     selectedCategory === cat
-                      ? "bg-orange-500 text-white"
-                      : "bg-gray-100 text-neutral-700 hover:bg-orange-100"
+                      ? "bg-primary text-cream"
+                      : "bg-gray-100 text-neutral-700 hover:bg-primary-soft"
                   }`}
                 >
                   {cat}
@@ -173,19 +173,19 @@ function OwnerProfilePage({ params }: { params: { id: string } }) {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-white rounded-2xl border shadow-sm overflow-hidden hover:shadow-lg transition-all"
+                className="bg-paper rounded-lg border border-line overflow-hidden hover:shadow-lg transition-all"
               >
-                <div className="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                <div className="h-48 bg-primary-soft flex items-center justify-center">
                   <span className="text-6xl">{item.image}</span>
                 </div>
                 <div className="p-5">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-medium">
+                    <span className="px-2 py-1 bg-primary-soft text-primary rounded-full text-xs font-medium">
                       {item.category}
                     </span>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       item.status === 'available' ? 'bg-green-100 text-green-700' :
-                      item.status === 'rented' ? 'bg-blue-100 text-blue-700' :
+                      item.status === 'rented' ? 'bg-primary-soft text-primary' :
                       'bg-yellow-100 text-yellow-700'
                     }`}>
                       {item.status}
@@ -202,8 +202,8 @@ function OwnerProfilePage({ params }: { params: { id: string } }) {
                       <p className="text-2xl font-bold text-neutral-900">${item.dailyRate}</p>
                       <p className="text-xs text-neutral-500">per day</p>
                     </div>
-                    <Link href={`/equipment/book?id=${item.id}`}>
-                      <Button className="bg-gradient-to-r from-orange-500 to-amber-500">
+                    <Link href="/equipment">
+                      <Button>
                         Book Now
                       </Button>
                     </Link>

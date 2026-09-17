@@ -31,7 +31,7 @@ export function RoleGuard({ children, allowedRoles, fallbackUrl }: RoleGuardProp
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-violet-500 border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -88,7 +88,7 @@ export function RoleGuard({ children, allowedRoles, fallbackUrl }: RoleGuardProp
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center max-w-md">
-          <IconComponent className="w-16 h-16 text-violet-300 mx-auto mb-4" />
+          <IconComponent className="w-16 h-16 text-ink-soft mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2">{t("accessDenied.title")}</h2>
           <p className="text-neutral-600 mb-2">
             {t.rich("accessDenied.signedInAs", { name: user.name, role: roleName, b: (chunks) => <strong>{chunks}</strong> })}

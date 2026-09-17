@@ -170,7 +170,13 @@
       "documentation": "Documentation",
       "tutorials": "Tutorials",
       "contactSupport": "Contact Support"
-    }
+    },
+    "marqueeItems": [
+      "AI Tools",
+      "Brand Deals",
+      "Gear Rental",
+      "Creator First"
+    ]
   },
   "auth": {
     "welcomeBack": "Welcome Back",
@@ -335,7 +341,15 @@
       "posted": "Posted",
       "deadline": "Deadline",
       "noDeadline": "Flexible",
-      "viewDetails": "View Details"
+      "viewDetails": "View Details",
+      "marqueeItems": [
+        "Brand Deals",
+        "Collaborations",
+        "Paid Campaigns"
+      ],
+      "newTag": "New",
+      "kicker": "THE MARKETPLACE",
+      "closingSoon": "CLOSING SOON"
     },
     "campaignDetail": {
       "backToList": "Back to Campaigns",
@@ -371,7 +385,15 @@
         "title": "Reject this application?",
         "description": "The creator will see that their application was rejected. This cannot be undone.",
         "confirm": "Reject"
-      }
+      },
+      "specBudget": "BUDGET",
+      "specDeadline": "DEADLINE",
+      "specRequirements": "REQUIREMENTS",
+      "specDeliverables": "DELIVERABLES",
+      "specPosted": "POSTED",
+      "stampUnderReview": "UNDER REVIEW",
+      "stampAccepted": "ACCEPTED ✓",
+      "stampDeclined": "DECLINED"
     },
     "creatorFeatureMatching": "AI-powered campaign matching",
     "creatorFeatureBudget": "Transparent budget ranges",
@@ -473,7 +495,7 @@
     "good": "Good",
     "includes": "Includes",
     "availableDates": "Available dates",
-    "perDay": "per day",
+    "perDay": "/day",
     "bookNow": "Book Now",
     "listedByYou": "Listed by you",
     "listYourGear": "List Your Gear",
@@ -509,7 +531,119 @@
     "serviceFee": "Service Fee",
     "total": "Total",
     "typeMessage": "Type a message...",
-    "review": "Review"
+    "review": "Review",
+    "category": {
+      "all": "All Gear",
+      "camera": "Cameras",
+      "lighting": "Lighting",
+      "audio": "Audio",
+      "drone": "Drones",
+      "accessory": "Accessories"
+    },
+    "conditionValue": {
+      "Like New": "Like New",
+      "Excellent": "Excellent",
+      "Good": "Good",
+      "Fair": "Fair"
+    },
+    "status": {
+      "available": "Available",
+      "rented": "Rented",
+      "unlisted": "Unlisted",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "completed": "Completed",
+      "returned": "Returned"
+    },
+    "listing": {
+      "searchPlaceholder": "Search gear, description or location...",
+      "emptyTitle": "No gear yet",
+      "emptyDesc": "No equipment listed yet — be the first creator to list yours!",
+      "by": "By {name}",
+      "moreItems": "+{count} more",
+      "newTag": "New",
+      "noPrefix": "No.",
+      "newListingTag": "NEW LISTING"
+    },
+    "newGear": {
+      "title": "List Your Gear",
+      "subtitle": "Rent out your equipment to other creators",
+      "back": "Back",
+      "fieldTitle": "Gear title",
+      "fieldCategory": "Category",
+      "fieldPrice": "Price per day (USD)",
+      "fieldDeposit": "Deposit (optional)",
+      "fieldLocation": "Location",
+      "fieldCondition": "Condition",
+      "fieldDescription": "Description",
+      "fieldIncludes": "What's included",
+      "placeholderTitle": "e.g. Sony A7IV Full-Frame",
+      "categoryPlaceholder": "Select a category",
+      "conditionPlaceholder": "Select condition",
+      "placeholderPrice": "e.g. 75",
+      "placeholderDeposit": "e.g. 200",
+      "placeholderLocation": "e.g. Los Angeles, CA",
+      "placeholderDescription": "Describe your gear, its history, and any notes for renters...",
+      "placeholderIncludes": "Body only\nBattery x2\nCharger\nCase",
+      "includesHelp": "One item per line.",
+      "publishSuccess": "Gear listed successfully!",
+      "errorGeneric": "Something went wrong. Please try again.",
+      "errorMissingColumns": "Database not ready — please run the gear renting SQL first.",
+      "submit": "List Gear",
+      "validation": {
+        "titleTooShort": "Title must be at least 3 characters",
+        "priceInvalid": "Price must be a number greater than 0",
+        "depositInvalid": "Deposit must be 0 or more"
+      },
+      "kicker": "LIST YOUR GEAR"
+    },
+    "detail": {
+      "ownerLabel": "Owner",
+      "depositValue": "Deposit: ${amount}",
+      "noDeposit": "No deposit",
+      "posted": "Listed",
+      "noDescription": "No description provided.",
+      "yourGear": "This is your gear — renters send requests here, and you can accept or reject them.",
+      "requestsTitle": "Rental Requests",
+      "noRequests": "No rental requests yet.",
+      "accept": "Accept",
+      "reject": "Reject",
+      "confirmReject": {
+        "title": "Reject this request?",
+        "description": "The renter will be notified that their request was rejected.",
+        "confirm": "Reject"
+      }
+    },
+    "rentalForm": {
+      "startDate": "Pick-up date",
+      "endDate": "Return date",
+      "messageLabel": "Message to the owner (optional)",
+      "messagePlaceholder": "Introduce yourself and explain what you're shooting...",
+      "submit": "Send Request",
+      "successTitle": "Request sent!",
+      "errorAuth": "Your session expired — please sign in again.",
+      "errorGeneric": "Failed to send the request. Please try again.",
+      "validation": {
+        "startPast": "Start date can't be in the past",
+        "endBeforeStart": "End date must be on or after the start date"
+      }
+    },
+    "marqueeItems": [
+      "Cameras",
+      "Lighting",
+      "Audio",
+      "Drones",
+      "Accessories"
+    ],
+    "kicker": "RENT GEAR",
+    "includesBoxTitle": "WHAT'S INCLUDED",
+    "stampAwaitingOwner": "AWAITING OWNER",
+    "stampApproved": "APPROVED ✓",
+    "stampDeclined": "DECLINED",
+    "stampCompleted": "COMPLETED",
+    "stampRentedOut": "RENTED OUT",
+    "stampOffShelf": "OFF SHELF"
   },
   "analytics": {
     "analytics": "Analytics",
@@ -588,6 +722,26 @@
     "receivedAppsTitle": "Received Applications",
     "followersBadge": "{count} followers",
     "reject": "Reject",
+    "gearTab": {
+      "myGearTitle": "My Gear",
+      "emptyGear": "You haven't listed any gear yet",
+      "listAction": "List",
+      "unlistAction": "Unlist",
+      "editAction": "Edit",
+      "editModalTitle": "Edit Gear",
+      "fieldTitle": "Title",
+      "fieldPrice": "Price per day (USD)",
+      "fieldDescription": "Description",
+      "save": "Save",
+      "rentalRecordsTitle": "Rental Records",
+      "rentingIn": "Renting In",
+      "rentingOut": "Renting Out",
+      "emptyRentingIn": "You haven't rented any gear yet",
+      "emptyRentingOut": "No one has rented your gear yet",
+      "dateRange": "{start} – {end}",
+      "confirmRejectTitle": "Reject this request?",
+      "confirmRejectDesc": "The renter will be notified that their request was rejected."
+    },
     "appStatus": {
       "pending": "Pending",
       "accepted": "Accepted",
@@ -687,7 +841,9 @@
       "fair": "Fair"
     },
     "gearNamePlaceholder": "e.g. Sony A7IV",
-    "gearDescPlaceholder": "Brief description of the item..."
+    "gearDescPlaceholder": "Brief description of the item...",
+    "creatorKicker": "CREATOR DASHBOARD",
+    "brandKicker": "BRAND DASHBOARD"
   },
   "admin": {
     "panelTitle": "Admin Panel",
@@ -909,7 +1065,11 @@
       "description": "The page you're looking for doesn't exist or has been moved.",
       "backHome": "Back to Home",
       "goBack": "Go Back"
-    }
+    },
+    "noPrefix": "No.",
+    "stampUnderReview": "UNDER REVIEW",
+    "stampAccepted": "ACCEPTED ✓",
+    "stampDeclined": "DECLINED"
   },
   "help": {
     "helpCenter": "Help Center",
@@ -983,7 +1143,11 @@
     "relatedArticles": "Related Articles",
     "wasThisHelpful": "Was this article helpful?",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "kicker": "HELP CENTER",
+    "introQuote": "Answers, gathered like clippings on an editor’s desk.",
+    "faqQuote": "Still curious? The next answer might be yours.",
+    "ctaQuestion": "Still have questions?"
   },
   "adminOverview": {
     "title": "Admin Overview",
@@ -1507,6 +1671,18 @@
       "lightingLabel": "Lighting:",
       "equipmentLabel": "Equipment:",
       "tipsLabel": "Tips:"
-    }
+    },
+    "kicker": "THE AI TOOLKIT",
+    "marqueeItems": [
+      "Storyboard AI",
+      "Caption Generator",
+      "Brand Advisor"
+    ],
+    "stampGenerated": "GENERATED ✦ AI",
+    "storyboardKicker": "TOOL 01 — STORYBOARD",
+    "captionKicker": "TOOL 02 — CAPTION",
+    "advisorKicker": "TOOL 03 — ADVISOR",
+    "stepLabel": "STEP {num}",
+    "archiveLabel": "ARCHIVE"
   }
 }

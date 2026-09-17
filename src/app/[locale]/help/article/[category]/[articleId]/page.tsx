@@ -51,20 +51,20 @@ export default function ArticlePage() {
   const currentCatInfo = categoryKeyMap[category] || { titleKey: "helpCenter", color: "violet" };
   const currentCatTitle = t(currentCatInfo.titleKey as any);
   const colorClasses: Record<string, { bg: string; text: string; border: string; lightBg: string }> = {
-    violet: { bg: "bg-violet-500", text: "text-violet-600", border: "border-violet-200", lightBg: "bg-violet-50" },
-    pink: { bg: "bg-pink-500", text: "text-pink-600", border: "border-pink-200", lightBg: "bg-pink-50" },
-    orange: { bg: "bg-orange-500", text: "text-orange-600", border: "border-orange-200", lightBg: "bg-orange-50" },
-    blue: { bg: "bg-blue-500", text: "text-blue-600", border: "border-blue-200", lightBg: "bg-blue-50" },
-    green: { bg: "bg-emerald-500", text: "text-emerald-600", border: "border-emerald-200", lightBg: "bg-emerald-50" },
+    violet: { bg: "bg-primary", text: "text-primary", border: "border-line", lightBg: "bg-primary-soft" },
+    pink: { bg: "bg-primary", text: "text-primary", border: "border-line", lightBg: "bg-primary-soft" },
+    orange: { bg: "bg-primary", text: "text-primary", border: "border-line", lightBg: "bg-primary-soft" },
+    blue: { bg: "bg-primary", text: "text-primary", border: "border-line", lightBg: "bg-primary-soft" },
+    green: { bg: "bg-primary", text: "text-primary", border: "border-line", lightBg: "bg-primary-soft" },
   };
   const colors = colorClasses[currentCatInfo.color];
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-gray-50/50 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-4xl mx-auto px-4">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-neutral-500 mb-6">
-          <Link href="/help" className="hover:text-violet-600 transition-colors">{t("helpCenter")}</Link>
+          <Link href="/help" className="hover:text-primary transition-colors">{t("helpCenter")}</Link>
           <ChevronRight className="w-4 h-4" />
           <span className={`${colors.text} font-medium`}>{currentCatTitle}</span>
           <ChevronRight className="w-4 h-4" />
@@ -73,7 +73,7 @@ export default function ArticlePage() {
 
         {/* Back Button */}
         <Link href="/help">
-          <Button variant="ghost" className="mb-6 -ml-2 text-neutral-600 hover:text-violet-600">
+          <Button variant="ghost" className="mb-6 -ml-2 text-neutral-600 hover:text-primary">
             <ArrowLeft className="w-4 h-4 mr-2" />
             {t("backToHelp")}
           </Button>
@@ -107,7 +107,7 @@ export default function ArticlePage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-2xl border shadow-sm p-8 md:p-10"
+          className="bg-paper rounded-lg border border-line p-8 md:p-10"
         >
           {/* Introduction */}
           <div className="text-lg text-neutral-600 mb-8 leading-relaxed">
@@ -171,10 +171,10 @@ export default function ArticlePage() {
                   <Link
                     key={index}
                     href={related.link}
-                    className="flex items-center gap-3 p-3 rounded-xl border hover:border-violet-300 hover:bg-violet-50/50 transition-all group"
+                    className="flex items-center gap-3 p-3 rounded-xl border hover:border-primary/30 hover:bg-primary-soft/50 transition-all group"
                   >
-                    <ExternalLink className="w-4 h-4 text-neutral-400 group-hover:text-violet-500" />
-                    <span className="text-sm font-medium text-neutral-700 group-hover:text-violet-700">
+                    <ExternalLink className="w-4 h-4 text-neutral-400 group-hover:text-primary" />
+                    <span className="text-sm font-medium text-neutral-700 group-hover:text-primary">
                       {related.title}
                     </span>
                   </Link>

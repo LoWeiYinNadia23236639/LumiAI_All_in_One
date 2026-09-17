@@ -96,22 +96,19 @@ export default function HelpPage() {
       title: t("creatorQuickStart"),
       icon: Play,
       description: t("creatorQuickStartDesc"),
-      duration: "5 min",
-      color: "from-violet-500 to-purple-600"
+      duration: "5 min"
     },
     {
       title: t("brandQuickStart"),
       icon: Play,
       description: t("brandQuickStartDesc"),
-      duration: "6 min",
-      color: "from-pink-500 to-rose-600"
+      duration: "6 min"
     },
     {
       title: t("rentersGuide"),
       icon: Play,
       description: t("rentersGuideDesc"),
-      duration: "8 min",
-      color: "from-orange-500 to-amber-600"
+      duration: "8 min"
     },
   ];
 
@@ -149,19 +146,16 @@ export default function HelpPage() {
   );
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-100 to-pink-100 text-violet-700 text-sm font-semibold mb-4">
-            <BookOpen className="w-4 h-4" />
-            {t("helpCenter")}
-          </div>
+          <span className="oval-label inline-block mb-6">{t("kicker")}</span>
           <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
             {t("howCanWeHelp")}
           </h1>
-          <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            {t("subtitle")}
+          <p className="font-quote text-xl md:text-2xl text-ink-soft max-w-2xl mx-auto">
+            {t("introQuote")}
           </p>
         </div>
 
@@ -172,7 +166,7 @@ export default function HelpPage() {
             <input 
               type="text"
               placeholder={t("searchPlaceholder")}
-              className="w-full pl-12 pr-4 py-4 rounded-2xl border shadow-sm focus:outline-none focus:ring-2 focus:ring-violet-500 text-lg"
+              className="w-full pl-12 pr-4 py-4 rounded-lg border border-line focus:outline-none focus:ring-2 focus:ring-primary text-lg"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -189,9 +183,9 @@ export default function HelpPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className="group bg-white rounded-2xl p-6 border shadow-sm hover:shadow-lg transition-all cursor-pointer"
+                className="group bg-paper rounded-lg p-6 border border-line hover:shadow-lg transition-all cursor-pointer"
               >
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${guide.color} flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform`}>
+                <div className="w-14 h-14 rounded-lg bg-primary-soft text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                   <guide.icon className="w-7 h-7" />
                 </div>
                 <h3 className="font-bold text-lg mb-2">{guide.title}</h3>
@@ -211,13 +205,13 @@ export default function HelpPage() {
             <h2 className="text-2xl font-bold mb-6">{t("browseByTopic")}</h2>
             <div className="space-y-4">
               {filteredCategories.map((category) => (
-                <div key={category.id} className="bg-white rounded-2xl border shadow-sm overflow-hidden">
+                <div key={category.id} className="bg-paper rounded-lg border border-line overflow-hidden">
                   <button
                     onClick={() => setExpandedCategory(expandedCategory === category.id ? null : category.id)}
                     className="w-full p-6 flex items-center justify-between hover:bg-gray-50 transition-colors"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white">
+                      <div className="w-12 h-12 rounded-lg bg-primary-soft text-primary flex items-center justify-center">
                         <category.icon className="w-6 h-6" />
                       </div>
                       <div className="text-left">
@@ -245,12 +239,12 @@ export default function HelpPage() {
                           className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors border-b last:border-b-0 group"
                         >
                           <div className="flex items-center gap-3">
-                            <FileText className="w-4 h-4 text-neutral-400 group-hover:text-violet-500 transition-colors" />
-                            <span className="font-medium group-hover:text-violet-600 transition-colors">{article.title}</span>
+                            <FileText className="w-4 h-4 text-neutral-400 group-hover:text-primary transition-colors" />
+                            <span className="font-medium group-hover:text-primary transition-colors">{article.title}</span>
                           </div>
                           <div className="flex items-center gap-3">
                             <span className="text-sm text-neutral-500">{article.readTime} {t("readTimeSuffix")}</span>
-                            <ArrowRight className="w-4 h-4 text-neutral-300 group-hover:text-violet-500 opacity-0 group-hover:opacity-100 transition-all" />
+                            <ArrowRight className="w-4 h-4 text-neutral-300 group-hover:text-primary opacity-0 group-hover:opacity-100 transition-all" />
                           </div>
                         </Link>
                       ))}
@@ -264,33 +258,38 @@ export default function HelpPage() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* FAQ Section */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
-                <HelpCircle className="w-5 h-5 text-violet-500" />
+                <HelpCircle className="w-5 h-5 text-primary" />
                 {t("frequentlyAsked")}
               </h3>
-              <div className="space-y-3">
+              <div>
                 {faqs.map((faq, i) => (
-                  <div key={i} className="border-b last:border-b-0 pb-3 last:pb-0">
+                  <div key={i} className="border-t border-line first:border-t-0">
                     <button
                       onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                      className="w-full text-left flex items-start justify-between gap-2"
+                      className="w-full text-left flex items-start gap-3 py-4"
                     >
-                      <span className="font-medium text-sm">{faq.question}</span>
-                      {expandedFaq === i ? (
-                        <ChevronDown className="w-4 h-4 text-neutral-400 flex-shrink-0" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4 text-neutral-400 flex-shrink-0" />
-                      )}
+                      <span className="font-quote text-2xl text-ink/30 w-10 shrink-0 hidden sm:block">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="font-medium text-sm flex-1 min-w-0">{faq.question}</span>
+                      <span
+                        className={`font-quote text-2xl leading-none text-primary transition-transform duration-300 ${
+                          expandedFaq === i ? "-rotate-45" : ""
+                        }`}
+                      >
+                        +
+                      </span>
                     </button>
                     {expandedFaq === i && (
-                      <motion.p
+                      <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="text-sm text-neutral-600 mt-2"
+                        className="border-l-2 border-primary/20 pl-4 pb-5 ml-5 sm:ml-[3.25rem] text-sm text-neutral-600 leading-relaxed"
                       >
                         {faq.answer}
-                      </motion.p>
+                      </motion.div>
                     )}
                   </div>
                 ))}
@@ -298,17 +297,17 @@ export default function HelpPage() {
             </div>
 
             {/* Contact Card */}
-            <div className="bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl p-6 text-white">
+            <div className="bg-primary rounded-lg p-6 text-cream">
               <h3 className="font-bold text-lg mb-2">{t("needMoreHelp")}</h3>
-              <p className="text-white/90 text-sm mb-4">
+              <p className="text-cream/90 text-sm mb-4">
                 {t("needMoreHelpDesc")}
               </p>
               <div className="space-y-2">
-                <Button className="w-full bg-white text-violet-600 hover:bg-gray-100">
+                <Button className="w-full bg-cream text-primary hover:bg-cream/80">
                   <Mail className="w-4 h-4 mr-2" />
                   {t("contactSupport")}
                 </Button>
-                <Button variant="outline" className="w-full border-white text-white hover:bg-white/10">
+                <Button variant="outline" className="w-full border-cream text-cream hover:bg-cream/10">
                   <MessageSquare className="w-4 h-4 mr-2" />
                   {t("liveChat")}
                 </Button>
@@ -316,7 +315,7 @@ export default function HelpPage() {
             </div>
 
             {/* Resources */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <h3 className="font-bold text-lg mb-4">{t("resources")}</h3>
               <ul className="space-y-3">
                 {[
@@ -326,7 +325,7 @@ export default function HelpPage() {
                   { label: t("communityForum"), icon: MessageSquare },
                 ].map((item, i) => (
                   <li key={i}>
-                    <a href="#" className="flex items-center gap-2 text-neutral-600 hover:text-violet-600 transition-colors">
+                    <a href="#" className="flex items-center gap-2 text-neutral-600 hover:text-primary transition-colors">
                       <item.icon className="w-4 h-4" />
                       {item.label}
                     </a>
@@ -336,6 +335,28 @@ export default function HelpPage() {
             </div>
           </div>
         </div>
+
+        {/* CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.5 }}
+          className="mt-16 bg-primary text-cream rounded-lg p-8 md:p-10 text-center"
+        >
+          <span className="inline-block border border-cream/40 text-cream rounded-full px-4 py-1 uppercase tracking-widest text-xs mb-5">
+            {t("ctaQuestion")}
+          </span>
+          <p className="font-quote text-2xl md:text-3xl max-w-2xl mx-auto mb-8">
+            {t("faqQuote")}
+          </p>
+          <a href="mailto:support@lumiai.app" className="inline-block">
+            <Button variant="outline" className="border-cream text-cream hover:bg-cream/10 hover:text-cream">
+              <Mail className="w-4 h-4 mr-2" />
+              {t("contactSupport")}
+            </Button>
+          </a>
+        </motion.div>
       </div>
     </main>
   );

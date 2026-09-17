@@ -95,7 +95,7 @@ function Overview() {
   if (loading) {
     return (
       <div className="min-h-[40vh] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-violet-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -111,19 +111,19 @@ function Overview() {
   }
 
   return (
-    <main className="min-h-screen pt-24 pb-16 px-4">
+    <main className="min-h-screen bg-cream pt-24 pb-16 px-4">
       <div className="max-w-6xl mx-auto space-y-8">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center">
-            <Shield className="w-6 h-6 text-white" />
+          <div className="w-11 h-11 rounded-lg bg-primary flex items-center justify-center">
+            <Shield className="w-6 h-6 text-cream" />
           </div>
           <h1 className="text-3xl font-bold">{t("title")}</h1>
         </div>
 
         {/* Users */}
-        <section className="bg-white rounded-2xl shadow-sm border p-6">
+        <section className="bg-paper rounded-lg border p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Users className="w-5 h-5 text-violet-600" />
+            <Users className="w-5 h-5 text-primary" />
             <h2 className="text-lg font-bold">{t("users")} ({profiles.length})</h2>
           </div>
           {profiles.length === 0 ? (
@@ -145,9 +145,9 @@ function Overview() {
         </section>
 
         {/* Campaigns */}
-        <section className="bg-white rounded-2xl shadow-sm border p-6">
+        <section className="bg-paper rounded-lg border p-6">
           <div className="flex items-center gap-2 mb-4">
-            <Megaphone className="w-5 h-5 text-pink-600" />
+            <Megaphone className="w-5 h-5 text-primary" />
             <h2 className="text-lg font-bold">{t("campaigns")} ({campaigns.length})</h2>
           </div>
           {campaigns.length === 0 ? (
@@ -167,9 +167,9 @@ function Overview() {
         </section>
 
         {/* Applications */}
-        <section className="bg-white rounded-2xl shadow-sm border p-6">
+        <section className="bg-paper rounded-lg border p-6">
           <div className="flex items-center gap-2 mb-4">
-            <FileText className="w-5 h-5 text-orange-600" />
+            <FileText className="w-5 h-5 text-primary" />
             <h2 className="text-lg font-bold">{t("applications")} ({applications.length})</h2>
           </div>
           {applications.length === 0 ? (
