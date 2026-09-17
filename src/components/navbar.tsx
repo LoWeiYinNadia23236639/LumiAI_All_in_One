@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Menu, X, ChevronDown, Globe, Bell, LogOut, Shield, BarChart3 } from "lucide-react";
+import { Menu, X, ChevronDown, Globe, Bell, LogOut, Shield, BarChart3 } from "lucide-react";
 import { Button } from "./ui/button";
 import { useTranslations, useLocale } from "next-intl";
 import { useNotifications } from "@/contexts/notifications-context";
@@ -77,10 +78,14 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center transition-transform group-hover:scale-110">
-              <Sparkles className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-violet-600 to-pink-600 bg-clip-text text-transparent">
+            <Image
+              src="/lumi-leaf.png"
+              alt="LumiAI"
+              width={36}
+              height={36}
+              className="transition-transform group-hover:scale-110"
+            />
+            <span className="text-2xl font-bold text-ink">
               LumiAI
             </span>
           </Link>
@@ -96,7 +101,7 @@ export function Navbar() {
               >
                 <Link 
                   href={link.href}
-                  className="flex items-center gap-1 px-4 py-2 text-gray-700 hover:text-violet-600 font-medium rounded-lg hover:bg-violet-50 transition-colors"
+                  className="flex items-center gap-1 px-4 py-2 text-ink-soft hover:text-primary font-medium rounded-lg hover:bg-primary-soft transition-colors"
                 >
                   {link.label}
                   {link.dropdown && <ChevronDown className="w-4 h-4" />}
@@ -109,7 +114,7 @@ export function Navbar() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border p-2"
+                      className="absolute top-full left-0 mt-2 w-64 bg-paper rounded-xl border border-line p-2"
                     >
                       {link.dropdown.map((item) => (
                         <Link
@@ -134,7 +139,7 @@ export function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 hover:text-violet-600 rounded-lg hover:bg-violet-50 transition-colors"
+                className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-ink-soft hover:text-primary rounded-lg hover:bg-primary-soft transition-colors"
               >
                 <Globe className="w-4 h-4" />
                 {currentLang.label}
@@ -146,14 +151,14 @@ export function Navbar() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-full right-0 mt-2 w-40 bg-white rounded-xl shadow-xl border p-1"
+                    className="absolute top-full right-0 mt-2 w-40 bg-paper rounded-xl border border-line p-1"
                   >
                     {languages.map((lang) => (
                       <Link
                         key={lang.code}
                         href={`/${lang.code}`}
                         className={`block px-4 py-2 rounded-lg text-sm transition-colors ${
-                          lang.code === locale ? "bg-violet-50 text-violet-700 font-medium" : "hover:bg-gray-50 text-gray-700"
+                          lang.code === locale ? "bg-primary-soft text-primary font-medium" : "hover:bg-gray-50 text-ink-soft"
                         }`}
                         onClick={() => setLangOpen(false)}
                       >
@@ -169,7 +174,7 @@ export function Navbar() {
             <div className="relative">
               <button
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="relative p-2 text-gray-700 hover:text-violet-600 rounded-lg hover:bg-violet-50 transition-colors"
+                className="relative p-2 text-ink-soft hover:text-primary rounded-lg hover:bg-primary-soft transition-colors"
               >
                 <Bell className="w-5 h-5" />
                 {unreadCount > 0 && (
@@ -184,12 +189,12 @@ export function Navbar() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute top-full right-0 mt-2 w-80 bg-white rounded-xl shadow-xl border p-3"
+                    className="absolute top-full right-0 mt-2 w-80 bg-paper rounded-xl border border-line p-3"
                   >
                     <div className="flex items-center justify-between px-2 py-1 mb-2">
                       <span className="font-semibold text-sm">{t("notifications")}</span>
                       {unreadCount > 0 && (
-                        <button onClick={markAllAsRead} className="text-xs text-violet-600 hover:underline">
+                        <button onClick={markAllAsRead} className="text-xs text-primary hover:underline">
                           {t("markAllRead")}
                         </button>
                       )}
@@ -202,10 +207,10 @@ export function Navbar() {
                         <button
                           key={n.id}
                           onClick={() => { markAsRead(n.id); setNotifOpen(false); }}
-                          className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${n.read ? "bg-white" : "bg-violet-50"}`}
+                          className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${n.read ? "bg-paper" : "bg-primary-soft"}`}
                         >
                           <div className="flex items-start gap-2">
-                            <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.read ? "bg-gray-300" : "bg-violet-500"}`} />
+                            <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.read ? "bg-gray-300" : "bg-primary"}`} />
                             <div className="flex-1">
                               <p className={`text-sm ${n.read ? "font-medium text-neutral-700" : "font-semibold text-neutral-900"}`}>{n.title}</p>
                               <p className="text-xs text-neutral-500">{n.message}</p>
@@ -225,9 +230,9 @@ export function Navbar() {
                 <div className="relative">
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-xl hover:bg-violet-50 transition-colors"
+              className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-xl hover:bg-primary-soft transition-colors"
             >
-              <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${user.avatarColor} flex items-center justify-center text-white font-bold text-xs`}>
+              <div className={`w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-xs`}>
                 {user.avatar}
               </div>
               <ChevronDown className="w-4 h-4 text-gray-500" />
@@ -238,7 +243,7 @@ export function Navbar() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
-                  className="absolute top-full right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border p-2"
+                  className="absolute top-full right-0 mt-2 w-56 bg-paper rounded-xl border border-line p-2"
                 >
                   <div className="px-3 py-2 border-b mb-1">
                     <p className="font-semibold text-sm text-gray-900 truncate">{user.name}</p>
@@ -247,7 +252,7 @@ export function Navbar() {
                   <Link
                     href={dashboardPath}
                     onClick={() => setUserMenuOpen(false)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-ink-soft hover:bg-primary-soft hover:text-primary transition-colors"
                   >
                     <BarChart3 className="w-4 h-4" />
                     {t("dashboard")}
@@ -256,7 +261,7 @@ export function Navbar() {
                     <Link
                       href="/admin/overview"
                       onClick={() => setUserMenuOpen(false)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-violet-50 hover:text-violet-600 transition-colors"
+                      className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-ink-soft hover:bg-primary-soft hover:text-primary transition-colors"
                     >
                       <Shield className="w-4 h-4" />
                       {t("admin")}
@@ -264,7 +269,7 @@ export function Navbar() {
                   )}
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 transition-colors"
+                    className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-ink-soft hover:bg-red-50 hover:text-red-600 transition-colors"
                   >
                     <LogOut className="w-4 h-4" />
                     {t("logout")}
@@ -302,14 +307,14 @@ export function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-white border-t"
+            className="md:hidden bg-paper border-t border-line"
           >
             <div className="px-4 py-4 space-y-2">
               {navLinks.map((link) => (
                 <div key={link.label}>
                   <Link 
                     href={link.href}
-                    className="block px-4 py-3 text-gray-700 font-medium rounded-lg hover:bg-gray-50"
+                    className="block px-4 py-3 text-ink-soft font-medium rounded-lg hover:bg-gray-50"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {link.label}
@@ -320,7 +325,7 @@ export function Navbar() {
                         <Link
                           key={item.label}
                           href={item.href}
-                          className="block px-4 py-2 text-sm text-gray-600 rounded-lg hover:bg-gray-50"
+                          className="block px-4 py-2 text-sm text-neutral-600 rounded-lg hover:bg-gray-50"
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           {item.label}
@@ -338,7 +343,7 @@ export function Navbar() {
                       href={`/${lang.code}`}
                       onClick={() => setMobileMenuOpen(false)}
                       className={`px-3 py-1.5 rounded-lg text-sm ${
-                        lang.code === locale ? "bg-violet-100 text-violet-700 font-medium" : "bg-gray-100 text-gray-700"
+                        lang.code === locale ? "bg-primary-soft text-primary font-medium" : "bg-gray-100 text-ink-soft"
                       }`}
                     >
                       {lang.label}
@@ -349,7 +354,7 @@ export function Navbar() {
                   (user ? (
                     <div className="px-4 pt-2 space-y-2">
                       <div className="flex items-center gap-3 px-1 pb-2">
-                        <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${user.avatarColor} flex items-center justify-center text-white font-bold text-sm`}>
+                        <div className={`w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-white font-bold text-sm`}>
                           {user.avatar}
                         </div>
                         <div className="min-w-0">

@@ -1,7 +1,8 @@
 "use client";
 
 import { ReactNode } from "react";
-import { Sparkles, CheckCircle, AlertCircle } from "lucide-react";
+import Image from "next/image";
+import { CheckCircle, AlertCircle } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 /**
@@ -22,12 +23,10 @@ export function AuthLayout({
   return (
     <main className="min-h-screen flex">
       {/* Left Side - Visual */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-violet-600 via-pink-500 to-orange-400 items-center justify-center p-12">
+      <div className="hidden lg:flex lg:w-1/2 bg-primary items-center justify-center p-12">
         <div className="max-w-md text-white">
           <div className="flex items-center gap-3 mb-8">
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-              <Sparkles className="w-7 h-7" />
-            </div>
+            <Image src="/lumi-leaf-cream.png" alt="LumiAI" width={44} height={44} />
             <span className="text-3xl font-bold">LumiAI</span>
           </div>
 
@@ -46,14 +45,12 @@ export function AuthLayout({
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-white overflow-y-auto">
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-cream overflow-y-auto">
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-3 mb-8 justify-center">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center">
-              <Sparkles className="w-6 h-6 text-white" />
-            </div>
-            <span className="text-2xl font-bold gradient-text">LumiAI</span>
+            <Image src="/lumi-leaf.png" alt="LumiAI" width={36} height={36} />
+            <span className="text-2xl font-bold text-primary">LumiAI</span>
           </div>
 
           {children}
