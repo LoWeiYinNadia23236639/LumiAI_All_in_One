@@ -114,7 +114,7 @@ export default function EquipmentMessagesPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-orange-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="flex items-center gap-4 mb-6">
@@ -131,7 +131,7 @@ export default function EquipmentMessagesPage() {
           <p className="text-neutral-600">{t("communicateOwners")}</p>
         </div>
 
-        <div className="bg-white rounded-2xl border shadow-lg overflow-hidden h-[600px]">
+        <div className="bg-paper rounded-lg border overflow-hidden h-[600px]">
           <div className="grid grid-cols-3 h-full">
             {/* Conversations List */}
             <div className="border-r">
@@ -141,7 +141,7 @@ export default function EquipmentMessagesPage() {
                   <input 
                     type="text"
                     placeholder={t("searchConversations")}
-                    className="w-full pl-9 pr-4 py-2 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="w-full pl-9 pr-4 py-2 rounded-xl border text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   />
                 </div>
               </div>
@@ -151,10 +151,10 @@ export default function EquipmentMessagesPage() {
                     key={conv.id}
                     onClick={() => setSelectedConversation(conv)}
                     className={`w-full p-4 flex gap-3 hover:bg-gray-50 transition-colors text-left ${
-                      selectedConversation.id === conv.id ? "bg-orange-50 border-l-4 border-orange-500" : ""
+                      selectedConversation.id === conv.id ? "bg-primary-soft border-l-4 border-primary" : ""
                     }`}
                   >
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold flex-shrink-0">
+                    <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center text-cream font-bold flex-shrink-0">
                       {conv.owner.avatar}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -171,7 +171,7 @@ export default function EquipmentMessagesPage() {
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-xs text-neutral-400">{conv.lastMessage.time}</span>
                         {conv.lastMessage.unread && (
-                          <span className="w-2 h-2 bg-orange-500 rounded-full" />
+                          <span className="w-2 h-2 bg-primary rounded-full" />
                         )}
                       </div>
                     </div>
@@ -185,7 +185,7 @@ export default function EquipmentMessagesPage() {
               {/* Chat Header */}
               <div className="p-4 border-b flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center text-white font-bold">
+                  <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-cream font-bold">
                     {selectedConversation.owner.avatar}
                   </div>
                   <div>
@@ -209,7 +209,7 @@ export default function EquipmentMessagesPage() {
               </div>
 
               {/* Equipment Info Banner */}
-              <div className="p-3 bg-orange-50 border-b flex items-center justify-between">
+              <div className="p-3 bg-primary-soft border-b flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{selectedConversation.equipment.image}</span>
                   <div>
@@ -217,7 +217,7 @@ export default function EquipmentMessagesPage() {
                     <p className="text-xs text-neutral-500">{selectedConversation.equipment.price}</p>
                   </div>
                 </div>
-                <Link href="/equipment/book">
+                <Link href="/equipment">
                   <Button size="sm" variant="outline">{t("viewItem")}</Button>
                 </Link>
               </div>
@@ -231,9 +231,9 @@ export default function EquipmentMessagesPage() {
                     animate={{ opacity: 1, y: 0 }}
                     className={`flex ${msg.sender === "me" ? "justify-end" : "justify-start"}`}
                   >
-                    <div className={`max-w-[70%] ${msg.sender === "me" ? "bg-orange-500 text-white" : "bg-gray-100 text-neutral-900"} rounded-2xl px-4 py-3`}>
+                    <div className={`max-w-[70%] ${msg.sender === "me" ? "bg-primary text-cream" : "bg-gray-100 text-neutral-900"} rounded-lg px-4 py-3`}>
                       <p>{msg.text}</p>
-                      <p className={`text-xs mt-1 ${msg.sender === "me" ? "text-orange-100" : "text-neutral-500"}`}>
+                      <p className={`text-xs mt-1 ${msg.sender === "me" ? "text-cream/70" : "text-neutral-500"}`}>
                         {msg.time}
                         {msg.sender === "me" && <CheckCheck className="w-3 h-3 inline ml-1" />}
                       </p>
@@ -248,13 +248,12 @@ export default function EquipmentMessagesPage() {
                   <input
                     type="text"
                     placeholder={tm("typeMessage")}
-                    className="flex-1 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="flex-1 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
                     value={messageInput}
                     onChange={(e) => setMessageInput(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && sendMessage()}
                   />
                   <Button 
-                    className="bg-gradient-to-r from-orange-500 to-amber-500"
                     onClick={sendMessage}
                     disabled={!messageInput.trim()}
                   >

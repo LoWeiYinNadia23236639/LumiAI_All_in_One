@@ -203,7 +203,7 @@ function AdminInspectionPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -216,8 +216,8 @@ function AdminInspectionPage() {
             </button>
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Shield className="w-5 h-5 text-violet-600" />
-                <span className="font-medium text-violet-600">Admin Inspection</span>
+                <Shield className="w-5 h-5 text-primary" />
+                <span className="font-medium text-primary">Admin Inspection</span>
                 <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full font-medium">
                   Action Required
                 </span>
@@ -256,10 +256,10 @@ function AdminInspectionPage() {
           {/* Left Sidebar - Parties Info */}
           <div className="space-y-4">
             {/* Gear Info */}
-            <div className="bg-white rounded-2xl border shadow-sm p-4">
+            <div className="bg-paper rounded-lg border border-line p-4">
               <h3 className="font-semibold mb-3 text-sm">Gear Information</h3>
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center text-2xl">
+                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-2xl">
                   {adminInspectionData.gear.image}
                 </div>
                 <div>
@@ -280,10 +280,10 @@ function AdminInspectionPage() {
             </div>
 
             {/* Owner Info */}
-            <div className="bg-white rounded-2xl border shadow-sm p-4">
+            <div className="bg-paper rounded-lg border border-line p-4">
               <h3 className="font-semibold mb-3 text-sm">Owner</h3>
               <div className="flex items-center gap-3 mb-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${adminInspectionData.owner.avatarColor} flex items-center justify-center text-white font-bold text-sm`}>
+                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-cream font-bold text-sm">
                   {adminInspectionData.owner.avatar}
                 </div>
                 <div>
@@ -307,10 +307,10 @@ function AdminInspectionPage() {
             </div>
 
             {/* Renter Info */}
-            <div className="bg-white rounded-2xl border shadow-sm p-4">
+            <div className="bg-paper rounded-lg border border-line p-4">
               <h3 className="font-semibold mb-3 text-sm">Renter</h3>
               <div className="flex items-center gap-3 mb-3">
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${adminInspectionData.renter.avatarColor} flex items-center justify-center text-white font-bold text-sm`}>
+                <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center text-cream font-bold text-sm">
                   {adminInspectionData.renter.avatar}
                 </div>
                 <div>
@@ -334,7 +334,7 @@ function AdminInspectionPage() {
             </div>
 
             {/* Rental Summary */}
-            <div className="bg-white rounded-2xl border shadow-sm p-4">
+            <div className="bg-paper rounded-lg border border-line p-4">
               <h3 className="font-semibold mb-3 text-sm">Rental Summary</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -369,7 +369,7 @@ function AdminInspectionPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     activeTab === tab.id
-                      ? "bg-white text-violet-600 shadow-sm"
+                      ? "bg-white text-primary shadow-sm"
                       : "text-neutral-600 hover:text-neutral-900"
                   }`}
                 >
@@ -383,7 +383,7 @@ function AdminInspectionPage() {
             {activeTab === "overview" && (
               <div className="space-y-6">
                 {/* AI Verdict */}
-                <div className="bg-gradient-to-r from-violet-500 to-purple-600 rounded-2xl p-6 text-white">
+                <div className="bg-primary rounded-lg p-6 text-cream">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <BadgeCheck className="w-6 h-6" />
@@ -413,7 +413,7 @@ function AdminInspectionPage() {
                 </div>
 
                 {/* Comparison Detail */}
-                <div className="bg-white rounded-2xl border shadow-sm p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h3 className="font-semibold mb-4">Damage Comparison</h3>
                   {adminInspectionData.aiAnalysis.comparison.map((item, i) => (
                     <div key={i} className="space-y-4">
@@ -453,17 +453,17 @@ function AdminInspectionPage() {
 
                 {/* Party Statements */}
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-orange-50 rounded-2xl border border-orange-100 p-6">
+                  <div className="bg-yellow-50 rounded-lg border border-yellow-100 p-6">
                     <h4 className="font-semibold text-orange-900 mb-2">Owner Statement</h4>
                     <p className="text-sm text-orange-800">{adminInspectionData.owner.notes}</p>
                     <p className="text-xs text-orange-600 mt-2">
                       Submitted Apr 15, 8:30 PM
                     </p>
                   </div>
-                  <div className="bg-blue-50 rounded-2xl border border-blue-100 p-6">
+                  <div className="bg-primary-soft rounded-lg border border-line p-6">
                     <h4 className="font-semibold text-blue-900 mb-2">Renter Statement</h4>
                     <p className="text-sm text-blue-800">{adminInspectionData.renter.notes}</p>
-                    <p className="text-xs text-blue-600 mt-2">
+                    <p className="text-xs text-primary mt-2">
                       Acknowledged during return
                     </p>
                   </div>
@@ -473,12 +473,12 @@ function AdminInspectionPage() {
 
             {/* AI Analysis Tab */}
             {activeTab === "ai" && (
-              <div className="bg-white rounded-2xl border shadow-sm p-6">
+              <div className="bg-paper rounded-lg border border-line p-6">
                 <h3 className="font-semibold mb-4">Detailed AI Analysis</h3>
                 <div className="space-y-4">
-                  <div className="p-4 bg-violet-50 rounded-xl">
-                    <h4 className="font-medium text-violet-900 mb-2">Image Comparison Algorithm</h4>
-                    <ul className="text-sm text-violet-800 space-y-1">
+                  <div className="p-4 bg-primary-soft rounded-xl">
+                    <h4 className="font-medium text-primary mb-2">Image Comparison Algorithm</h4>
+                    <ul className="text-sm text-primary space-y-1">
                       <li>• Compared 12 feature points across 7 photos</li>
                       <li>• Detected surface texture change on top plate</li>
                       <li>• Scratch depth estimated at 0.3mm (cosmetic only)</li>
@@ -506,7 +506,7 @@ function AdminInspectionPage() {
             {/* Photos Tab */}
             {activeTab === "photos" && (
               <div className="space-y-6">
-                <div className="bg-white rounded-2xl border shadow-sm p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h3 className="font-semibold mb-4">Pickup Photos</h3>
                   <div className="grid grid-cols-3 gap-3">
                     {adminInspectionData.photos.pickup.map((photo, i) => (
@@ -525,7 +525,7 @@ function AdminInspectionPage() {
                   </div>
                 </div>
 
-                <div className="bg-white rounded-2xl border shadow-sm p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h3 className="font-semibold mb-4">Return Photos</h3>
                   <div className="grid grid-cols-3 gap-3">
                     {adminInspectionData.photos.return.map((photo, i) => (
@@ -552,7 +552,7 @@ function AdminInspectionPage() {
 
             {/* Checklist Tab */}
             {activeTab === "checklist" && (
-              <div className="bg-white rounded-2xl border shadow-sm p-6">
+              <div className="bg-paper rounded-lg border border-line p-6">
                 <h3 className="font-semibold mb-4">Condition Checklist</h3>
                 <div className="space-y-2">
                   {Object.entries(adminInspectionData.checklist).map(([key, value]) => (
@@ -583,7 +583,7 @@ function AdminInspectionPage() {
 
             {/* Timeline Tab */}
             {activeTab === "timeline" && (
-              <div className="bg-white rounded-2xl border shadow-sm p-6">
+              <div className="bg-paper rounded-lg border border-line p-6">
                 <h3 className="font-semibold mb-4">Inspection Timeline</h3>
                 <div className="space-y-0">
                   {adminInspectionData.timeline.map((event, i) => (
@@ -593,11 +593,11 @@ function AdminInspectionPage() {
                       )}
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                         event.type === 'system' ? 'bg-gray-100' : 
-                        event.type === 'inspection' ? 'bg-violet-100' : 'bg-gray-100'
+                        event.type === 'inspection' ? 'bg-primary-soft' : 'bg-gray-100'
                       }`}>
                         <Clock className={`w-5 h-5 ${
                           event.type === 'system' ? 'text-gray-600' : 
-                          event.type === 'inspection' ? 'text-violet-600' : 'text-gray-600'
+                          event.type === 'inspection' ? 'text-primary' : 'text-gray-600'
                         }`} />
                       </div>
                       <div className="flex-1 pt-1">
@@ -614,16 +614,16 @@ function AdminInspectionPage() {
           {/* Right Sidebar - Admin Actions */}
           <div className="space-y-4">
             {/* Decision Card */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6 sticky top-24">
+            <div className="bg-paper rounded-lg border border-line p-6 sticky top-24">
               <h3 className="font-bold mb-4 flex items-center gap-2">
                 <Gavel className="w-5 h-5" />
                 Admin Decision
               </h3>
 
               {/* AI Recommendation */}
-              <div className="p-3 bg-violet-50 rounded-xl mb-4">
-                <p className="text-xs text-violet-600 font-medium mb-1">AI Recommendation</p>
-                <p className="text-sm text-violet-900">Approve with $50 deduction from deposit</p>
+              <div className="p-3 bg-primary-soft rounded-xl mb-4">
+                <p className="text-xs text-primary font-medium mb-1">AI Recommendation</p>
+                <p className="text-sm text-primary">Approve with $50 deduction from deposit</p>
               </div>
 
               {/* Suggested Actions */}
@@ -645,7 +645,7 @@ function AdminInspectionPage() {
                       (suggestion.action === "partial_refund" && adminDecision === "deduct") ||
                       (suggestion.action === "full_refund" && adminDecision === "approve") ||
                       (suggestion.action === "hold_deposit" && adminDecision === "dispute")
-                        ? 'border-violet-500 bg-violet-50' 
+                        ? 'border-violet-500 bg-primary-soft' 
                         : 'border-gray-100 hover:border-gray-200'
                     }`}
                   >
@@ -669,7 +669,7 @@ function AdminInspectionPage() {
                       value={deductAmount}
                       onChange={(e) => setDeductAmount(e.target.value)}
                       max="800"
-                      className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-violet-500"
+                      className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                   <p className="text-xs text-neutral-500 mt-1">
@@ -685,13 +685,13 @@ function AdminInspectionPage() {
                   value={adminNotes}
                   onChange={(e) => setAdminNotes(e.target.value)}
                   placeholder="Add your reasoning for this decision..."
-                  className="w-full h-24 px-3 py-2 border rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="w-full h-24 px-3 py-2 border rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
 
               {/* Release Decision Button */}
               <Button 
-                className="w-full bg-violet-500 hover:bg-violet-600 mb-2"
+                className="w-full bg-primary hover:bg-primary/90 mb-2"
                 disabled={!adminDecision}
                 onClick={handleReleaseDecision}
               >
@@ -729,7 +729,7 @@ function AdminInspectionPage() {
               <X className="w-6 h-6" />
             </button>
             <div className="max-w-4xl w-full">
-              <div className="bg-gray-800 rounded-2xl overflow-hidden">
+              <div className="bg-ink rounded-lg overflow-hidden">
                 <div className="aspect-video bg-gray-700 flex items-center justify-center">
                   <Camera className="w-16 h-16 text-gray-500" />
                 </div>
@@ -752,7 +752,7 @@ function AdminInspectionPage() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-2xl w-full max-w-md p-6"
+              className="bg-paper rounded-lg w-full max-w-md p-6"
             >
               <h3 className="font-bold text-lg mb-4">Admin Override Options</h3>
               <div className="space-y-3 mb-6">

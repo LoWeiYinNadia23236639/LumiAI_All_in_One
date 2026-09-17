@@ -132,7 +132,7 @@ function InspectionPage() {
   const data = inspectionData;
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-white via-gray-50 to-white pt-24 pb-16">
+    <main className="min-h-screen bg-cream pt-24 pb-16">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -144,7 +144,7 @@ function InspectionPage() {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <div className="flex items-center gap-2 text-amber-600 mb-1">
+              <div className="flex items-center gap-2 text-primary mb-1">
                 <CheckCheck className="w-5 h-5" />
                 <span className="font-medium">Return Inspection</span>
               </div>
@@ -164,9 +164,9 @@ function InspectionPage() {
           {/* Left Column - Gear & People */}
           <div className="space-y-6">
             {/* Gear Card */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center text-4xl">
+                <div className="w-20 h-20 bg-primary-soft rounded-xl flex items-center justify-center text-4xl">
                   {data.rental.gear.image}
                 </div>
                 <div>
@@ -192,13 +192,13 @@ function InspectionPage() {
             </div>
 
             {/* Renter Card */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <h3 className="font-semibold mb-4 flex items-center gap-2">
                 <User className="w-4 h-4" />
                 Renter
               </h3>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white font-bold">
+                <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-cream font-bold">
                   {data.rental.renter.avatar}
                 </div>
                 <div>
@@ -223,7 +223,7 @@ function InspectionPage() {
             </div>
 
             {/* Rental Details */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <h3 className="font-semibold mb-4">Rental Details</h3>
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
@@ -287,7 +287,7 @@ function InspectionPage() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all flex-1 justify-center ${
                     activeTab === tab.id
-                      ? "bg-white text-amber-600 shadow-sm"
+                      ? "bg-paper text-primary shadow-sm"
                       : "text-neutral-600 hover:text-neutral-900"
                   }`}
                 >
@@ -301,7 +301,7 @@ function InspectionPage() {
             {activeTab === "overview" && (
               <div className="space-y-6">
                 {/* Photos Summary */}
-                <div className="bg-white rounded-2xl border shadow-sm p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h3 className="font-semibold mb-4">Photo Comparison</h3>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div>
@@ -352,7 +352,7 @@ function InspectionPage() {
                 </div>
 
                 {/* Checklist Summary */}
-                <div className="bg-white rounded-2xl border shadow-sm p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h3 className="font-semibold mb-4">Condition Checklist</h3>
                   <div className="space-y-2">
                     {Object.entries(data.checklist).slice(0, 4).map(([key, value]) => (
@@ -380,12 +380,12 @@ function InspectionPage() {
                 </div>
 
                 {/* Notes */}
-                <div className="bg-white rounded-2xl border shadow-sm p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h3 className="font-semibold mb-4">Notes</h3>
                   <div className="space-y-3">
-                    <div className="p-3 bg-blue-50 rounded-lg">
-                      <p className="text-sm font-medium text-blue-900">Renter Note</p>
-                      <p className="text-sm text-blue-800 mt-1">{data.notes.renter}</p>
+                    <div className="p-3 bg-primary-soft rounded-lg">
+                      <p className="text-sm font-medium text-primary">Renter Note</p>
+                      <p className="text-sm text-ink-soft mt-1">{data.notes.renter}</p>
                     </div>
                     {data.notes.return && (
                       <div className="p-3 bg-gray-50 rounded-lg">
@@ -402,7 +402,7 @@ function InspectionPage() {
             {activeTab === "photos" && (
               <div className="space-y-6">
                 {/* Pickup Photos */}
-                <div className="bg-white rounded-2xl border shadow-sm p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h3 className="font-semibold mb-4">Pickup Photos ({data.photos.pickup.length})</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {data.photos.pickup.map((photo, i) => (
@@ -419,7 +419,7 @@ function InspectionPage() {
                 </div>
 
                 {/* Return Photos */}
-                <div className="bg-white rounded-2xl border shadow-sm p-6">
+                <div className="bg-paper rounded-lg border border-line p-6">
                   <h3 className="font-semibold mb-4">Return Photos ({data.photos.return.length})</h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {data.photos.return.map((photo, i) => (
@@ -443,7 +443,7 @@ function InspectionPage() {
 
             {/* Checklist Tab */}
             {activeTab === "checklist" && (
-              <div className="bg-white rounded-2xl border shadow-sm p-6">
+              <div className="bg-paper rounded-lg border border-line p-6">
                 <h3 className="font-semibold mb-4">Detailed Condition Checklist</h3>
                 <div className="space-y-2">
                   {Object.entries(data.checklist).map(([key, value]) => (
@@ -470,7 +470,7 @@ function InspectionPage() {
 
             {/* Timeline Tab */}
             {activeTab === "timeline" && (
-              <div className="bg-white rounded-2xl border shadow-sm p-6">
+              <div className="bg-paper rounded-lg border border-line p-6">
                 <h3 className="font-semibold mb-4">Rental Timeline</h3>
                 <div className="space-y-0">
                   {data.timeline.map((event, i) => (
@@ -492,7 +492,7 @@ function InspectionPage() {
             )}
 
             {/* Decision Section */}
-            <div className="bg-white rounded-2xl border shadow-sm p-6">
+            <div className="bg-paper rounded-lg border border-line p-6">
               <h3 className="font-semibold mb-4">Your Decision</h3>
               
               {/* Decision Options */}
@@ -548,7 +548,7 @@ function InspectionPage() {
                       value={deductAmount}
                       onChange={(e) => setDeductAmount(e.target.value)}
                       placeholder="Enter amount to deduct"
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                     />
                   </div>
                 </div>
@@ -561,7 +561,7 @@ function InspectionPage() {
                   value={inspectionNote}
                   onChange={(e) => setInspectionNote(e.target.value)}
                   placeholder="Describe your findings and decision reasoning..."
-                  className="w-full h-24 px-4 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-amber-500"
+                  className="w-full h-24 px-4 py-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary"
                 />
               </div>
 
@@ -597,7 +597,7 @@ function InspectionPage() {
               <XCircle className="w-6 h-6" />
             </button>
             <div className="max-w-4xl w-full">
-              <div className="bg-gray-800 rounded-2xl overflow-hidden">
+              <div className="bg-gray-800 rounded-lg overflow-hidden">
                 <div className="aspect-video bg-gray-700 flex items-center justify-center">
                   <Camera className="w-16 h-16 text-gray-500" />
                 </div>
@@ -640,8 +640,8 @@ function InspectionPage() {
         {/* Comparison Modal */}
         {showComparison && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto">
-              <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+            <div className="bg-paper rounded-lg w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+              <div className="sticky top-0 bg-paper border-b p-4 flex items-center justify-between">
                 <h3 className="font-bold">Photo Comparison</h3>
                 <button 
                   onClick={() => setShowComparison(false)}
