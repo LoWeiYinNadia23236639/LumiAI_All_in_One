@@ -48,19 +48,19 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <Shield className="w-16 h-16 text-red-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Admin Access Only</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("adminOnly.title")}</h2>
           <p className="text-neutral-600 mb-2">
-            You are signed in as <strong>{user.name}</strong> ({user.role})
+            {t.rich("adminOnly.signedInAs", { name: user.name, role: user.role, b: (chunks) => <strong>{chunks}</strong> })}
           </p>
           <p className="text-neutral-600 mb-6">
-            This page is restricted to administrators only. If you need admin access, please contact support.
+            {t("adminOnly.description")}
           </p>
           <div className="flex gap-3 justify-center">
             <Link href="/">
-              <Button variant="outline">Go Home</Button>
+              <Button variant="outline">{t("accessDenied.goHome")}</Button>
             </Link>
             <Link href={user.role === "company" ? "/analytics/company" : "/analytics"}>
-              <Button>Go to Dashboard</Button>
+              <Button>{t("adminOnly.goToDashboard")}</Button>
             </Link>
           </div>
         </div>

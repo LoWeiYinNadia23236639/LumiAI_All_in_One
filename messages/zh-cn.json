@@ -135,7 +135,42 @@
     "waitlistButton": "加入等候名单",
     "waitlistSuccess": "已成功加入等候名单！有名额时我们会以邮箱通知你。",
     "waitlistDuplicate": "这个邮箱已在等候名单中。",
-    "waitlistError": "发生错误，请再试一次。"
+    "waitlistError": "发生错误，请再试一次。",
+    "supercharge": {
+      "titleBefore": "以三种方式",
+      "titleHighlight": "加速",
+      "titleAfter": "你的事业",
+      "aiHubStats": "分镜、文案等更多功能",
+      "aiHubFeatures": [
+        "分镜 AI",
+        "文案生成器",
+        "合同扫描器"
+      ],
+      "marketplaceStats": "品牌合作与推广活动",
+      "marketplaceFeatures": [
+        "寻找活动",
+        "发掘创作者",
+        "安全付款"
+      ],
+      "rentalStats": "向创作者租赁器材",
+      "rentalFeatures": [
+        "按日期预订",
+        "联系物主",
+        "有保障的租赁"
+      ],
+      "explore": "探索 {title}"
+    },
+    "footer": {
+      "aiHub": "AI 中心",
+      "marketplace": "市集",
+      "rentGear": "租赁器材",
+      "helpCenter": "帮助中心",
+      "creatorLogin": "创作者登录",
+      "brandLogin": "品牌登录",
+      "documentation": "使用文档",
+      "tutorials": "教程",
+      "contactSupport": "联系客服"
+    }
   },
   "auth": {
     "welcomeBack": "欢迎回来",
@@ -155,7 +190,12 @@
     "terms": "继续即表示你同意我们的服务条款及隐私政策",
     "authRequired": "需要登录",
     "pleaseSignIn": "请登录以浏览此页面。",
-    "adminOnly": "仅限管理员",
+    "adminOnly": {
+      "title": "仅限管理员",
+      "signedInAs": "你当前以 <b>{name}</b>（{role}）身份登录",
+      "description": "此页面仅限管理员使用。如需管理员权限，请联系客服。",
+      "goToDashboard": "前往仪表板"
+    },
     "findBrandDeals": "寻找品牌合作",
     "rentGear": "租借设备",
     "analytics": "数据分析",
@@ -179,7 +219,21 @@
     "haveAccount": "已经有帐户了？",
     "signingIn": "登录中...",
     "aiFeatures": "AI 分镜及文案生成",
-    "emailPlaceholder": "you@example.com"
+    "emailPlaceholder": "you@example.com",
+    "accessDenied": {
+      "title": "拒绝访问",
+      "signedInAs": "你当前以 <b>{name}</b>（{role}）身份登录",
+      "descDefault": "你无权访问此页面。",
+      "descCreator": "此页面面向其他用户类型。请改用你的创作者仪表板。",
+      "descCompany": "此页面面向其他用户类型。请改用你的公司仪表板。",
+      "descAdmin": "此页面不适用于管理员。",
+      "roleUser": "用户",
+      "roleCreator": "创作者",
+      "roleCompany": "品牌公司",
+      "roleAdmin": "管理员",
+      "goHome": "返回首页",
+      "goToDashboard": "前往你的仪表板"
+    }
   },
   "marketplace": {
     "twoWayMarketplace": "双向市集",
@@ -370,7 +424,33 @@
         "value": "Lifestyle",
         "label": "生活方式"
       }
-    ]
+    ],
+    "creatorProfile": {
+      "website": "网站",
+      "viewsCount": "{count} 次观看",
+      "likesCount": "{count} 个赞",
+      "contactTitle": "有兴趣合作吗？",
+      "responseLine": "{name} 通常会在 24 小时内回复。",
+      "sendMessage": "发送消息",
+      "saveToList": "收藏到列表",
+      "gender": "性别",
+      "female": "女性",
+      "male": "男性",
+      "discussStyle": "聊聊这种风格",
+      "contactName": "联系 {name}",
+      "rateRangeLine": "收费范围：{range}",
+      "typicalResponse": "一般回复时间：24 小时内",
+      "companyNamePlaceholder": "你的公司名称",
+      "yourEmailPlaceholder": "你的邮箱",
+      "campaignTypePlaceholder": "选择活动类型",
+      "campaignTypes": {
+        "productReview": "产品测评",
+        "sponsoredPost": "赞助帖子",
+        "brandAmbassador": "品牌大使",
+        "eventCoverage": "活动报道"
+      },
+      "campaignGoalsPlaceholder": "告诉我你的活动和目标..."
+    }
   },
   "equipment": {
     "rentProfessionalGear": "租用专业器材",
@@ -418,7 +498,18 @@
     "proposeDates": "建议日期",
     "requestToBookShort": "申请预订",
     "viewItem": "查看项目",
-    "backToEquipment": "返回器材"
+    "backToEquipment": "返回器材",
+    "reviewsCount": "{count} 条评价",
+    "yearLabel": "年份：{year}",
+    "respondsStats": "{time} 内回复 • {count} 次租赁",
+    "viewProfile": "点击查看主页 →",
+    "message": "消息",
+    "daysCount": "{count} 天",
+    "highDemand": "需求旺盛",
+    "serviceFee": "服务费",
+    "total": "总计",
+    "typeMessage": "输入消息...",
+    "review": "评价"
   },
   "analytics": {
     "analytics": "数据分析",
@@ -577,7 +668,26 @@
       "campaignMessage": "讲讲你的活动计划...",
       "sendMessage": "发送信息",
       "messageSent": "信息已发送！创作者会在 24 小时内回复。"
-    }
+    },
+    "welcomeBackName": "欢迎回来，{name}！",
+    "businessRegistration": "商业登记",
+    "paymentMethod": "付款方式",
+    "noSavedCreators": "尚未收藏任何创作者。",
+    "savedCreatorItem": "创作者 #{id}",
+    "noSavedCampaigns": "尚未收藏任何活动。",
+    "savedCampaignItem": "活动 #{id}",
+    "browseGear": "浏览器材",
+    "markAvailable": "标记为可租",
+    "markUnavailable": "标记为不可租",
+    "perDay": "/天",
+    "conditionLabel": "成色",
+    "conditionOptions": {
+      "excellent": "极佳",
+      "good": "良好",
+      "fair": "一般"
+    },
+    "gearNamePlaceholder": "例如：Sony A7IV",
+    "gearDescPlaceholder": "简要描述该物品..."
   },
   "admin": {
     "panelTitle": "管理员面板",
@@ -688,7 +798,16 @@
     "resolved": "已解决",
     "released": "已退还",
     "filed": "已提交",
-    "dismissed": "已驳回"
+    "dismissed": "已驳回",
+    "creator": "创作者",
+    "company": "公司",
+    "submittedAt": "已于 {time} 提交",
+    "openedAt": "已于 {time} 开启",
+    "dispute": "纠纷",
+    "rentedBy": "承租人：{renter} • 上架人：{lister} • 归还：{date}",
+    "totalSimulatedCases": "模拟案例总数",
+    "aiImpactTitle": "AI 自动化成效",
+    "aiImpactDesc": "今天系统自动验证了 {verified} 个账户、解决了 {resolved} 起纠纷，并在无需管理员介入的情况下发放了 {deposits} 笔押金。"
   },
   "messages": {
     "messages": "消息",
@@ -724,7 +843,28 @@
     "rentalHistory": "租赁记录",
     "notes": "备注",
     "inspectionChecklist": "查验清单",
-    "submitInspection": "提交查验"
+    "submitInspection": "提交查验",
+    "alertApproved": "租赁申请已批准！确认消息已发送给承租人。",
+    "alertDeclined": "租赁申请已拒绝。原因：{reason}",
+    "submittedAt": "已于 {time} 提交",
+    "exportReport": "导出",
+    "forDuration": "共 {duration}",
+    "dateAtTime": "{date} 于 {time}",
+    "ratingLabel": "评分",
+    "rentalsCount": "{count} 次租赁",
+    "memberSince": "{date} 加入",
+    "sendEmail": "发邮件",
+    "call": "致电",
+    "fromOwner": "来自 {owner} • {date}",
+    "serialNumber": "序列号：{serial}",
+    "purchased": "{year} 年购入",
+    "conversationHistory": "对话记录",
+    "openFullChat": "打开完整对话",
+    "noConflict": "无冲突",
+    "declineReasonUnavailable": "该日期设备不可用",
+    "declineReasonVerification": "承租人验证不足",
+    "declineReasonHistory": "以往租赁记录有问题",
+    "declineReasonOther": "其他（请注明）"
   },
   "common": {
     "logout": "登出",
@@ -960,6 +1100,413 @@
         "比较同类型创作者…",
         "微调你的收费范围…"
       ]
+    },
+    "backToAiHub": "返回 AI 中心",
+    "advisor": {
+      "badge": "AI 市场顾问",
+      "titleBefore": "你的专属",
+      "titleHighlight": "合作助手",
+      "subtitle": "用 AI 洞察帮你建议收费、分析合同、预估项目时间、起草专业消息，并策划你的推广活动。",
+      "tabs": {
+        "rates": "收费计算器",
+        "quote": "工作报价",
+        "messages": "消息助手",
+        "planner": "项目规划师",
+        "contract": "合同扫描器"
+      },
+      "nicheLabel": "领域",
+      "followersLabel": "粉丝数",
+      "engagementLabel": "互动率",
+      "platformLabel": "主要平台",
+      "nicheOptions": [
+        "美容护肤",
+        "时尚",
+        "健身",
+        "科技",
+        "美食",
+        "旅游",
+        "生活方式"
+      ],
+      "followerOptions": [
+        "10K - 50K",
+        "50K - 100K",
+        "100K - 500K",
+        "500K+"
+      ],
+      "engagementOptions": [
+        "1-3%",
+        "3-5%",
+        "5-8%",
+        "8%+"
+      ],
+      "platformOptions": [
+        "Instagram",
+        "TikTok",
+        "YouTube",
+        "多平台"
+      ],
+      "rateDesc": "根据你的个人资料与市场数据，获取个性化收费建议。",
+      "getRateInsights": "获取收费分析",
+      "recommendedRange": "建议收费范围",
+      "perPost": "每条赞助帖子（60 秒视频）",
+      "growthRecs": "增长建议",
+      "quickStartQuote": "快速开始：选择一个示范情境",
+      "quoteTitle": "报价助手",
+      "quoteDesc": "告诉我们这份工作的内容，即可获得时间预估、定价建议与交付项目明细。",
+      "brandNameLabel": "品牌／客户名称",
+      "brandNamePlaceholder": "例如：Glow 护肤",
+      "deliverablesLabel": "需要的交付项目",
+      "deliverableLabels": [
+        "Feed 帖",
+        "Instagram Reel",
+        "限时动态系列",
+        "轮播帖",
+        "直播环节",
+        "TikTok 视频",
+        "YouTube 视频"
+      ],
+      "complexityLabel": "项目复杂度",
+      "complexityOptions": {
+        "low": "简单 — 标准内容",
+        "medium": "适中 — 需要部分创作指导",
+        "high": "复杂 — 高制作规格"
+      },
+      "timelineLabel": "时间安排",
+      "timelineOptions": {
+        "1week": "加急 — 1 周内",
+        "2weeks": "标准 — 2 周",
+        "1month": "宽松 — 1 个月"
+      },
+      "briefLabel": "项目简介摘要",
+      "briefPlaceholder": "简单描述品牌想要的内容...",
+      "generateQuote": "生成报价与时间表",
+      "recommendedPrice": "建议收费",
+      "estimatedTime": "预计所需时间",
+      "hoursUnit": "{count} 小时",
+      "estPrefix": "预计",
+      "marketPosition": "市场定位",
+      "pricePerDeliverable": "每项交付项目收费",
+      "pricingFactors": "定价因素",
+      "timelineBreakdown": "时间表细分",
+      "tryAnotherQuote": "重新报价",
+      "draftMessage": "起草消息",
+      "quickStartMessage": "快速开始：选择一个消息情境",
+      "messageDesc": "为任何场景起草专业邮件与消息。",
+      "scenarioLabel": "消息场景",
+      "clientNameLabel": "客户／品牌名称",
+      "clientNamePlaceholder": "例如：Glow 护肤的 Sarah",
+      "toneLabel": "语气",
+      "toneOptions": {
+        "professional": "专业",
+        "friendly": "友善",
+        "formal": "正式",
+        "enthusiastic": "热情"
+      },
+      "msgBriefLabel": "简介描述",
+      "msgBriefPlaceholder": "描述项目或者背景...",
+      "pointsLabel": "想包含的重点",
+      "pointsPlaceholder": "任何你想提到的具体细节、要求或者重点...",
+      "generateMessage": "生成消息",
+      "draftBadge": "消息草稿",
+      "subjectLabel": "主旨：",
+      "copiedExcl": "已复制！",
+      "copyToClipboard": "复制到剪贴板",
+      "newMessage": "新消息",
+      "tipsTitle": "这条消息的小贴士",
+      "tryTones": "试试其他语气",
+      "quickStartPlanner": "快速开始：选择一个活动模板",
+      "twoWeeks": "2 周",
+      "oneMonth": "1 个月",
+      "twoMonths": "2 个月",
+      "plannerDesc": "建立详细的项目计划，包括任务细分、时间表与内容日历。",
+      "campaignNameLabel": "活动名称",
+      "campaignNamePlaceholder": "例如：夏季系列发布",
+      "durationLabel": "活动时长",
+      "platformsLabel": "目标平台",
+      "contentCountLabel": "内容数量：",
+      "onePiece": "1 条",
+      "tenPieces": "10 条",
+      "goalsLabel": "活动目标",
+      "goalsPlaceholder": "这个活动的主要目标是什么？",
+      "generatePlan": "生成项目计划",
+      "campaignPlanFallback": "活动计划",
+      "totalDuration": "总时长",
+      "daysUnit": "{count} 天",
+      "keyMilestones": "主要里程碑",
+      "contentPieces": "内容数量",
+      "criticalDates": "关键日期",
+      "phaseBreakdown": "阶段细分",
+      "tasksLabel": "任务",
+      "deliverablesTitle": "交付项目",
+      "createNewPlan": "建立新计划",
+      "quickStartContract": "看看怎么运作：试试示范合同",
+      "sampleStandard": "标准品牌合作",
+      "sampleFair": "公平合同",
+      "sampleConcerning": "有隐忧的条款",
+      "sampleStandardDesc": "条款参差的典型创作者合同",
+      "sampleFairDesc": "对创作者友好的平衡合同",
+      "sampleConcerningDesc": "有多个风险信号，包括过度的使用权",
+      "scoreBadge": "评分：{score}/100",
+      "reviewNeeded": "需要复核",
+      "fairDeal": "公平交易",
+      "highRisk": "高风险",
+      "contractDesc": "上传你的品牌合同，我们的 AI 会分析其中的漏洞、不公条款与风险信号。",
+      "uploadTitle": "点击上传或者拖曳文件到此",
+      "uploadHint": "PDF、DOC 或 DOCX（上限 10MB）",
+      "privacyLabel": "隐私提示：",
+      "privacyText": "你的合同会被安全处理，我们不会存储。建议上传前移除敏感个人信息。",
+      "scanButton": "扫描问题",
+      "fairnessScore": "合同公平评分",
+      "fairBadge": "✓ 公平",
+      "reviewBadge": "⚠ 需复核",
+      "riskyBadge": "⚠ 有风险",
+      "redFlags": "风险信号（{count}）",
+      "potentialRisks": "潜在风险",
+      "recommendedChanges": "建议修改",
+      "scanAnother": "再扫描一次",
+      "legendRedFlag": "风险信号",
+      "legendGoodClause": "良好条款"
+    },
+    "hub": {
+      "badge": "AI 驱动的创作者工具",
+      "titleBefore": "用 AI 提升你的",
+      "titleHighlight": "内容",
+      "subtitle": "生成视觉分镜、撰写爆款文案、获取市场洞察、分析合同 — 全部由 AI 驱动。",
+      "toolDescs": [
+        "根据你的脚本生成视觉分镜与拍摄清单",
+        "撰写契合你风格、提升互动的爆款文案",
+        "你的全方位合作助手 — 报价、合同、消息与项目规划"
+      ],
+      "toolFeatures": [
+        [
+          "场景分解",
+          "运镜建议",
+          "灯光备注",
+          "器材清单"
+        ],
+        [
+          "开场金句变化",
+          "话题标签建议",
+          "行动呼吁",
+          "语气匹配"
+        ],
+        [
+          "收费计算器",
+          "报价助手",
+          "消息助手",
+          "项目规划师",
+          "合同扫描器"
+        ]
+      ],
+      "moreTools": "还有 {count} 个",
+      "tryNow": "立即试用",
+      "fiveInOne": "5 合 1 工具",
+      "storyboard": {
+        "badge": "视觉内容规划",
+        "title": "用 Storyboard AI 像专业人士一样规划",
+        "desc": "将你的创作愿景转化为详细的制作计划。仅需一个简单脚本，即可获得拍摄清单、灯光备注与器材建议。",
+        "cta": "创建你的分镜",
+        "features": [
+          {
+            "title": "视觉分镜",
+            "description": "将你的脚本转化为逐场景的详细视觉分镜。在拿起相机之前规划好每一个镜头。"
+          },
+          {
+            "title": "运镜建议",
+            "description": "获取 AI 推荐的拍摄角度、构图与运镜方式，最能讲述你的故事。"
+          },
+          {
+            "title": "灯光备注",
+            "description": "为每个场景获取专业灯光建议，营造最合适的氛围。"
+          },
+          {
+            "title": "器材清单",
+            "description": "为你的拍摄生成完整器材清单，包括相机、镜头、灯光与收音设备。"
+          }
+        ]
+      },
+      "caption": {
+        "badge": "爆款内容写作",
+        "title": "写出高转化的文案",
+        "desc": "撰写吸引眼球、契合你风格并带动真实互动的文案。从开场金句到话题标签，我们全部帮你搞定。",
+        "cta": "写爆款文案",
+        "features": [
+          {
+            "title": "开场金句变化",
+            "description": "获取多个抢眼的开场句子，在前 3 秒留住观众，提升内容表现。"
+          },
+          {
+            "title": "智能话题标签",
+            "description": "根据你的内容、领域与热门话题获取 AI 生成的话题标签建议，最大化曝光。"
+          },
+          {
+            "title": "行动呼吁",
+            "description": "生成推动互动、评论、收藏与转化的吸引 CTA，契合你的目标。"
+          },
+          {
+            "title": "语气匹配",
+            "description": "让文案语气契合你的品牌个性 — 无论轻松、专业、玩味还是鼓舞人心。"
+          }
+        ]
+      },
+      "advisor": {
+        "badge": "精选：市场顾问",
+        "title": "你的全方位合作助手",
+        "desc": "从报价到签约，市场顾问用 AI 洞察引导你完成品牌合作的每一步。",
+        "cta": "打开市场顾问",
+        "features": [
+          {
+            "title": "报价助手",
+            "description": "描述你的项目，立即获得时间预估、定价建议与交付项目明细。清楚知道自己应该收多少、要做多久。"
+          },
+          {
+            "title": "消息助手",
+            "description": "为任何场景起草专业邮件与消息 — 初次接触、跟进、议价、还价或礼貌婉拒。选好语气，立即获得完美文稿。"
+          },
+          {
+            "title": "项目规划师",
+            "description": "建立包含阶段细分、任务时间表、关键里程碑与资源需求的详细项目计划。从启动到交付都井井有条。"
+          },
+          {
+            "title": "收费计算器",
+            "description": "根据你的领域、粉丝数、互动率与最新市场趋势，获取个性化收费建议。了解自己的价值。"
+          },
+          {
+            "title": "合同扫描器",
+            "description": "上传品牌合同，立即分析风险信号、不公条款与潜在风险。在签字之前了解自己签的是什么。"
+          }
+        ]
+      },
+      "howItWorks": {
+        "title": "运作方式",
+        "subtitle": "每个 AI 工具都为你节省时间、提升内容质量。选择一个最适合你当前需要的工具。",
+        "storyboardSteps": [
+          "描述你的影片构思或粘贴脚本",
+          "AI 会将其分解为场景与运镜建议",
+          "获取灯光备注与器材清单"
+        ],
+        "captionSteps": [
+          "上传你的照片或描述内容",
+          "选择语气与内容目标",
+          "获得附带话题标签的爆款文案选项"
+        ],
+        "advisorSteps": [
+          "描述你的品牌合作机会",
+          "获取报价、起草消息、规划项目",
+          "扫描合同并敲定交易"
+        ]
+      },
+      "highlights": {
+        "title": "内容创作节省数小时",
+        "desc": "我们的 AI 工具帮你在数分钟内完成内容规划、写作与策略，而非数小时。加入 10,000+ 位用 LumiAI 更快创作更好内容的创作者。",
+        "stats": [
+          "快 10 倍",
+          "每周节省 5+ 小时",
+          "效果更好"
+        ],
+        "items": [
+          "Storyboard AI 在你开拍前规划好视觉内容",
+          "Caption AI 写出契合你风格的吸引文案",
+          "Market Advisor 帮你处理商业洽谈",
+          "所有工具互相配合，创作流程无缝衔接"
+        ]
+      }
+    },
+    "captionPage": {
+      "badge": "AI 文案生成器",
+      "titleBefore": "写出爆款",
+      "titleHighlight": "文案",
+      "subtitle": "生成契合你风格、在各个平台提升互动的吸引文案。",
+      "examplesTitle": "试试这些内容范例",
+      "platformLabel": "平台",
+      "platformTips": [
+        "用换行令文案更易读",
+        "保持简短有力",
+        "在前 100 字内抓住注意力",
+        "用故事传递价值"
+      ],
+      "topicLabel": "你打算发什么内容？",
+      "promptPlaceholder": "例如：我刚刚完成了 3 个月的健身蜕变之旅，想鼓励其他人一起开始...",
+      "toneLabel": "语气",
+      "tones": [
+        {
+          "label": "自信",
+          "desc": "大胆又充满自信"
+        },
+        {
+          "label": "玩味",
+          "desc": "有趣又轻松"
+        },
+        {
+          "label": "鼓舞",
+          "desc": "励志又振奋"
+        },
+        {
+          "label": "轻松",
+          "desc": "自在又如日常聊天"
+        },
+        {
+          "label": "专业",
+          "desc": "精致又具商业感"
+        }
+      ],
+      "toneSuffix": "语气",
+      "examplePrefix": "范例：",
+      "resultsTitle": "已生成的文案",
+      "regenerate": "重新生成",
+      "topPick": "最佳之选",
+      "useThis": "用这个",
+      "tipsTitle": "写好文案的专业贴士",
+      "tips": [
+        "第一行就要有金句，才能留住观众",
+        "用换行令文案更易扫读",
+        "加入清晰的行动呼吁去提升互动",
+        "配合平台调整文案长度（TikTok 短一些，LinkedIn 长一些）"
+      ],
+      "generate": "生成文案"
+    },
+    "storyboardPage": {
+      "badge": "AI 分镜生成器",
+      "titleBefore": "将你的内容",
+      "titleHighlight": "变成画面",
+      "subtitle": "描述你的影片构思，即可获得完整分镜，包括运镜建议、灯光备注与器材建议。",
+      "examplesTitle": "试试这些范例",
+      "ideaLabel": "描述你的影片构思",
+      "ideaPlaceholder": "例如：一段 30 秒的早晨护肤流程，展示一个人神清气起床、洗脸、涂精华，呈现自然透亮肌肤...",
+      "moodLabel": "氛围／感觉（可选）",
+      "moodPlaceholder": "例如：温暖晨光、高能、电影感、简约...",
+      "tip": "贴士：注明时长、场景与主要动作，效果最好",
+      "generate": "生成分镜",
+      "resultBadge": "AI 生成的分镜",
+      "scenesCount": "{count} 个场景",
+      "copiedExcl": "已复制！",
+      "exportLabel": "导出",
+      "equipment": "建议器材",
+      "directorsTips": "导演贴士",
+      "tipsTitle": "做好分镜的专业贴士",
+      "tips": [
+        {
+          "title": "具体些",
+          "content": "加入时长、场景、拍摄角度与关键动作等细节，越具体分镜越好。"
+        },
+        {
+          "title": "注明时间",
+          "content": "讲明影片总长度，我们就可以为每个场景建议合适节奏。"
+        },
+        {
+          "title": "提供背景",
+          "content": "告诉我们你的观众与目的 — 有助于量身订制运镜建议。"
+        },
+        {
+          "title": "讲明风格",
+          "content": "描述想要的感觉 — 专业、轻松、高能或治愈 — 我们会配合你的风格选镜头。"
+        }
+      ],
+      "copyScenePrefix": "场景",
+      "actionLabel": "动作：",
+      "lightingLabel": "灯光：",
+      "equipmentLabel": "器材：",
+      "tipsLabel": "贴士："
     }
   }
 }

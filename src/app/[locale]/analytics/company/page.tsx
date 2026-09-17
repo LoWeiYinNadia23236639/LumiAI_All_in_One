@@ -117,10 +117,10 @@ function CompanyAnalytics() {
   };
 
   const verificationSteps = [
-    { label: "Email", done: true },
-    { label: "Business Registration", done: true },
-    { label: "Payment Method", done: false },
-    { label: "Verified", done: false },
+    { label: t("email"), done: true },
+    { label: t("businessRegistration"), done: true },
+    { label: t("paymentMethod"), done: false },
+    { label: t("verified"), done: false },
   ];
 
   return (
@@ -129,8 +129,8 @@ function CompanyAnalytics() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-neutral-900">Company Dashboard</h1>
-            <p className="text-neutral-600">Track campaign performance and manage creator partnerships</p>
+            <h1 className="text-3xl font-bold text-neutral-900">{t("companyDashboard")}</h1>
+            <p className="text-neutral-600">{t("trackCampaigns")}</p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <select 
@@ -138,18 +138,18 @@ function CompanyAnalytics() {
               onChange={(e) => setTimeRange(e.target.value)}
               className="px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="7d">Last 7 days</option>
-              <option value="30d">Last 30 days</option>
-              <option value="90d">Last 90 days</option>
-              <option value="1y">Last year</option>
+              <option value="7d">{t("last7Days")}</option>
+              <option value="30d">{t("last30Days")}</option>
+              <option value="90d">{t("last90Days")}</option>
+              <option value="1y">{t("lastYear")}</option>
             </select>
             <Button variant="outline" size="sm">
               <Settings className="w-4 h-4 mr-2" />
-              Settings
+              {t("settings")}
             </Button>
             <Button variant="outline" size="sm" onClick={logout}>
               <LogOut className="w-4 h-4 mr-2" />
-              Logout
+              {tc("logout")}
             </Button>
           </div>
         </div>
@@ -162,14 +162,14 @@ function CompanyAnalytics() {
                 {user.avatar}
               </div>
               <div>
-                <h2 className="text-2xl font-bold">Welcome back, {user.name}!</h2>
-                <p className="text-white/80">{user.email} • Company Account</p>
+                <h2 className="text-2xl font-bold">{t("welcomeBackName", { name: user.name })}</h2>
+                <p className="text-white/80">{user.email} • {t("companyAccount")}</p>
               </div>
               <div className="ml-auto text-right">
                 <Link href="/marketplace/campaigns">
                   <Button className="bg-white text-blue-600 hover:bg-gray-100">
                     <Briefcase className="w-4 h-4 mr-2" />
-                    Post Campaign
+                    {t("postCampaign")}
                   </Button>
                 </Link>
               </div>
@@ -180,10 +180,10 @@ function CompanyAnalytics() {
         {/* Overview Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Active Campaigns", key: "campaigns", icon: Briefcase, color: "text-blue-500", bg: "bg-blue-50", href: "/marketplace/campaigns/new" },
-            { label: "Total Spent", key: "spent", icon: DollarSign, color: "text-green-500", bg: "bg-green-50", href: "/marketplace/campaigns/new" },
-            { label: "ROI", key: "roi", icon: TrendingUp, color: "text-violet-500", bg: "bg-violet-50", href: "/marketplace/talent" },
-            { label: "Total Reach", key: "reach", icon: Users, color: "text-orange-500", bg: "bg-orange-50", href: "/marketplace/talent" },
+            { label: t("activeCampaigns"), key: "campaigns", icon: Briefcase, color: "text-blue-500", bg: "bg-blue-50", href: "/marketplace/campaigns/new" },
+            { label: t("totalSpent"), key: "spent", icon: DollarSign, color: "text-green-500", bg: "bg-green-50", href: "/marketplace/campaigns/new" },
+            { label: t("roi"), key: "roi", icon: TrendingUp, color: "text-violet-500", bg: "bg-violet-50", href: "/marketplace/talent" },
+            { label: t("totalReach"), key: "reach", icon: Users, color: "text-orange-500", bg: "bg-orange-50", href: "/marketplace/talent" },
           ].map((stat) => {
             return (
               <motion.div
@@ -215,9 +215,9 @@ function CompanyAnalytics() {
           {/* Active Campaigns */}
           <div className="lg:col-span-2 bg-white rounded-2xl p-6 border shadow-sm">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold text-lg">Active Campaigns</h3>
+              <h3 className="font-bold text-lg">{t("activeCampaigns")}</h3>
               <Button variant="ghost" size="sm">
-                View All
+                {t("viewAll")}
                 <ArrowRight className="w-4 h-4 ml-1" />
               </Button>
             </div>
@@ -240,7 +240,7 @@ function CompanyAnalytics() {
             <div className="bg-white rounded-2xl p-6 border shadow-sm">
               <div className="flex items-center gap-2 mb-4">
                 <Shield className="w-5 h-5 text-blue-600" />
-                <h3 className="font-bold text-lg">Verification Progress</h3>
+                <h3 className="font-bold text-lg">{t("verificationProgress")}</h3>
               </div>
               <div className="space-y-3">
                 {verificationSteps.map((step, i) => (
@@ -259,24 +259,24 @@ function CompanyAnalytics() {
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
                   <Bookmark className="w-5 h-5 text-pink-500" />
-                  <h3 className="font-bold text-lg">Saved Creators</h3>
+                  <h3 className="font-bold text-lg">{t("savedCreators")}</h3>
                 </div>
                 <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">{savedCreators.length}</span>
               </div>
               {savedCreators.length === 0 ? (
-                <p className="text-sm text-neutral-500">No saved creators yet.</p>
+                <p className="text-sm text-neutral-500">{t("noSavedCreators")}</p>
               ) : (
                 <div className="space-y-2">
                   {savedCreators.map((id) => (
                     <div key={id} className="p-3 bg-gray-50 rounded-xl text-sm font-medium">
-                      Creator #{id}
+                      {t("savedCreatorItem", { id })}
                     </div>
                   ))}
                 </div>
               )}
               <Link href="/marketplace/talent">
                 <Button variant="outline" size="sm" className="w-full mt-3">
-                  Browse Creators
+                  {t("browseCreators")}
                 </Button>
               </Link>
             </div>
@@ -373,7 +373,7 @@ function CompanyAnalytics() {
 
             {/* Top Performing Creators */}
             <div className="bg-white rounded-2xl p-6 border shadow-sm">
-              <h3 className="font-bold text-lg mb-4">Top Performers</h3>
+              <h3 className="font-bold text-lg mb-4">{t("topPerformers")}</h3>
               <p className="text-sm text-neutral-500">{t("noDataYet")}</p>
             </div>
 
@@ -381,7 +381,7 @@ function CompanyAnalytics() {
             <div className="bg-gradient-to-br from-blue-500 to-violet-600 rounded-2xl p-6 text-white">
               <div className="flex items-center gap-2 mb-3">
                 <Zap className="w-5 h-5" />
-                <h3 className="font-bold">AI Suggestions</h3>
+                <h3 className="font-bold">{t("aiSuggestions")}</h3>
               </div>
               <p className="text-sm text-white/80">{t("noDataYet")}</p>
             </div>

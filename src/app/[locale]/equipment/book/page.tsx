@@ -139,13 +139,13 @@ function BookingContent() {
               <div className="flex items-center gap-4 text-sm text-neutral-600">
                 <span className="flex items-center gap-1">
                   <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                  {equipmentData.rating} ({equipmentData.reviews} reviews)
+                  {equipmentData.rating} ({t("reviewsCount", { count: equipmentData.reviews })})
                 </span>
                 <span className="flex items-center gap-1">
                   <MapPin className="w-4 h-4" />
                   {equipmentData.location}
                 </span>
-                <span>Year: {equipmentData.year}</span>
+                <span>{t("yearLabel", { year: equipmentData.year })}</span>
               </div>
             </div>
 
@@ -164,9 +164,9 @@ function BookingContent() {
                       )}
                     </div>
                     <p className="text-sm text-neutral-500">
-                      Responds {equipmentData.owner.responseTime} • {equipmentData.owner.totalRentals} rentals
+                      {t("respondsStats", { time: equipmentData.owner.responseTime, count: equipmentData.owner.totalRentals })}
                     </p>
-                    <p className="text-xs text-orange-600 mt-0.5">Click to view profile →</p>
+                    <p className="text-xs text-orange-600 mt-0.5">{t("viewProfile")}</p>
                   </div>
                 </Link>
                 <Button 
@@ -174,7 +174,7 @@ function BookingContent() {
                   onClick={() => setShowMessageModal(true)}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Message
+                  {t("message")}
                 </Button>
               </div>
             </div>
@@ -225,7 +225,7 @@ function BookingContent() {
                       />
                     ))}
                   </div>
-                  <p className="text-sm text-neutral-500">{equipmentData.reviews} reviews</p>
+                  <p className="text-sm text-neutral-500">{t("reviewsCount", { count: equipmentData.reviews })}</p>
                 </div>
               </div>
             </div>
@@ -262,7 +262,7 @@ function BookingContent() {
                 {selectedDates.start && selectedDates.end && (
                   <div className="border-t pt-4 mb-4 space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>${equipmentData.dailyRate} x {Math.ceil((new Date(selectedDates.end).getTime() - new Date(selectedDates.start).getTime()) / (1000 * 60 * 60 * 24))} days</span>
+                      <span>${equipmentData.dailyRate} x {t("daysCount", { count: Math.ceil((new Date(selectedDates.end).getTime() - new Date(selectedDates.start).getTime()) / (1000 * 60 * 60 * 24)) })}</span>
                       <span>${calculateTotal()}</span>
                     </div>
                     <div className="flex justify-between text-sm">
@@ -270,7 +270,7 @@ function BookingContent() {
                       <span>${Math.round(calculateTotal() * 0.1)}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>Insurance</span>
+                      <span>{t("insurance")}</span>
                       <span>$15</span>
                     </div>
                     <div className="flex justify-between font-bold text-lg pt-2 border-t">
@@ -284,7 +284,7 @@ function BookingContent() {
                   className="w-full bg-gradient-to-r from-orange-500 to-amber-500 mb-3"
                   disabled={!selectedDates.start || !selectedDates.end}
                 >
-                  Request to Book
+                  {t("requestToBook")}
                 </Button>
 
                 <div className="flex gap-2">
@@ -312,7 +312,7 @@ function BookingContent() {
               <div className="mt-4 bg-orange-50 rounded-xl p-4">
                 <div className="flex items-center gap-2 text-orange-800 mb-2">
                   <AlertCircle className="w-4 h-4" />
-                  <span className="font-medium">High Demand</span>
+                  <span className="font-medium">{t("highDemand")}</span>
                 </div>
                 <p className="text-sm text-orange-700">
                   {t("basicInsurance")}

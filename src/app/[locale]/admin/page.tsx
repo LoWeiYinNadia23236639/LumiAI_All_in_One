@@ -852,7 +852,7 @@ function AdminPanel() {
                               <span className={`px-2 py-0.5 rounded-full text-xs ${
                                 item.type === "creator" ? "bg-pink-100 text-pink-700" : "bg-blue-100 text-blue-700"
                               }`}>
-                                {item.type === "creator" ? "Creator" : "Company"}
+                                {item.type === "creator" ? t("creator") : t("company")}
                               </span>
                               {item.status === "under_review" && (
                                 <span className="px-2 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded-full">
@@ -861,7 +861,7 @@ function AdminPanel() {
                               )}
                               {riskBadge(getVerificationRisk(item))}
                             </div>
-                            <p className="text-sm text-neutral-500">{item.handle} • Submitted {item.submittedAt}</p>
+                            <p className="text-sm text-neutral-500">{item.handle} • {t("submittedAt", { time: item.submittedAt })}</p>
                             {item.missing && (
                               <p className="text-xs text-orange-600 mt-1">{t("missing")}: {item.missing.join(", ")}</p>
                             )}
@@ -878,7 +878,7 @@ function AdminPanel() {
                               className="p-2 text-green-600 hover:bg-green-50 rounded-lg"
                               onClick={() => {
                                 setVerifications(prev => prev.map(v => v.id === item.id ? { ...v, status: "approved" as const } : v));
-                                addActivity("Approved", item.name, false, { category: "verification", result: "approved", documents: item.documents, riskLevel: getVerificationRisk(item) });
+                                addActivity(t("approved"), item.name, false, { category: "verification", result: "approved", documents: item.documents, riskLevel: getVerificationRisk(item) });
                                 addNotification({ type: "email", subject: t("subjectAccountApproved"), recipient: item.handle, body: `${t("subjectAccountApproved")}. Welcome to LumiAI!`, auto: false });
                               }}
                             >
@@ -888,7 +888,7 @@ function AdminPanel() {
                               className="p-2 text-red-600 hover:bg-red-50 rounded-lg"
                               onClick={() => {
                                 setVerifications(prev => prev.map(v => v.id === item.id ? { ...v, status: "rejected" as const } : v));
-                                addActivity("Rejected", item.name, false, { category: "verification", result: "rejected", detail: item.flag ? `${t("flag")}: ${item.flag}` : `${t("missing")}: ${item.missing?.join(", ")}`, flag: item.flag, missingDocs: item.missing, documents: item.documents, riskLevel: getVerificationRisk(item) });
+                                addActivity(t("rejected"), item.name, false, { category: "verification", result: "rejected", detail: item.flag ? `${t("flag")}: ${item.flag}` : `${t("missing")}: ${item.missing?.join(", ")}`, flag: item.flag, missingDocs: item.missing, documents: item.documents, riskLevel: getVerificationRisk(item) });
                                 addNotification({ type: "email", subject: t("subjectAccountRejected"), recipient: item.handle, body: `${t("subjectAccountRejected")}.`, auto: false });
                               }}
                             >
@@ -952,7 +952,7 @@ function AdminPanel() {
                         <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">{t("open")}</span>
                         {riskBadge(getDisputeRisk(item))}
                       </div>
-                      <p className="text-sm text-neutral-500 mb-3">{item.parties} • Opened {item.openedAt}</p>
+                      <p className="text-sm text-neutral-500 mb-3">{item.parties} • {t("openedAt", { time: item.openedAt })}</p>
                       
                       <div className="bg-violet-50 rounded-xl p-4 border border-violet-100">
                         <div className="flex items-start gap-3">
@@ -1047,10 +1047,10 @@ function AdminPanel() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <h3 className="font-bold text-lg">{item.gear}</h3>
-                        <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">Dispute</span>
+                        <span className="px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full">{t("dispute")}</span>
                         {riskBadge(getInspectionRisk(item))}
                       </div>
-                      <p className="text-sm text-neutral-500 mb-3">Rented by {item.renter} • Listed by {item.lister} • Returned {item.returnDate}</p>
+                      <p className="text-sm text-neutral-500 mb-3">{t("rentedBy", { renter: item.renter, lister: item.lister, date: item.returnDate })}</p>
                       
                       <div className="bg-violet-50 rounded-xl p-4 border border-violet-100">
                         <div className="flex items-start gap-3">
@@ -1252,7 +1252,7 @@ function AdminPanel() {
                 </div>
                 <div className="md:text-right">
                   <p className="text-3xl font-bold">{verifications.length + disputes.length + inspections.length}</p>
-                  <p className="text-xs text-white/80">Total simulated cases</p>
+                  <p className="text-xs text-white/80">{t("totalSimulatedCases")}</p>
                 </div>
               </div>
             </div>
@@ -1264,12 +1264,13 @@ function AdminPanel() {
                   <Zap className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-lg font-bold">AI Automation Impact</h4>
+                  <h4 className="text-lg font-bold">{t("aiImpactTitle")}</h4>
                   <p className="text-white/90 text-sm">
-                    Today the system auto-verified <span className="font-bold text-white">{autoVerifiedToday}</span> accounts, 
-                    resolved <span className="font-bold text-white">{disputes.filter(d => d.autoResolved).length}</span> disputes, 
-                    and released <span className="font-bold text-white">{inspections.filter(i => i.autoProcessed).length}</span> deposits 
-                    without admin intervention.
+                    {t("aiImpactDesc", {
+                      verified: autoVerifiedToday,
+                      resolved: disputes.filter(d => d.autoResolved).length,
+                      deposits: inspections.filter(i => i.autoProcessed).length,
+                    })}
                   </p>
                 </div>
               </div>
@@ -1294,7 +1295,7 @@ function AdminPanel() {
                   </div>
                   {activity.auto && (
                     <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium flex-shrink-0">
-                      Auto
+                      {t("auto")}
                     </span>
                   )}
                   <span className="text-sm text-neutral-400 flex-shrink-0">{activity.time}</span>

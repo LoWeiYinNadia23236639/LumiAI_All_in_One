@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
+import { useTranslations } from "next-intl";
 
 const aiTools = [
   {
@@ -43,9 +44,6 @@ const aiTools = [
     color: "from-violet-500 to-purple-600",
     bgColor: "bg-violet-50",
     href: "/ai-hub/storyboard",
-    description: "Generate visual storyboards and shot lists from your script",
-    features: ["Scene breakdown", "Shot suggestions", "Lighting notes", "Equipment list"],
-    demoExample: "Summer skincare routine - 5 scenes showing morning routine progression"
   },
   {
     id: "caption",
@@ -54,9 +52,6 @@ const aiTools = [
     color: "from-pink-500 to-rose-600",
     bgColor: "bg-pink-50",
     href: "/ai-hub/caption",
-    description: "Write viral captions that match your voice and boost engagement",
-    features: ["Hook variations", "Hashtag suggestions", "Call-to-action", "Tone matching"],
-    demoExample: "Fitness transformation post showing 3-month progress"
   },
   {
     id: "advisor",
@@ -65,120 +60,44 @@ const aiTools = [
     color: "from-orange-500 to-amber-600",
     bgColor: "bg-orange-50",
     href: "/ai-hub/advisor",
-    description: "Your complete deal assistant - quotes, contracts, messages & project planning",
-    features: [
-      "Rate Calculator",
-      "Job Quote Assistant", 
-      "Message Assistant",
-      "Project Planner",
-      "Contract Scanner"
-    ],
-    demoExample: "Generate complete project quotes with timelines and draft professional emails",
     featured: true
   },
 ];
 
 const advisorFeatures = [
-  {
-    icon: Briefcase,
-    title: "Job Quote Assistant",
-    description: "Describe your project and get instant time estimates, pricing recommendations, and deliverable breakdowns. Know exactly what to charge and how long it will take.",
-    color: "text-orange-500",
-    bgColor: "bg-orange-50"
-  },
-  {
-    icon: Mail,
-    title: "Message Assistant",
-    description: "Draft professional emails and messages for any scenario - initial pitches, follow-ups, negotiations, counter offers, or polite declines. Choose your tone and get perfect copy.",
-    color: "text-blue-500",
-    bgColor: "bg-blue-50"
-  },
-  {
-    icon: ClipboardList,
-    title: "Project Planner",
-    description: "Create detailed project plans with phase breakdowns, task timelines, critical milestones, and resource requirements. Stay organized from kickoff to delivery.",
-    color: "text-emerald-500",
-    bgColor: "bg-emerald-50"
-  },
-  {
-    icon: BarChart3,
-    title: "Rate Calculator",
-    description: "Get personalized rate recommendations based on your niche, follower count, engagement rate, and current market trends. Know your worth.",
-    color: "text-purple-500",
-    bgColor: "bg-purple-50"
-  },
-  {
-    icon: Shield,
-    title: "Contract Scanner",
-    description: "Upload brand contracts and get instant analysis of red flags, unfair terms, and potential risks. Understand what you're signing before you commit.",
-    color: "text-red-500",
-    bgColor: "bg-red-50"
-  }
+  { icon: Briefcase, color: "text-orange-500", bgColor: "bg-orange-50" },
+  { icon: Mail, color: "text-blue-500", bgColor: "bg-blue-50" },
+  { icon: ClipboardList, color: "text-emerald-500", bgColor: "bg-emerald-50" },
+  { icon: BarChart3, color: "text-purple-500", bgColor: "bg-purple-50" },
+  { icon: Shield, color: "text-red-500", bgColor: "bg-red-50" }
 ];
 
 const storyboardFeatures = [
-  {
-    icon: Layout,
-    title: "Visual Storyboarding",
-    description: "Transform your script into detailed visual storyboards with scene-by-scene breakdowns. Plan every shot before you pick up your camera.",
-    color: "text-violet-500",
-    bgColor: "bg-violet-50"
-  },
-  {
-    icon: Camera,
-    title: "Shot Suggestions",
-    description: "Get AI-powered shot recommendations including angles, framing, and camera movements that best tell your story.",
-    color: "text-purple-500",
-    bgColor: "bg-purple-50"
-  },
-  {
-    icon: Lightbulb,
-    title: "Lighting Notes",
-    description: "Receive professional lighting suggestions for each scene to create the perfect mood and atmosphere for your content.",
-    color: "text-amber-500",
-    bgColor: "bg-amber-50"
-  },
-  {
-    icon: Film,
-    title: "Equipment List",
-    description: "Generate a complete equipment checklist for your shoot including cameras, lenses, lighting, and audio gear.",
-    color: "text-pink-500",
-    bgColor: "bg-pink-50"
-  }
+  { icon: Layout, color: "text-violet-500", bgColor: "bg-violet-50" },
+  { icon: Camera, color: "text-purple-500", bgColor: "bg-purple-50" },
+  { icon: Lightbulb, color: "text-amber-500", bgColor: "bg-amber-50" },
+  { icon: Film, color: "text-pink-500", bgColor: "bg-pink-50" }
 ];
 
 const captionFeatures = [
-  {
-    icon: WandIcon,
-    title: "Hook Variations",
-    description: "Get multiple attention-grabbing opening lines designed to stop the scroll and boost your content's performance in the first 3 seconds.",
-    color: "text-pink-500",
-    bgColor: "bg-pink-50"
-  },
-  {
-    icon: Hash,
-    title: "Smart Hashtags",
-    description: "Receive AI-generated hashtag suggestions based on your content, niche, and trending topics to maximize discoverability.",
-    color: "text-rose-500",
-    bgColor: "bg-rose-50"
-  },
-  {
-    icon: Megaphone,
-    title: "Call-to-Action",
-    description: "Generate compelling CTAs that drive engagement, comments, saves, and conversions tailored to your specific goals.",
-    color: "text-orange-500",
-    bgColor: "bg-orange-50"
-  },
-  {
-    icon: Palette,
-    title: "Tone Matching",
-    description: "Match your caption's voice to your brand personality - whether it's casual, professional, playful, or inspirational.",
-    color: "text-fuchsia-500",
-    bgColor: "bg-fuchsia-50"
-  }
+  { icon: WandIcon, color: "text-pink-500", bgColor: "bg-pink-50" },
+  { icon: Hash, color: "text-rose-500", bgColor: "bg-rose-50" },
+  { icon: Megaphone, color: "text-orange-500", bgColor: "bg-orange-50" },
+  { icon: Palette, color: "text-fuchsia-500", bgColor: "bg-fuchsia-50" }
 ];
 
 export default function AIHubPage() {
+  const t = useTranslations("aiTools");
+  const toolDescs = t.raw("hub.toolDescs") as string[];
+  const toolFeatures = t.raw("hub.toolFeatures") as string[][];
+  const hubStoryboardFeatures = t.raw("hub.storyboard.features") as { title: string; description: string }[];
+  const hubCaptionFeatures = t.raw("hub.caption.features") as { title: string; description: string }[];
+  const hubAdvisorFeatures = t.raw("hub.advisor.features") as { title: string; description: string }[];
+  const storyboardSteps = t.raw("hub.howItWorks.storyboardSteps") as string[];
+  const captionSteps = t.raw("hub.howItWorks.captionSteps") as string[];
+  const advisorSteps = t.raw("hub.howItWorks.advisorSteps") as string[];
+  const highlightStats = t.raw("hub.highlights.stats") as string[];
+  const highlightItems = t.raw("hub.highlights.items") as string[];
   return (
     <AuthGuard>
     <main className="min-h-screen bg-gradient-to-b from-white via-violet-50/30 to-white pt-24 pb-16">
@@ -187,13 +106,13 @@ export default function AIHubPage() {
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-violet-100 to-pink-100 text-violet-700 text-sm font-semibold mb-4">
             <Sparkles className="w-4 h-4" />
-            AI-Powered Creator Tools
+            {t("hub.badge")}
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
-            Supercharge Your Content with <span className="gradient-text">AI</span>
+            {t("hub.titleBefore")} <span className="gradient-text">{t("hub.titleHighlight")}</span>
           </h1>
           <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            Generate storyboards, write viral captions, get market insights, and analyze contracts — all powered by AI.
+            {t("hub.subtitle")}
           </p>
         </div>
 
@@ -210,28 +129,28 @@ export default function AIHubPage() {
                 <div className={`group bg-white rounded-2xl p-6 border-2 shadow-lg hover:shadow-xl transition-all h-full flex flex-col ${tool.featured ? 'border-orange-200 relative' : 'border-transparent hover:border-violet-200'}`}>
                   {tool.featured && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-gradient-to-r from-orange-500 to-amber-500 text-white text-xs font-bold rounded-full">
-                      5 TOOLS IN 1
+                      {t("hub.fiveInOne")}
                     </div>
                   )}
                   <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${tool.color} flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform`}>
                     <tool.icon className="w-7 h-7" />
                   </div>
                   <h3 className="text-xl font-bold mb-2">{tool.name}</h3>
-                  <p className="text-neutral-600 text-sm mb-4 flex-1">{tool.description}</p>
+                  <p className="text-neutral-600 text-sm mb-4 flex-1">{toolDescs[index]}</p>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {tool.features.slice(0, 4).map((feature, i) => (
+                    {toolFeatures[index].slice(0, 4).map((feature, i) => (
                       <span key={i} className={`px-2 py-1 ${tool.bgColor} text-neutral-700 rounded text-xs`}>
                         {feature}
                       </span>
                     ))}
-                    {tool.features.length > 4 && (
+                    {toolFeatures[index].length > 4 && (
                       <span className={`px-2 py-1 ${tool.bgColor} text-neutral-700 rounded text-xs`}>
-                        +{tool.features.length - 4} more
+                        {t("hub.moreTools", { count: toolFeatures[index].length - 4 })}
                       </span>
                     )}
                   </div>
                   <div className="flex items-center text-violet-600 font-medium text-sm">
-                    Try it now
+                    {t("hub.tryNow")}
                     <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
@@ -247,20 +166,20 @@ export default function AIHubPage() {
               <div className="text-center mb-10">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm font-semibold mb-4">
                   <Camera className="w-4 h-4" />
-                  Visual Content Planning
+                  {t("hub.storyboard.badge")}
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                  Plan Like a Pro with Storyboard AI
+                  {t("hub.storyboard.title")}
                 </h2>
                 <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-                  Transform your creative vision into detailed production plans. Get shot lists, lighting notes, and equipment recommendations — all from a simple script.
+                  {t("hub.storyboard.desc")}
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {storyboardFeatures.map((feature, index) => (
                   <motion.div
-                    key={feature.title}
+                    key={hubStoryboardFeatures[index].title}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * index }}
@@ -269,8 +188,8 @@ export default function AIHubPage() {
                     <div className={`w-12 h-12 rounded-xl ${feature.bgColor} ${feature.color} flex items-center justify-center mb-4`}>
                       <feature.icon className="w-6 h-6" />
                     </div>
-                    <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
-                    <p className="text-sm text-neutral-600">{feature.description}</p>
+                    <h3 className="font-bold text-lg mb-2">{hubStoryboardFeatures[index].title}</h3>
+                    <p className="text-sm text-neutral-600">{hubStoryboardFeatures[index].description}</p>
                   </motion.div>
                 ))}
               </div>
@@ -279,7 +198,7 @@ export default function AIHubPage() {
                 <Link href="/ai-hub/storyboard">
                   <Button className="bg-gradient-to-r from-violet-500 to-purple-500 px-8 py-3 h-auto text-lg">
                     <Camera className="w-5 h-5 mr-2" />
-                    Create Your Storyboard
+                    {t("hub.storyboard.cta")}
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
@@ -295,20 +214,20 @@ export default function AIHubPage() {
               <div className="text-center mb-10">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-100 text-pink-700 text-sm font-semibold mb-4">
                   <MessageSquare className="w-4 h-4" />
-                  Viral Content Writing
+                  {t("hub.caption.badge")}
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                  Write Captions That Convert
+                  {t("hub.caption.title")}
                 </h2>
                 <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-                  Craft engaging, scroll-stopping captions that match your voice and drive real engagement. From hooks to hashtags, we've got you covered.
+                  {t("hub.caption.desc")}
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 {captionFeatures.map((feature, index) => (
                   <motion.div
-                    key={feature.title}
+                    key={hubCaptionFeatures[index].title}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * index }}
@@ -317,8 +236,8 @@ export default function AIHubPage() {
                     <div className={`w-12 h-12 rounded-xl ${feature.bgColor} ${feature.color} flex items-center justify-center mb-4`}>
                       <feature.icon className="w-6 h-6" />
                     </div>
-                    <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
-                    <p className="text-sm text-neutral-600">{feature.description}</p>
+                    <h3 className="font-bold text-lg mb-2">{hubCaptionFeatures[index].title}</h3>
+                    <p className="text-sm text-neutral-600">{hubCaptionFeatures[index].description}</p>
                   </motion.div>
                 ))}
               </div>
@@ -327,7 +246,7 @@ export default function AIHubPage() {
                 <Link href="/ai-hub/caption">
                   <Button className="bg-gradient-to-r from-pink-500 to-rose-500 px-8 py-3 h-auto text-lg">
                     <MessageSquare className="w-5 h-5 mr-2" />
-                    Write Viral Captions
+                    {t("hub.caption.cta")}
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
@@ -343,20 +262,20 @@ export default function AIHubPage() {
               <div className="text-center mb-10">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 text-orange-700 text-sm font-semibold mb-4">
                   <Star className="w-4 h-4" />
-                  Featured: Market Advisor
+                  {t("hub.advisor.badge")}
                 </div>
                 <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 mb-4">
-                  Your Complete Deal Assistant
+                  {t("hub.advisor.title")}
                 </h2>
                 <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-                  From quote to contract, the Market Advisor guides you through every step of your brand partnerships with AI-powered insights.
+                  {t("hub.advisor.desc")}
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {advisorFeatures.map((feature, index) => (
                   <motion.div
-                    key={feature.title}
+                    key={hubAdvisorFeatures[index].title}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.1 * index }}
@@ -365,8 +284,8 @@ export default function AIHubPage() {
                     <div className={`w-12 h-12 rounded-xl ${feature.bgColor} ${feature.color} flex items-center justify-center mb-4`}>
                       <feature.icon className="w-6 h-6" />
                     </div>
-                    <h3 className="font-bold text-lg mb-2">{feature.title}</h3>
-                    <p className="text-sm text-neutral-600">{feature.description}</p>
+                    <h3 className="font-bold text-lg mb-2">{hubAdvisorFeatures[index].title}</h3>
+                    <p className="text-sm text-neutral-600">{hubAdvisorFeatures[index].description}</p>
                   </motion.div>
                 ))}
               </div>
@@ -375,7 +294,7 @@ export default function AIHubPage() {
                 <Link href="/ai-hub/advisor">
                   <Button className="bg-gradient-to-r from-orange-500 to-amber-500 px-8 py-3 h-auto text-lg">
                     <Briefcase className="w-5 h-5 mr-2" />
-                    Open Market Advisor
+                    {t("hub.advisor.cta")}
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
@@ -386,9 +305,9 @@ export default function AIHubPage() {
 
         {/* How It Works - For all tools */}
         <div className="mb-16">
-          <h2 className="text-2xl font-bold text-center mb-4">How It Works</h2>
+          <h2 className="text-2xl font-bold text-center mb-4">{t("hub.howItWorks.title")}</h2>
           <p className="text-center text-neutral-600 mb-8 max-w-2xl mx-auto">
-            Each AI tool is designed to save you time and elevate your content. Choose the tool that fits your current need.
+            {t("hub.howItWorks.subtitle")}
           </p>
           <div className="grid md:grid-cols-3 gap-8">
             {/* Storyboard Workflow */}
@@ -402,15 +321,15 @@ export default function AIHubPage() {
               <ol className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-violet-200 text-violet-700 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
-                  <span>Describe your video concept or paste your script</span>
+                  <span>{storyboardSteps[0]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-violet-200 text-violet-700 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
-                  <span>AI breaks it down into scenes with shot suggestions</span>
+                  <span>{storyboardSteps[1]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-violet-200 text-violet-700 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
-                  <span>Get lighting notes and equipment checklist</span>
+                  <span>{storyboardSteps[2]}</span>
                 </li>
               </ol>
             </div>
@@ -426,15 +345,15 @@ export default function AIHubPage() {
               <ol className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-pink-200 text-pink-700 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
-                  <span>Upload your photo or describe your content</span>
+                  <span>{captionSteps[0]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-pink-200 text-pink-700 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
-                  <span>Select your tone and content goal</span>
+                  <span>{captionSteps[1]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-pink-200 text-pink-700 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
-                  <span>Get viral caption options with hashtags</span>
+                  <span>{captionSteps[2]}</span>
                 </li>
               </ol>
             </div>
@@ -450,15 +369,15 @@ export default function AIHubPage() {
               <ol className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-orange-200 text-orange-700 flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
-                  <span>Describe your brand collaboration opportunity</span>
+                  <span>{advisorSteps[0]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-orange-200 text-orange-700 flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
-                  <span>Get quotes, draft messages, plan projects</span>
+                  <span>{advisorSteps[1]}</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-orange-200 text-orange-700 flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
-                  <span>Scan contracts and finalize your deal</span>
+                  <span>{advisorSteps[2]}</span>
                 </li>
               </ol>
             </div>
@@ -469,33 +388,27 @@ export default function AIHubPage() {
         <div className="bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400 rounded-3xl p-8 md:p-12 text-white">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-4">Save Hours on Content Creation</h2>
+              <h2 className="text-3xl font-bold mb-4">{t("hub.highlights.title")}</h2>
               <p className="text-white/90 mb-6">
-                Our AI tools help you plan, write, and strategize your content in minutes instead of hours. 
-                Join 10,000+ creators who use LumiAI to create better content faster.
+                {t("hub.highlights.desc")}
               </p>
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2">
                   <Zap className="w-5 h-5" />
-                  <span>10x Faster</span>
+                  <span>{highlightStats[0]}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-5 h-5" />
-                  <span>Save 5+ hrs/week</span>
+                  <span>{highlightStats[1]}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Target className="w-5 h-5" />
-                  <span>Better Results</span>
+                  <span>{highlightStats[2]}</span>
                 </div>
               </div>
             </div>
             <div className="space-y-4">
-              {[
-                "Storyboard AI plans your visual content before you shoot",
-                "Caption AI writes engaging copy that matches your voice",
-                "Market Advisor handles your business negotiations",
-                "All tools work together for seamless content creation"
-              ].map((item, i) => (
+              {highlightItems.map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                     <span className="text-sm">✓</span>

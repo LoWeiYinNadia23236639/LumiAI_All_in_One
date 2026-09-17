@@ -264,7 +264,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                 className="flex items-center gap-2 px-4 py-2 bg-violet-100 text-violet-700 rounded-full text-sm hover:bg-violet-200 transition-colors"
               >
                 <ExternalLink className="w-3 h-3" />
-                Website
+                {t("creatorProfile.website")}
               </a>
             </div>
 
@@ -326,7 +326,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                     )}
                     <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent text-white">
                       <p className="font-medium text-sm truncate">{item.title}</p>
-                      <p className="text-xs opacity-80">{item.views} views • {item.brand}</p>
+                      <p className="text-xs opacity-80">{t("creatorProfile.viewsCount", { count: item.views })} • {item.brand}</p>
                     </div>
                     {item.duration && (
                       <span className="absolute top-2 right-2 px-2 py-1 bg-black/60 text-white text-xs rounded">
@@ -367,15 +367,15 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                 <div className="bg-white rounded-xl border p-6">
                   <h4 className="font-bold mb-4">{t("demographics")}</h4>
                   <div className="mb-4">
-                    <p className="text-sm text-neutral-500 mb-2">Gender</p>
+                    <p className="text-sm text-neutral-500 mb-2">{t("creatorProfile.gender")}</p>
                     <div className="flex h-4 rounded-full overflow-hidden">
                       <div className="w-[68%] bg-pink-400" />
                       <div className="w-[30%] bg-blue-400" />
                       <div className="w-[2%] bg-purple-400" />
                     </div>
                     <div className="flex gap-3 mt-2 text-xs">
-                      <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-pink-400" /> Female 68%</span>
-                      <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" /> Male 30%</span>
+                      <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-pink-400" /> {t("creatorProfile.female")} 68%</span>
+                      <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" /> {t("creatorProfile.male")} 30%</span>
                     </div>
                   </div>
                 </div>
@@ -417,20 +417,20 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
           <div className="space-y-6">
             {/* Contact Card */}
             <div className="bg-gradient-to-br from-violet-500 to-purple-600 rounded-2xl p-6 text-white">
-              <h3 className="font-bold text-lg mb-2">Interested in working together?</h3>
+              <h3 className="font-bold text-lg mb-2">{t("creatorProfile.contactTitle")}</h3>
               <p className="text-white/90 text-sm mb-4">
-                {creatorData.name} typically responds within 24 hours.
+                {t("creatorProfile.responseLine", { name: creatorData.name })}
               </p>
               <Button 
                 className="w-full bg-white text-violet-600 hover:bg-gray-100 mb-2"
                 onClick={() => setShowContactModal(true)}
               >
                 <Mail className="w-4 h-4 mr-2" />
-                Send Message
+                {t("creatorProfile.sendMessage")}
               </Button>
               <Button variant="outline" className="w-full border-white text-white hover:bg-white/10">
                 <Bookmark className="w-4 h-4 mr-2" />
-                Save to List
+                {t("creatorProfile.saveToList")}
               </Button>
             </div>
 
@@ -498,11 +498,11 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
             <div className="flex items-center gap-4 mb-4 text-sm">
               <span className="flex items-center gap-1">
                 <Play className="w-4 h-4" />
-                {showWorkModal.views} views
+                {t("creatorProfile.viewsCount", { count: showWorkModal.views })}
               </span>
               <span className="flex items-center gap-1">
                 <Heart className="w-4 h-4" />
-                {showWorkModal.likes} likes
+                {t("creatorProfile.likesCount", { count: showWorkModal.likes })}
               </span>
               <span className="px-2 py-1 bg-violet-100 text-violet-700 rounded text-xs">
                 {showWorkModal.brand}
@@ -526,7 +526,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                   setShowContactModal(true);
                 }}
               >
-                Discuss This Style
+                {t("creatorProfile.discussStyle")}
               </Button>
             </div>
           </motion.div>
@@ -542,7 +542,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
             className="bg-white rounded-2xl p-6 w-full max-w-md"
           >
             <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-lg">Contact {creatorData.name}</h3>
+              <h3 className="font-bold text-lg">{t("creatorProfile.contactName", { name: creatorData.name })}</h3>
               <button 
                 onClick={() => setShowContactModal(false)}
                 className="p-2 hover:bg-gray-100 rounded-lg"
@@ -552,29 +552,29 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
             </div>
             
             <div className="bg-gray-50 rounded-xl p-4 mb-4">
-              <p className="text-sm text-neutral-600">Rate Range: {creatorData.rateRange}</p>
-              <p className="text-xs text-neutral-500">Typical response: Within 24 hours</p>
+              <p className="text-sm text-neutral-600">{t("creatorProfile.rateRangeLine", { range: creatorData.rateRange })}</p>
+              <p className="text-xs text-neutral-500">{t("creatorProfile.typicalResponse")}</p>
             </div>
 
             <input
               type="text"
-              placeholder="Your company name"
+              placeholder={t("creatorProfile.companyNamePlaceholder")}
               className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
             <input
               type="email"
-              placeholder="Your email"
+              placeholder={t("creatorProfile.yourEmailPlaceholder")}
               className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-violet-500"
             />
             <select className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-violet-500">
-              <option>Select campaign type</option>
-              <option>Product Review</option>
-              <option>Sponsored Post</option>
-              <option>Brand Ambassador</option>
-              <option>Event Coverage</option>
+              <option>{t("creatorProfile.campaignTypePlaceholder")}</option>
+              <option>{t("creatorProfile.campaignTypes.productReview")}</option>
+              <option>{t("creatorProfile.campaignTypes.sponsoredPost")}</option>
+              <option>{t("creatorProfile.campaignTypes.brandAmbassador")}</option>
+              <option>{t("creatorProfile.campaignTypes.eventCoverage")}</option>
             </select>
             <textarea
-              placeholder="Tell me about your campaign and goals..."
+              placeholder={t("creatorProfile.campaignGoalsPlaceholder")}
               className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none mb-4"
             />
 
@@ -584,7 +584,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                 className="flex-1"
                 onClick={() => setShowContactModal(false)}
               >
-                Cancel
+                {tc("cancel")}
               </Button>
               <Button 
                 className="flex-1 bg-gradient-to-r from-violet-500 to-pink-500"
@@ -593,7 +593,7 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
                   alert(`Message sent to ${creatorData.name}! They will respond within 24 hours.`);
                 }}
               >
-                Send Message
+                {t("creatorProfile.sendMessage")}
               </Button>
             </div>
           </motion.div>

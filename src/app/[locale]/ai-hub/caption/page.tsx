@@ -33,18 +33,18 @@ interface CaptionResult {
 }
 
 const tones = [
-  { id: "confident", label: "Confident", desc: "Bold and self-assured", example: "I didn't come this far to only come this far. 🔥" },
-  { id: "playful", label: "Playful", desc: "Fun and lighthearted", example: "POV: You finally figured out the lighting ✨" },
-  { id: "inspiring", label: "Inspiring", desc: "Motivational and uplifting", example: "Your future self is watching – make them proud 💪" },
-  { id: "casual", label: "Casual", desc: "Relaxed and conversational", example: "Just a casual Tuesday look, nothing special 😌" },
-  { id: "professional", label: "Professional", desc: "Polished and business-like", example: "3 strategies that transformed my content game 📈" },
+  { id: "confident", example: "I didn't come this far to only come this far. 🔥" },
+  { id: "playful", example: "POV: You finally figured out the lighting ✨" },
+  { id: "inspiring", example: "Your future self is watching – make them proud 💪" },
+  { id: "casual", example: "Just a casual Tuesday look, nothing special 😌" },
+  { id: "professional", example: "3 strategies that transformed my content game 📈" },
 ];
 
 const platforms = [
-  { id: "instagram", label: "Instagram", maxLength: 2200, bestPractice: "Use line breaks for readability" },
-  { id: "tiktok", label: "TikTok", maxLength: 2200, bestPractice: "Keep it short and punchy" },
-  { id: "twitter", label: "Twitter/X", maxLength: 280, bestPractice: "Hook in first 100 characters" },
-  { id: "linkedin", label: "LinkedIn", maxLength: 3000, bestPractice: "Tell a story with value" },
+  { id: "instagram", label: "Instagram", maxLength: 2200 },
+  { id: "tiktok", label: "TikTok", maxLength: 2200 },
+  { id: "twitter", label: "Twitter/X", maxLength: 280 },
+  { id: "linkedin", label: "LinkedIn", maxLength: 3000 },
 ];
 
 const contentExamples = [
@@ -90,6 +90,10 @@ export default function CaptionAIPage() {
   const [showExamples, setShowExamples] = useState(true);
   const [showTips, setShowTips] = useState(true);
   const example = t.raw("examples.caption") as { topic: string };
+  const toneMeta = t.raw("captionPage.tones") as { label: string; desc: string }[];
+  const platformTips = t.raw("captionPage.platformTips") as string[];
+  const captionTips = t.raw("captionPage.tips") as string[];
+  const tonesLocalized = tones.map((tone, i) => ({ ...tone, label: toneMeta[i].label, desc: toneMeta[i].desc }));
 
   const generate = async () => {
     if (!prompt.trim() || loading) return;
@@ -140,7 +144,7 @@ export default function CaptionAIPage() {
           <Link href="/ai-hub">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to AI Hub
+              {t("backToAiHub")}
             </Button>
           </Link>
         </div>
@@ -148,13 +152,13 @@ export default function CaptionAIPage() {
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-pink-100 text-pink-700 text-sm font-semibold mb-4">
             <MessageSquare className="w-4 h-4" />
-            AI Caption Generator
+            {t("captionPage.badge")}
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
-            Write Viral <span className="gradient-text">Captions</span>
+            {t("captionPage.titleBefore")} <span className="gradient-text">{t("captionPage.titleHighlight")}</span>
           </h1>
           <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            Generate engaging captions that match your voice and boost engagement across all platforms.
+            {t("captionPage.subtitle")}
           </p>
         </div>
 
@@ -166,7 +170,7 @@ export default function CaptionAIPage() {
           >
             <div className="flex items-center gap-2">
               <Lightbulb className="w-5 h-5 text-amber-500" />
-              <span className="font-semibold">Try These Content Examples</span>
+              <span className="font-semibold">{t("captionPage.examplesTitle")}</span>
             </div>
             {showExamples ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
           </button>
@@ -188,7 +192,7 @@ export default function CaptionAIPage() {
                   <p className="text-sm text-neutral-500 mb-2 line-clamp-2">{example.prompt}</p>
                   <div className="flex gap-2">
                     <span className="text-xs px-2 py-1 bg-pink-100 text-pink-700 rounded-full">
-                      {tones.find(t => t.id === example.tone)?.label} tone
+                      {tonesLocalized.find(t => t.id === example.tone)?.label} {t("captionPage.toneSuffix")}
                     </span>
                   </div>
                 </button>
@@ -201,7 +205,7 @@ export default function CaptionAIPage() {
         <div className="bg-white rounded-2xl shadow-lg border p-6 mb-8">
           {/* Platform Selection */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-neutral-700 mb-3">Platform</label>
+            <label className="block text-sm font-medium text-neutral-700 mb-3">{t("captionPage.platformLabel")}</label>
             <div className="flex flex-wrap gap-2">
               {platforms.map((p) => (
                 <button
@@ -218,7 +222,7 @@ export default function CaptionAIPage() {
               ))}
             </div>
             <p className="text-xs text-neutral-500 mt-2">
-              💡 {platforms.find(p => p.id === platform)?.bestPractice}
+              💡 {platformTips[platforms.findIndex(p => p.id === platform)]}
             </p>
           </div>
 
@@ -226,7 +230,7 @@ export default function CaptionAIPage() {
           <div className="mb-6">
             <div className="flex items-center justify-between mb-3">
               <label className="block text-sm font-medium text-neutral-700">
-                What are you posting about?
+                {t("captionPage.topicLabel")}
               </label>
               <Button variant="ghost" size="sm" onClick={() => setPrompt(example.topic)}>
                 <Sparkles className="w-4 h-4 mr-2" />
@@ -234,7 +238,7 @@ export default function CaptionAIPage() {
               </Button>
             </div>
             <textarea
-              placeholder="Example: Just completed my 3-month fitness transformation journey, want to inspire others..."
+              placeholder={t("captionPage.promptPlaceholder")}
               className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -243,9 +247,9 @@ export default function CaptionAIPage() {
 
           {/* Tone Selection */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-neutral-700 mb-3">Tone</label>
+            <label className="block text-sm font-medium text-neutral-700 mb-3">{t("captionPage.toneLabel")}</label>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              {tones.map((t) => (
+              {tonesLocalized.map((t) => (
                 <button
                   key={t.id}
                   onClick={() => setTone(t.id)}
@@ -264,7 +268,7 @@ export default function CaptionAIPage() {
               <div className="mt-3 p-3 bg-pink-50 rounded-xl flex items-start gap-2">
                 <Quote className="w-4 h-4 text-pink-500 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-pink-700 italic">
-                  Example: {tones.find(t => t.id === tone)?.example}
+                  {t("captionPage.examplePrefix")} {tonesLocalized.find(t => t.id === tone)?.example}
                 </p>
               </div>
             )}
@@ -295,7 +299,7 @@ export default function CaptionAIPage() {
             ) : (
               <>
                 <Sparkles className="w-5 h-5 mr-2" />
-                Generate Captions
+                {t("captionPage.generate")}
               </>
             )}
           </Button>
@@ -310,10 +314,10 @@ export default function CaptionAIPage() {
             className="space-y-4"
           >
             <div className="flex items-center justify-between">
-              <h3 className="text-xl font-bold">Generated Captions</h3>
+              <h3 className="text-xl font-bold">{t("captionPage.resultsTitle")}</h3>
               <Button variant="outline" size="sm" onClick={() => setResults([])}>
                 <RefreshCw className="w-4 h-4 mr-2" />
-                Regenerate
+                {t("captionPage.regenerate")}
               </Button>
             </div>
 
@@ -332,7 +336,7 @@ export default function CaptionAIPage() {
                     {i === 0 && (
                       <span className="px-3 py-1 bg-pink-100 text-pink-700 text-xs rounded-full flex items-center gap-1">
                         <Zap className="w-3 h-3" />
-                        Top Pick
+                        {t("captionPage.topPick")}
                       </span>
                     )}
                   </div>
@@ -369,7 +373,7 @@ export default function CaptionAIPage() {
                       )}
                     </Button>
                     <Button size="sm" className="bg-pink-500 hover:bg-pink-600">
-                      Use This
+                      {t("captionPage.useThis")}
                     </Button>
                   </div>
                 </div>
@@ -387,24 +391,24 @@ export default function CaptionAIPage() {
         <div className="mt-12 bg-gradient-to-r from-pink-500 to-rose-500 rounded-2xl p-6 text-white">
           <h4 className="font-bold text-lg mb-3 flex items-center gap-2">
             <Sparkles className="w-5 h-5" />
-            Pro Tips for Better Captions
+            {t("captionPage.tipsTitle")}
           </h4>
           <ul className="space-y-2 text-white/90">
             <li className="flex items-start gap-2">
               <span className="text-white/60">•</span>
-              Start with a hook in the first line to stop the scroll
+              {captionTips[0]}
             </li>
             <li className="flex items-start gap-2">
               <span className="text-white/60">•</span>
-              Use line breaks to make your caption skimmable
+              {captionTips[1]}
             </li>
             <li className="flex items-start gap-2">
               <span className="text-white/60">•</span>
-              Include a clear call-to-action to boost engagement
+              {captionTips[2]}
             </li>
             <li className="flex items-start gap-2">
               <span className="text-white/60">•</span>
-              Match your caption length to the platform (shorter for TikTok, longer for LinkedIn)
+              {captionTips[3]}
             </li>
           </ul>
         </div>

@@ -135,7 +135,42 @@
     "waitlistButton": "Join Waitlist",
     "waitlistSuccess": "You’re on the list! We’ll email you when your invite is ready.",
     "waitlistDuplicate": "This email is already on the waitlist.",
-    "waitlistError": "Something went wrong. Please try again."
+    "waitlistError": "Something went wrong. Please try again.",
+    "supercharge": {
+      "titleBefore": "Three Ways to",
+      "titleHighlight": "Supercharge",
+      "titleAfter": "Your Career",
+      "aiHubStats": "Storyboards, captions & more",
+      "aiHubFeatures": [
+        "Storyboard AI",
+        "Caption Generator",
+        "Contract Scanner"
+      ],
+      "marketplaceStats": "Brand deals & campaigns",
+      "marketplaceFeatures": [
+        "Find Campaigns",
+        "Discover Creators",
+        "Secure Payments"
+      ],
+      "rentalStats": "Rent gear from creators",
+      "rentalFeatures": [
+        "Book by Date",
+        "Message Owners",
+        "Insured Rentals"
+      ],
+      "explore": "Explore {title}"
+    },
+    "footer": {
+      "aiHub": "AI Hub",
+      "marketplace": "Marketplace",
+      "rentGear": "Rent Gear",
+      "helpCenter": "Help Center",
+      "creatorLogin": "Creator Login",
+      "brandLogin": "Brand Login",
+      "documentation": "Documentation",
+      "tutorials": "Tutorials",
+      "contactSupport": "Contact Support"
+    }
   },
   "auth": {
     "welcomeBack": "Welcome Back",
@@ -155,7 +190,12 @@
     "terms": "By continuing, you agree to our Terms of Service and Privacy Policy",
     "authRequired": "Authentication Required",
     "pleaseSignIn": "Please sign in to access this page.",
-    "adminOnly": "Admin Access Only",
+    "adminOnly": {
+      "title": "Admin Access Only",
+      "signedInAs": "You are signed in as <b>{name}</b> ({role})",
+      "description": "This page is restricted to administrators only. If you need admin access, please contact support.",
+      "goToDashboard": "Go to Dashboard"
+    },
     "findBrandDeals": "Find brand deals",
     "rentGear": "Rent gear",
     "analytics": "Analytics",
@@ -179,7 +219,21 @@
     "haveAccount": "Already have an account?",
     "signingIn": "Signing in...",
     "aiFeatures": "AI Storyboard & Caption Generation",
-    "emailPlaceholder": "you@example.com"
+    "emailPlaceholder": "you@example.com",
+    "accessDenied": {
+      "title": "Access Denied",
+      "signedInAs": "You are signed in as <b>{name}</b> ({role})",
+      "descDefault": "You don't have access to this page.",
+      "descCreator": "This page is for other user types. View your creator dashboard instead.",
+      "descCompany": "This page is for other user types. View your company dashboard instead.",
+      "descAdmin": "This page is not for admin users.",
+      "roleUser": "User",
+      "roleCreator": "Creator",
+      "roleCompany": "Company",
+      "roleAdmin": "Admin",
+      "goHome": "Go Home",
+      "goToDashboard": "Go to Your Dashboard"
+    }
   },
   "marketplace": {
     "twoWayMarketplace": "Two-Way Marketplace",
@@ -370,7 +424,33 @@
         "value": "Lifestyle",
         "label": "Lifestyle"
       }
-    ]
+    ],
+    "creatorProfile": {
+      "website": "Website",
+      "viewsCount": "{count} views",
+      "likesCount": "{count} likes",
+      "contactTitle": "Interested in working together?",
+      "responseLine": "{name} typically responds within 24 hours.",
+      "sendMessage": "Send Message",
+      "saveToList": "Save to List",
+      "gender": "Gender",
+      "female": "Female",
+      "male": "Male",
+      "discussStyle": "Discuss This Style",
+      "contactName": "Contact {name}",
+      "rateRangeLine": "Rate Range: {range}",
+      "typicalResponse": "Typical response: Within 24 hours",
+      "companyNamePlaceholder": "Your company name",
+      "yourEmailPlaceholder": "Your email",
+      "campaignTypePlaceholder": "Select campaign type",
+      "campaignTypes": {
+        "productReview": "Product Review",
+        "sponsoredPost": "Sponsored Post",
+        "brandAmbassador": "Brand Ambassador",
+        "eventCoverage": "Event Coverage"
+      },
+      "campaignGoalsPlaceholder": "Tell me about your campaign and goals..."
+    }
   },
   "equipment": {
     "rentProfessionalGear": "Rent Professional Gear",
@@ -418,7 +498,18 @@
     "proposeDates": "Propose Dates",
     "requestToBookShort": "Request to Book",
     "viewItem": "View Item",
-    "backToEquipment": "Back to Equipment"
+    "backToEquipment": "Back to Equipment",
+    "reviewsCount": "{count} reviews",
+    "yearLabel": "Year: {year}",
+    "respondsStats": "Responds {time} • {count} rentals",
+    "viewProfile": "Click to view profile →",
+    "message": "Message",
+    "daysCount": "{count} days",
+    "highDemand": "High Demand",
+    "serviceFee": "Service Fee",
+    "total": "Total",
+    "typeMessage": "Type a message...",
+    "review": "Review"
   },
   "analytics": {
     "analytics": "Analytics",
@@ -577,7 +668,26 @@
       "campaignMessage": "Tell me about your campaign...",
       "sendMessage": "Send Message",
       "messageSent": "Message sent! The creator will respond within 24 hours."
-    }
+    },
+    "welcomeBackName": "Welcome back, {name}!",
+    "businessRegistration": "Business Registration",
+    "paymentMethod": "Payment Method",
+    "noSavedCreators": "No saved creators yet.",
+    "savedCreatorItem": "Creator #{id}",
+    "noSavedCampaigns": "No saved campaigns yet.",
+    "savedCampaignItem": "Campaign #{id}",
+    "browseGear": "Browse Gear",
+    "markAvailable": "Mark available",
+    "markUnavailable": "Mark unavailable",
+    "perDay": "/day",
+    "conditionLabel": "Condition",
+    "conditionOptions": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair"
+    },
+    "gearNamePlaceholder": "e.g. Sony A7IV",
+    "gearDescPlaceholder": "Brief description of the item..."
   },
   "admin": {
     "panelTitle": "Admin Panel",
@@ -688,7 +798,16 @@
     "resolved": "Resolved",
     "released": "Released",
     "filed": "Filed",
-    "dismissed": "Dismissed"
+    "dismissed": "Dismissed",
+    "creator": "Creator",
+    "company": "Company",
+    "submittedAt": "Submitted {time}",
+    "openedAt": "Opened {time}",
+    "dispute": "Dispute",
+    "rentedBy": "Rented by {renter} • Listed by {lister} • Returned {date}",
+    "totalSimulatedCases": "Total simulated cases",
+    "aiImpactTitle": "AI Automation Impact",
+    "aiImpactDesc": "Today the system auto-verified {verified} accounts, resolved {resolved} disputes, and released {deposits} deposits without admin intervention."
   },
   "messages": {
     "messages": "Messages",
@@ -724,7 +843,28 @@
     "rentalHistory": "Rental History",
     "notes": "Notes",
     "inspectionChecklist": "Inspection Checklist",
-    "submitInspection": "Submit Inspection"
+    "submitInspection": "Submit Inspection",
+    "alertApproved": "Rental request approved! Confirmation sent to renter.",
+    "alertDeclined": "Rental request declined. Reason: {reason}",
+    "submittedAt": "Submitted {time}",
+    "exportReport": "Export",
+    "forDuration": "for {duration}",
+    "dateAtTime": "{date} at {time}",
+    "ratingLabel": "rating",
+    "rentalsCount": "{count} rentals",
+    "memberSince": "Member since {date}",
+    "sendEmail": "Email",
+    "call": "Call",
+    "fromOwner": "from {owner} • {date}",
+    "serialNumber": "S/N: {serial}",
+    "purchased": "Purchased {year}",
+    "conversationHistory": "Conversation History",
+    "openFullChat": "Open Full Chat",
+    "noConflict": "OK",
+    "declineReasonUnavailable": "Gear not available on those dates",
+    "declineReasonVerification": "Renter has insufficient verification",
+    "declineReasonHistory": "Previous rental issues",
+    "declineReasonOther": "Other (please specify)"
   },
   "common": {
     "logout": "Logout",
@@ -960,6 +1100,413 @@
         "Comparing creators like you...",
         "Fine-tuning your range..."
       ]
+    },
+    "backToAiHub": "Back to AI Hub",
+    "advisor": {
+      "badge": "AI Market Advisor",
+      "titleBefore": "Your Personal",
+      "titleHighlight": "Deal Assistant",
+      "subtitle": "Get rate suggestions, analyze contracts, estimate project timelines, draft professional messages, and plan your campaigns with AI-powered insights.",
+      "tabs": {
+        "rates": "Rate Calculator",
+        "quote": "Job Quote",
+        "messages": "Message Assistant",
+        "planner": "Project Planner",
+        "contract": "Contract Scanner"
+      },
+      "nicheLabel": "Niche",
+      "followersLabel": "Followers",
+      "engagementLabel": "Engagement Rate",
+      "platformLabel": "Primary Platform",
+      "nicheOptions": [
+        "Beauty & Skincare",
+        "Fashion",
+        "Fitness",
+        "Tech",
+        "Food",
+        "Travel",
+        "Lifestyle"
+      ],
+      "followerOptions": [
+        "10K - 50K",
+        "50K - 100K",
+        "100K - 500K",
+        "500K+"
+      ],
+      "engagementOptions": [
+        "1-3%",
+        "3-5%",
+        "5-8%",
+        "8%+"
+      ],
+      "platformOptions": [
+        "Instagram",
+        "TikTok",
+        "YouTube",
+        "Multi-Platform"
+      ],
+      "rateDesc": "Get personalized rate recommendations based on your profile and market data.",
+      "getRateInsights": "Get Rate Insights",
+      "recommendedRange": "Your recommended rate range",
+      "perPost": "Per sponsored post (60s video)",
+      "growthRecs": "Growth Recommendations",
+      "quickStartQuote": "Quick Start: Choose a Sample Scenario",
+      "quoteTitle": "Job Quote Assistant",
+      "quoteDesc": "Tell us about the job and get time estimates, pricing recommendations, and deliverables breakdown.",
+      "brandNameLabel": "Brand/Client Name",
+      "brandNamePlaceholder": "e.g., Glow Skincare",
+      "deliverablesLabel": "Deliverables Required",
+      "deliverableLabels": [
+        "Feed Post",
+        "Instagram Reel",
+        "Story Series",
+        "Carousel Post",
+        "Live Session",
+        "TikTok Video",
+        "YouTube Video"
+      ],
+      "complexityLabel": "Project Complexity",
+      "complexityOptions": {
+        "low": "Simple - Standard content",
+        "medium": "Moderate - Some creative direction",
+        "high": "Complex - High production value"
+      },
+      "timelineLabel": "Timeline",
+      "timelineOptions": {
+        "1week": "Urgent - Within 1 week",
+        "2weeks": "Standard - 2 weeks",
+        "1month": "Relaxed - 1 month"
+      },
+      "briefLabel": "Project Brief Summary",
+      "briefPlaceholder": "Briefly describe what the brand is looking for...",
+      "generateQuote": "Generate Quote & Timeline",
+      "recommendedPrice": "Recommended Price",
+      "estimatedTime": "Estimated Time",
+      "hoursUnit": "{count} hours",
+      "estPrefix": "Est.",
+      "marketPosition": "Market Position",
+      "pricePerDeliverable": "Price per Deliverable",
+      "pricingFactors": "Pricing Factors",
+      "timelineBreakdown": "Timeline Breakdown",
+      "tryAnotherQuote": "Try Another Quote",
+      "draftMessage": "Draft Message",
+      "quickStartMessage": "Quick Start: Choose a Message Scenario",
+      "messageDesc": "Draft professional emails and messages for any scenario.",
+      "scenarioLabel": "Message Scenario",
+      "clientNameLabel": "Client/Brand Name",
+      "clientNamePlaceholder": "e.g., Sarah from Glow Skincare",
+      "toneLabel": "Tone",
+      "toneOptions": {
+        "professional": "Professional",
+        "friendly": "Friendly",
+        "formal": "Formal",
+        "enthusiastic": "Enthusiastic"
+      },
+      "msgBriefLabel": "Brief Description",
+      "msgBriefPlaceholder": "Describe the project or context...",
+      "pointsLabel": "Key Points to Include",
+      "pointsPlaceholder": "Any specific details, requirements, or points you want to mention...",
+      "generateMessage": "Generate Message",
+      "draftBadge": "Draft Message",
+      "subjectLabel": "Subject:",
+      "copiedExcl": "Copied!",
+      "copyToClipboard": "Copy to Clipboard",
+      "newMessage": "New Message",
+      "tipsTitle": "Tips for This Message",
+      "tryTones": "Try Different Tones",
+      "quickStartPlanner": "Quick Start: Choose a Campaign Template",
+      "twoWeeks": "2 Weeks",
+      "oneMonth": "1 Month",
+      "twoMonths": "2 Months",
+      "plannerDesc": "Create a detailed project plan with task breakdowns, timelines, and content calendars.",
+      "campaignNameLabel": "Campaign Name",
+      "campaignNamePlaceholder": "e.g., Summer Collection Launch",
+      "durationLabel": "Campaign Duration",
+      "platformsLabel": "Target Platforms",
+      "contentCountLabel": "Number of Content Pieces:",
+      "onePiece": "1 piece",
+      "tenPieces": "10 pieces",
+      "goalsLabel": "Campaign Goals",
+      "goalsPlaceholder": "What are the main objectives of this campaign?",
+      "generatePlan": "Generate Project Plan",
+      "campaignPlanFallback": "Campaign Plan",
+      "totalDuration": "Total Duration",
+      "daysUnit": "{count} days",
+      "keyMilestones": "Key Milestones",
+      "contentPieces": "Content Pieces",
+      "criticalDates": "Critical Dates",
+      "phaseBreakdown": "Phase Breakdown",
+      "tasksLabel": "Tasks",
+      "deliverablesTitle": "Deliverables",
+      "createNewPlan": "Create New Plan",
+      "quickStartContract": "See How It Works: Try a Sample Contract",
+      "sampleStandard": "Standard Brand Deal",
+      "sampleFair": "Fair Contract",
+      "sampleConcerning": "Concerning Terms",
+      "sampleStandardDesc": "Typical influencer contract with mixed terms",
+      "sampleFairDesc": "Well-balanced contract with creator-friendly terms",
+      "sampleConcerningDesc": "Multiple red flags including excessive usage rights",
+      "scoreBadge": "Score: {score}/100",
+      "reviewNeeded": "Review Needed",
+      "fairDeal": "Fair Deal",
+      "highRisk": "High Risk",
+      "contractDesc": "Upload your brand contract and our AI will analyze it for loopholes, unfair terms, and red flags.",
+      "uploadTitle": "Click to upload or drag and drop",
+      "uploadHint": "PDF, DOC, or DOCX (max 10MB)",
+      "privacyLabel": "Privacy Note:",
+      "privacyText": "Your contract is processed securely and never stored. We recommend removing sensitive personal information before uploading.",
+      "scanButton": "Scan for Issues",
+      "fairnessScore": "Contract Fairness Score",
+      "fairBadge": "✓ Fair",
+      "reviewBadge": "⚠ Review",
+      "riskyBadge": "⚠ Risky",
+      "redFlags": "Red Flags ({count})",
+      "potentialRisks": "Potential Risks",
+      "recommendedChanges": "Recommended Changes",
+      "scanAnother": "Scan Another",
+      "legendRedFlag": "Red Flag",
+      "legendGoodClause": "Good Clause"
+    },
+    "hub": {
+      "badge": "AI-Powered Creator Tools",
+      "titleBefore": "Supercharge Your Content with",
+      "titleHighlight": "AI",
+      "subtitle": "Generate storyboards, write viral captions, get market insights, and analyze contracts — all powered by AI.",
+      "toolDescs": [
+        "Generate visual storyboards and shot lists from your script",
+        "Write viral captions that match your voice and boost engagement",
+        "Your complete deal assistant - quotes, contracts, messages & project planning"
+      ],
+      "toolFeatures": [
+        [
+          "Scene breakdown",
+          "Shot suggestions",
+          "Lighting notes",
+          "Equipment list"
+        ],
+        [
+          "Hook variations",
+          "Hashtag suggestions",
+          "Call-to-action",
+          "Tone matching"
+        ],
+        [
+          "Rate Calculator",
+          "Job Quote Assistant",
+          "Message Assistant",
+          "Project Planner",
+          "Contract Scanner"
+        ]
+      ],
+      "moreTools": "+{count} more",
+      "tryNow": "Try it now",
+      "fiveInOne": "5 TOOLS IN 1",
+      "storyboard": {
+        "badge": "Visual Content Planning",
+        "title": "Plan Like a Pro with Storyboard AI",
+        "desc": "Transform your creative vision into detailed production plans. Get shot lists, lighting notes, and equipment recommendations — all from a simple script.",
+        "cta": "Create Your Storyboard",
+        "features": [
+          {
+            "title": "Visual Storyboarding",
+            "description": "Transform your script into detailed visual storyboards with scene-by-scene breakdowns. Plan every shot before you pick up your camera."
+          },
+          {
+            "title": "Shot Suggestions",
+            "description": "Get AI-powered shot recommendations including angles, framing, and camera movements that best tell your story."
+          },
+          {
+            "title": "Lighting Notes",
+            "description": "Receive professional lighting suggestions for each scene to create the perfect mood and atmosphere for your content."
+          },
+          {
+            "title": "Equipment List",
+            "description": "Generate a complete equipment checklist for your shoot including cameras, lenses, lighting, and audio gear."
+          }
+        ]
+      },
+      "caption": {
+        "badge": "Viral Content Writing",
+        "title": "Write Captions That Convert",
+        "desc": "Craft engaging, scroll-stopping captions that match your voice and drive real engagement. From hooks to hashtags, we've got you covered.",
+        "cta": "Write Viral Captions",
+        "features": [
+          {
+            "title": "Hook Variations",
+            "description": "Get multiple attention-grabbing opening lines designed to stop the scroll and boost your content's performance in the first 3 seconds."
+          },
+          {
+            "title": "Smart Hashtags",
+            "description": "Receive AI-generated hashtag suggestions based on your content, niche, and trending topics to maximize discoverability."
+          },
+          {
+            "title": "Call-to-Action",
+            "description": "Generate compelling CTAs that drive engagement, comments, saves, and conversions tailored to your specific goals."
+          },
+          {
+            "title": "Tone Matching",
+            "description": "Match your caption's voice to your brand personality - whether it's casual, professional, playful, or inspirational."
+          }
+        ]
+      },
+      "advisor": {
+        "badge": "Featured: Market Advisor",
+        "title": "Your Complete Deal Assistant",
+        "desc": "From quote to contract, the Market Advisor guides you through every step of your brand partnerships with AI-powered insights.",
+        "cta": "Open Market Advisor",
+        "features": [
+          {
+            "title": "Job Quote Assistant",
+            "description": "Describe your project and get instant time estimates, pricing recommendations, and deliverable breakdowns. Know exactly what to charge and how long it will take."
+          },
+          {
+            "title": "Message Assistant",
+            "description": "Draft professional emails and messages for any scenario - initial pitches, follow-ups, negotiations, counter offers, or polite declines. Choose your tone and get perfect copy."
+          },
+          {
+            "title": "Project Planner",
+            "description": "Create detailed project plans with phase breakdowns, task timelines, critical milestones, and resource requirements. Stay organized from kickoff to delivery."
+          },
+          {
+            "title": "Rate Calculator",
+            "description": "Get personalized rate recommendations based on your niche, follower count, engagement rate, and current market trends. Know your worth."
+          },
+          {
+            "title": "Contract Scanner",
+            "description": "Upload brand contracts and get instant analysis of red flags, unfair terms, and potential risks. Understand what you're signing before you commit."
+          }
+        ]
+      },
+      "howItWorks": {
+        "title": "How It Works",
+        "subtitle": "Each AI tool is designed to save you time and elevate your content. Choose the tool that fits your current need.",
+        "storyboardSteps": [
+          "Describe your video concept or paste your script",
+          "AI breaks it down into scenes with shot suggestions",
+          "Get lighting notes and equipment checklist"
+        ],
+        "captionSteps": [
+          "Upload your photo or describe your content",
+          "Select your tone and content goal",
+          "Get viral caption options with hashtags"
+        ],
+        "advisorSteps": [
+          "Describe your brand collaboration opportunity",
+          "Get quotes, draft messages, plan projects",
+          "Scan contracts and finalize your deal"
+        ]
+      },
+      "highlights": {
+        "title": "Save Hours on Content Creation",
+        "desc": "Our AI tools help you plan, write, and strategize your content in minutes instead of hours. Join 10,000+ creators who use LumiAI to create better content faster.",
+        "stats": [
+          "10x Faster",
+          "Save 5+ hrs/week",
+          "Better Results"
+        ],
+        "items": [
+          "Storyboard AI plans your visual content before you shoot",
+          "Caption AI writes engaging copy that matches your voice",
+          "Market Advisor handles your business negotiations",
+          "All tools work together for seamless content creation"
+        ]
+      }
+    },
+    "captionPage": {
+      "badge": "AI Caption Generator",
+      "titleBefore": "Write Viral",
+      "titleHighlight": "Captions",
+      "subtitle": "Generate engaging captions that match your voice and boost engagement across all platforms.",
+      "examplesTitle": "Try These Content Examples",
+      "platformLabel": "Platform",
+      "platformTips": [
+        "Use line breaks for readability",
+        "Keep it short and punchy",
+        "Hook in first 100 characters",
+        "Tell a story with value"
+      ],
+      "topicLabel": "What are you posting about?",
+      "promptPlaceholder": "Example: Just completed my 3-month fitness transformation journey, want to inspire others...",
+      "toneLabel": "Tone",
+      "tones": [
+        {
+          "label": "Confident",
+          "desc": "Bold and self-assured"
+        },
+        {
+          "label": "Playful",
+          "desc": "Fun and lighthearted"
+        },
+        {
+          "label": "Inspiring",
+          "desc": "Motivational and uplifting"
+        },
+        {
+          "label": "Casual",
+          "desc": "Relaxed and conversational"
+        },
+        {
+          "label": "Professional",
+          "desc": "Polished and business-like"
+        }
+      ],
+      "toneSuffix": "tone",
+      "examplePrefix": "Example:",
+      "resultsTitle": "Generated Captions",
+      "regenerate": "Regenerate",
+      "topPick": "Top Pick",
+      "useThis": "Use This",
+      "tipsTitle": "Pro Tips for Better Captions",
+      "tips": [
+        "Start with a hook in the first line to stop the scroll",
+        "Use line breaks to make your caption skimmable",
+        "Include a clear call-to-action to boost engagement",
+        "Match your caption length to the platform (shorter for TikTok, longer for LinkedIn)"
+      ],
+      "generate": "Generate Captions"
+    },
+    "storyboardPage": {
+      "badge": "AI Storyboard Generator",
+      "titleBefore": "Visualize Your",
+      "titleHighlight": "Content",
+      "subtitle": "Describe your video idea and get a complete storyboard with shot suggestions, lighting notes, and equipment recommendations.",
+      "examplesTitle": "Try These Examples",
+      "ideaLabel": "Describe your video idea",
+      "ideaPlaceholder": "Example: A 30-second morning skincare routine showing a person waking up refreshed, washing their face, and applying serum with a natural glow...",
+      "moodLabel": "Mood / Atmosphere (optional)",
+      "moodPlaceholder": "e.g. cozy morning, high-energy, cinematic, minimalist...",
+      "tip": "Tip: Include duration, setting, and key actions for best results",
+      "generate": "Generate Storyboard",
+      "resultBadge": "AI-Generated Storyboard",
+      "scenesCount": "{count} scenes",
+      "copiedExcl": "Copied!",
+      "exportLabel": "Export",
+      "equipment": "Recommended Equipment",
+      "directorsTips": "Director's Tips",
+      "tipsTitle": "Pro Tips for Better Storyboards",
+      "tips": [
+        {
+          "title": "Be Specific",
+          "content": "Include details like duration, setting, camera angles, and key actions. The more specific, the better the storyboard."
+        },
+        {
+          "title": "Add Timing",
+          "content": "Mention total video length so we can suggest appropriate pacing for each scene."
+        },
+        {
+          "title": "Include Context",
+          "content": "Tell us about your audience and the purpose - this helps tailor shot suggestions."
+        },
+        {
+          "title": "Mention Style",
+          "content": "Describe the vibe - professional, casual, energetic, calming - we match the shots to your style."
+        }
+      ],
+      "copyScenePrefix": "Scene",
+      "actionLabel": "Action:",
+      "lightingLabel": "Lighting:",
+      "equipmentLabel": "Equipment:",
+      "tipsLabel": "Tips:"
     }
   }
 }

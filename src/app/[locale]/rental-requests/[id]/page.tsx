@@ -150,13 +150,13 @@ function RentalRequestDetailPage() {
   const [ownerNotes, setOwnerNotes] = useState(rentalRequestData.ownerNotes);
 
   const handleApprove = () => {
-    alert("Rental request approved! Confirmation sent to renter.");
+    alert(t("alertApproved"));
     router.push("/analytics/gear-owner");
   };
 
   const handleDecline = () => {
     if (declineReason) {
-      alert(`Rental request declined. Reason: ${declineReason}`);
+      alert(t("alertDeclined", { reason: declineReason }));
       setShowDeclineModal(false);
       router.push("/analytics/gear-owner");
     }
@@ -182,7 +182,7 @@ function RentalRequestDetailPage() {
                 </span>
               </div>
               <h1 className="text-2xl font-bold text-neutral-900">{rentalRequestData.id}</h1>
-              <p className="text-neutral-600">Submitted {rentalRequestData.submittedAt}</p>
+              <p className="text-neutral-600">{t("submittedAt", { time: rentalRequestData.submittedAt })}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -192,7 +192,7 @@ function RentalRequestDetailPage() {
             </Button>
             <Button variant="outline" size="sm">
               <Download className="w-4 h-4 mr-2" />
-              Export
+              {t("exportReport")}
             </Button>
           </div>
         </div>
@@ -237,7 +237,7 @@ function RentalRequestDetailPage() {
                       <p className="text-neutral-500">{rentalRequestData.gear.category}</p>
                       <div className="flex items-center gap-4 mt-2">
                         <span className="text-2xl font-bold text-orange-600">${rentalRequestData.pricing.total}</span>
-                        <span className="text-neutral-500">for {rentalRequestData.dates.duration}</span>
+                        <span className="text-neutral-500">{t("forDuration", { duration: rentalRequestData.dates.duration })}</span>
                       </div>
                     </div>
                     <div className="text-right">
@@ -263,7 +263,7 @@ function RentalRequestDetailPage() {
                         </div>
                         <div>
                           <p className="font-medium">{t("pickup")}</p>
-                          <p className="text-sm text-neutral-500">{rentalRequestData.dates.pickup} at {rentalRequestData.dates.pickupTime}</p>
+                          <p className="text-sm text-neutral-500">{t("dateAtTime", { date: rentalRequestData.dates.pickup, time: rentalRequestData.dates.pickupTime })}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -272,7 +272,7 @@ function RentalRequestDetailPage() {
                         </div>
                         <div>
                           <p className="font-medium">{t("return")}</p>
-                          <p className="text-sm text-neutral-500">{rentalRequestData.dates.return} at {rentalRequestData.dates.returnTime}</p>
+                          <p className="text-sm text-neutral-500">{t("dateAtTime", { date: rentalRequestData.dates.return, time: rentalRequestData.dates.returnTime })}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
@@ -405,12 +405,12 @@ function RentalRequestDetailPage() {
                         <div className="flex items-center gap-1">
                           <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                           <span className="font-medium">{rentalRequestData.renter.rating}</span>
-                          <span className="text-neutral-500 text-sm">rating</span>
+                          <span className="text-neutral-500 text-sm">{t("ratingLabel")}</span>
                         </div>
                         <span className="text-neutral-300">|</span>
-                        <span className="text-sm"><span className="font-medium">{rentalRequestData.renter.totalRentals}</span> rentals</span>
+                        <span className="text-sm">{t("rentalsCount", { count: rentalRequestData.renter.totalRentals })}</span>
                         <span className="text-neutral-300">|</span>
-                        <span className="text-sm">Member since {rentalRequestData.renter.memberSince}</span>
+                        <span className="text-sm">{t("memberSince", { date: rentalRequestData.renter.memberSince })}</span>
                       </div>
                     </div>
                   </div>
@@ -418,13 +418,13 @@ function RentalRequestDetailPage() {
                     <a href={`mailto:${rentalRequestData.renter.email}`} className="flex-1">
                       <Button variant="outline" className="w-full">
                         <Mail className="w-4 h-4 mr-2" />
-                        Email
+                        {t("sendEmail")}
                       </Button>
                     </a>
                     <a href={`tel:${rentalRequestData.renter.phone}`} className="flex-1">
                       <Button variant="outline" className="w-full">
                         <Phone className="w-4 h-4 mr-2" />
-                        Call
+                        {t("call")}
                       </Button>
                     </a>
                   </div>
@@ -444,7 +444,7 @@ function RentalRequestDetailPage() {
                         </div>
                         <div className="flex-1">
                           <p className="font-medium">{rental.gear}</p>
-                          <p className="text-sm text-neutral-500">from {rental.owner} • {rental.date}</p>
+                          <p className="text-sm text-neutral-500">{t("fromOwner", { owner: rental.owner, date: rental.date })}</p>
                         </div>
                         <div className="flex items-center gap-1">
                           {Array(5).fill(0).map((_, j) => (
@@ -472,17 +472,17 @@ function RentalRequestDetailPage() {
                     <div>
                       <h3 className="font-bold text-xl">{rentalRequestData.gear.name}</h3>
                       <p className="text-neutral-500">{rentalRequestData.gear.category}</p>
-                      <p className="text-sm text-neutral-400 mt-1">S/N: {rentalRequestData.gear.serialNumber}</p>
+                      <p className="text-sm text-neutral-400 mt-1">{t("serialNumber", { serial: rentalRequestData.gear.serialNumber })}</p>
                       <div className="flex items-center gap-3 mt-2">
                         <span className="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">{rentalRequestData.gear.condition}</span>
-                        <span className="text-sm text-neutral-500">Purchased {rentalRequestData.gear.purchaseYear}</span>
+                        <span className="text-sm text-neutral-500">{t("purchased", { year: rentalRequestData.gear.purchaseYear })}</span>
                       </div>
                     </div>
                   </div>
                   
                   <p className="text-neutral-600 mb-6">{rentalRequestData.gear.description}</p>
 
-                  <h4 className="font-semibold mb-3">What's Included</h4>
+                  <h4 className="font-semibold mb-3">{t("includedItems")}</h4>
                   <div className="grid sm:grid-cols-2 gap-2">
                     {rentalRequestData.gear.includedItems.map((item, i) => (
                       <div key={i} className="flex items-center gap-2 text-sm">
@@ -499,9 +499,9 @@ function RentalRequestDetailPage() {
             {activeTab === "messages" && (
               <div className="bg-white rounded-2xl border shadow-sm p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h4 className="font-semibold">Conversation History</h4>
+                  <h4 className="font-semibold">{t("conversationHistory")}</h4>
                   <Link href={`/messages/${rentalRequestData.id}`}>
-                    <Button>Open Full Chat</Button>
+                    <Button>{t("openFullChat")}</Button>
                   </Link>
                 </div>
                 <div className="space-y-4">
@@ -556,7 +556,7 @@ function RentalRequestDetailPage() {
               <div className="p-3 bg-green-50 rounded-xl mb-4">
                 <div className="flex items-center gap-2 text-green-700">
                   <CheckCircle className="w-4 h-4" />
-                  <span className="text-sm font-medium">OK</span>
+                  <span className="text-sm font-medium">{t("noConflict")}</span>
                 </div>
                 <p className="text-xs text-green-600 mt-1">{t("autoReleaseDesc")}</p>
               </div>
@@ -625,10 +625,10 @@ function RentalRequestDetailPage() {
             </p>
             <div className="space-y-2 mb-4">
               {[
-                "Gear not available on those dates",
-                "Renter has insufficient verification",
-                "Previous rental issues",
-                "Other (please specify)",
+                t("declineReasonUnavailable"),
+                t("declineReasonVerification"),
+                t("declineReasonHistory"),
+                t("declineReasonOther"),
               ].map((reason) => (
                 <button
                   key={reason}

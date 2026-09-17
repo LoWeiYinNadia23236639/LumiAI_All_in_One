@@ -58,28 +58,28 @@ export function RoleGuard({ children, allowedRoles, fallbackUrl }: RoleGuardProp
     // Redirect to appropriate dashboard based on role
     let redirectUrl = "/";
     let icon = User;
-    let roleName = "User";
-    let description = "You don't have access to this page.";
+    let roleName = t("accessDenied.roleUser");
+    let description = t("accessDenied.descDefault");
 
     switch (user.role) {
       case "influencer":
         redirectUrl = "/analytics";
         icon = User;
-        roleName = "Creator";
-        description = "This page is for other user types. View your creator dashboard instead.";
+        roleName = t("accessDenied.roleCreator");
+        description = t("accessDenied.descCreator");
         break;
       case "company":
         redirectUrl = "/analytics/company";
         icon = Building2;
-        roleName = "Company";
-        description = "This page is for other user types. View your company dashboard instead.";
+        roleName = t("accessDenied.roleCompany");
+        description = t("accessDenied.descCompany");
         break;
 
       case "admin":
         redirectUrl = "/admin/overview";
         icon = User;
-        roleName = "Admin";
-        description = "This page is not for admin users.";
+        roleName = t("accessDenied.roleAdmin");
+        description = t("accessDenied.descAdmin");
         break;
     }
 
@@ -89,17 +89,17 @@ export function RoleGuard({ children, allowedRoles, fallbackUrl }: RoleGuardProp
       <div className="min-h-screen flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <IconComponent className="w-16 h-16 text-violet-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold mb-2">Access Denied</h2>
+          <h2 className="text-2xl font-bold mb-2">{t("accessDenied.title")}</h2>
           <p className="text-neutral-600 mb-2">
-            You are signed in as <strong>{user.name}</strong> ({roleName})
+            {t.rich("accessDenied.signedInAs", { name: user.name, role: roleName, b: (chunks) => <strong>{chunks}</strong> })}
           </p>
           <p className="text-neutral-600 mb-6">{description}</p>
           <div className="flex gap-3 justify-center">
             <Link href="/">
-              <Button variant="outline">Go Home</Button>
+              <Button variant="outline">{t("accessDenied.goHome")}</Button>
             </Link>
             <Link href={redirectUrl}>
-              <Button>Go to Your Dashboard</Button>
+              <Button>{t("accessDenied.goToDashboard")}</Button>
             </Link>
           </div>
         </div>

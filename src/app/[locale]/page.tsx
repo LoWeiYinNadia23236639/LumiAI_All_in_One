@@ -86,8 +86,8 @@ export default function HomePage() {
       bgGradient: "from-violet-50 via-purple-50 to-indigo-50",
       iconBg: "bg-violet-500",
       href: "/ai-hub",
-      stats: "Storyboards, captions & more",
-      features: ["Storyboard AI", "Caption Generator", "Contract Scanner"]
+      stats: t("supercharge.aiHubStats"),
+      features: t.raw("supercharge.aiHubFeatures") as string[]
     },
     {
       icon: ShoppingBag,
@@ -99,8 +99,8 @@ export default function HomePage() {
       bgGradient: "from-pink-50 via-rose-50 to-red-50",
       iconBg: "bg-pink-500",
       href: "/marketplace",
-      stats: "Brand deals & campaigns",
-      features: ["Find Campaigns", "Discover Creators", "Secure Payments"]
+      stats: t("supercharge.marketplaceStats"),
+      features: t.raw("supercharge.marketplaceFeatures") as string[]
     },
     {
       icon: Camera,
@@ -112,8 +112,8 @@ export default function HomePage() {
       bgGradient: "from-orange-50 via-amber-50 to-yellow-50",
       iconBg: "bg-orange-500",
       href: "/equipment",
-      stats: "Rent gear from creators",
-      features: ["Book by Date", "Message Owners", "Insured Rentals"]
+      stats: t("supercharge.rentalStats"),
+      features: t.raw("supercharge.rentalFeatures") as string[]
     },
   ];
   return (
@@ -205,10 +205,10 @@ export default function HomePage() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              Three Ways to <span className="gradient-text">Supercharge</span> Your Career
+              {t("supercharge.titleBefore")} <span className="gradient-text">{t("supercharge.titleHighlight")}</span> {t("supercharge.titleAfter")}
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Each tool is designed with a unique purpose, united by one goal: your success
+              {t("featuresSubtitle")}
             </p>
           </motion.div>
           
@@ -255,7 +255,7 @@ export default function HomePage() {
                       
                       {/* CTA */}
                       <div className={`flex items-center font-bold text-${feature.color}-600 group-hover:gap-3 transition-all`}>
-                        Explore {feature.title}
+                        {t("supercharge.explore", { title: feature.title })}
                         <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                       </div>
                     </div>
@@ -370,21 +370,21 @@ export default function HomePage() {
             
             <div className="relative z-10">
               <h2 className="text-3xl md:text-5xl font-bold mb-4">
-                Ready to Level Up?
+                {t("ctaTitle")}
               </h2>
               <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-                Join thousands of creators and brands building the future of content creation.
+                {t("ctaSubtitle")}
               </p>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link href="/signup">
                   <Button size="lg" className="bg-white text-violet-600 hover:bg-gray-100 shadow-xl">
-                    Get Started Free
+                    {t("getStartedFree")}
                     <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
                 </Link>
                 <Link href="/marketplace/talent">
                   <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/20">
-                    Browse Creators
+                    {t("browseCreators")}
                   </Button>
                 </Link>
               </div>
@@ -405,37 +405,37 @@ export default function HomePage() {
                 <span className="text-2xl font-bold gradient-text">LumiAI</span>
               </div>
               <p className="text-gray-600 text-sm">
-                The all-in-one creator operating system. AI tools, brand deals, and equipment rental.
+                {t("footerTagline")}
               </p>
             </div>
             <div>
-              <h4 className="font-bold mb-4 text-gray-900">Platform</h4>
+              <h4 className="font-bold mb-4 text-gray-900">{t("footerPlatform")}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/ai-hub" className="hover:text-violet-600 transition-colors">AI Hub</Link></li>
-                <li><Link href="/marketplace" className="hover:text-pink-600 transition-colors">Marketplace</Link></li>
-                <li><Link href="/equipment" className="hover:text-orange-600 transition-colors">Rent Gear</Link></li>
-                <li><Link href="/help" className="hover:text-violet-600 transition-colors">Help Center</Link></li>
+                <li><Link href="/ai-hub" className="hover:text-violet-600 transition-colors">{t("footer.aiHub")}</Link></li>
+                <li><Link href="/marketplace" className="hover:text-pink-600 transition-colors">{t("footer.marketplace")}</Link></li>
+                <li><Link href="/equipment" className="hover:text-orange-600 transition-colors">{t("footer.rentGear")}</Link></li>
+                <li><Link href="/help" className="hover:text-violet-600 transition-colors">{t("footer.helpCenter")}</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-bold mb-4 text-gray-900">For Users</h4>
+              <h4 className="font-bold mb-4 text-gray-900">{t("footerForUsers")}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/login" className="hover:text-violet-600 transition-colors">Creator Login</Link></li>
-                <li><Link href="/login" className="hover:text-pink-600 transition-colors">Brand Login</Link></li>
+                <li><Link href="/login" className="hover:text-violet-600 transition-colors">{t("footer.creatorLogin")}</Link></li>
+                <li><Link href="/login" className="hover:text-pink-600 transition-colors">{t("footer.brandLogin")}</Link></li>
 
               </ul>
             </div>
             <div>
-              <h4 className="font-bold mb-4 text-gray-900">Resources</h4>
+              <h4 className="font-bold mb-4 text-gray-900">{t("footerResources")}</h4>
               <ul className="space-y-2 text-sm text-gray-600">
-                <li><Link href="/help" className="hover:text-violet-600 transition-colors">Documentation</Link></li>
-                <li><Link href="/help" className="hover:text-violet-600 transition-colors">Tutorials</Link></li>
-                <li><Link href="/help" className="hover:text-violet-600 transition-colors">Contact Support</Link></li>
+                <li><Link href="/help" className="hover:text-violet-600 transition-colors">{t("footer.documentation")}</Link></li>
+                <li><Link href="/help" className="hover:text-violet-600 transition-colors">{t("footer.tutorials")}</Link></li>
+                <li><Link href="/help" className="hover:text-violet-600 transition-colors">{t("footer.contactSupport")}</Link></li>
               </ul>
             </div>
           </div>
           <div className="pt-8 border-t text-center text-sm text-gray-500">
-            © 2026 LumiAI. All rights reserved.
+            {t("copyright")}
           </div>
         </div>
       </footer>

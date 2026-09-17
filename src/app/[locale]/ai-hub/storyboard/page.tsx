@@ -65,13 +65,6 @@ const examples = [
   }
 ];
 
-const tips = [
-  { title: "Be Specific", content: "Include details like duration, setting, camera angles, and key actions. The more specific, the better the storyboard." },
-  { title: "Add Timing", content: "Mention total video length so we can suggest appropriate pacing for each scene." },
-  { title: "Include Context", content: "Tell us about your audience and the purpose - this helps tailor shot suggestions." },
-  { title: "Mention Style", content: "Describe the vibe - professional, casual, energetic, calming - we match the shots to your style." },
-];
-
 export default function StoryboardAIPage() {
   const t = useTranslations("aiTools");
   const tc = useTranslations("common");
@@ -89,6 +82,7 @@ export default function StoryboardAIPage() {
   const [showTips, setShowTips] = useState(true);
   const [showExamples, setShowExamples] = useState(true);
   const example = t.raw("examples.storyboard") as { idea: string; mood: string };
+  const storyboardTips = t.raw("storyboardPage.tips") as { title: string; content: string }[];
 
   const generate = async () => {
     if (!prompt.trim() || loading) return;
@@ -131,12 +125,12 @@ export default function StoryboardAIPage() {
 ${prompt.slice(0, 80)}
 
 ${result.scenes.map(s => `
-Scene ${s.scene_number}: ${s.shot_angle}
-Action: ${s.description}
-Lighting: ${s.lighting}
+${t("storyboardPage.copyScenePrefix")} ${s.scene_number}: ${s.shot_angle}
+${t("storyboardPage.actionLabel")} ${s.description}
+${t("storyboardPage.lightingLabel")} ${s.lighting}
 `).join('')}
 
-Equipment: ${result.equipment_checklist.join(", ")}
+${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
     `.trim();
     navigator.clipboard.writeText(text);
     setCopied(true);
@@ -146,7 +140,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
 
   const copyScene = (scene: Scene) => {
     navigator.clipboard.writeText(
-      `Scene ${scene.scene_number}: ${scene.shot_angle}\n${scene.description}\nLighting: ${scene.lighting}`
+      `${t("storyboardPage.copyScenePrefix")} ${scene.scene_number}: ${scene.shot_angle}\n${scene.description}\n${t("storyboardPage.lightingLabel")} ${scene.lighting}`
     );
     setCopiedScene(scene.scene_number);
     success(tc("copied"));
@@ -156,9 +150,9 @@ Equipment: ${result.equipment_checklist.join(", ")}
   const copyLists = () => {
     if (!result) return;
     const text = [
-      `Equipment: ${result.equipment_checklist.join(", ")}`,
+      `${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}`,
       result.pro_tips.length > 0
-        ? `Tips:\n${result.pro_tips.map((tip) => `- ${tip}`).join("\n")}`
+        ? `${t("storyboardPage.tipsLabel")}\n${result.pro_tips.map((tip) => `- ${tip}`).join("\n")}`
         : "",
     ].filter(Boolean).join("\n\n");
     navigator.clipboard.writeText(text);
@@ -176,7 +170,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
           <Link href="/ai-hub">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to AI Hub
+              {t("backToAiHub")}
             </Button>
           </Link>
         </div>
@@ -184,13 +178,13 @@ Equipment: ${result.equipment_checklist.join(", ")}
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-violet-100 text-violet-700 text-sm font-semibold mb-4">
             <Image className="w-4 h-4" />
-            AI Storyboard Generator
+            {t("storyboardPage.badge")}
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-neutral-900 mb-4">
-            Visualize Your <span className="gradient-text">Content</span>
+            {t("storyboardPage.titleBefore")} <span className="gradient-text">{t("storyboardPage.titleHighlight")}</span>
           </h1>
           <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-            Describe your video idea and get a complete storyboard with shot suggestions, lighting notes, and equipment recommendations.
+            {t("storyboardPage.subtitle")}
           </p>
         </div>
 
@@ -202,7 +196,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
           >
             <div className="flex items-center gap-2">
               <Lightbulb className="w-5 h-5 text-amber-500" />
-              <span className="font-semibold">Try These Examples</span>
+              <span className="font-semibold">{t("storyboardPage.examplesTitle")}</span>
             </div>
             {showExamples ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
           </button>
@@ -231,7 +225,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
         <div className="bg-white rounded-2xl shadow-lg border p-6 mb-8">
           <div className="flex items-center justify-between mb-3">
             <label className="block text-sm font-medium text-neutral-700">
-              Describe your video idea
+              {t("storyboardPage.ideaLabel")}
             </label>
             <Button variant="ghost" size="sm" onClick={fillExample}>
               <Sparkles className="w-4 h-4 mr-2" />
@@ -239,17 +233,17 @@ Equipment: ${result.equipment_checklist.join(", ")}
             </Button>
           </div>
           <textarea
-            placeholder="Example: A 30-second morning skincare routine showing a person waking up refreshed, washing their face, and applying serum with a natural glow..."
+            placeholder={t("storyboardPage.ideaPlaceholder")}
             className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none mb-4"
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
           />
           <label className="block text-sm font-medium text-neutral-700 mb-3">
-            Mood / Atmosphere (optional)
+            {t("storyboardPage.moodLabel")}
           </label>
           <input
             type="text"
-            placeholder="e.g. cozy morning, high-energy, cinematic, minimalist..."
+            placeholder={t("storyboardPage.moodPlaceholder")}
             className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-violet-500 mb-4"
             value={mood}
             onChange={(e) => setMood(e.target.value)}
@@ -267,7 +261,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
           )}
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <p className="text-sm text-neutral-500">
-              Tip: Include duration, setting, and key actions for best results
+              {t("storyboardPage.tip")}
             </p>
             <Button 
               onClick={generate}
@@ -282,7 +276,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
               ) : (
                 <>
                   <Wand2 className="w-5 h-5 mr-2" />
-                  Generate Storyboard
+                  {t("storyboardPage.generate")}
                 </>
               )}
             </Button>
@@ -302,11 +296,11 @@ Equipment: ${result.equipment_checklist.join(", ")}
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Sparkles className="w-5 h-5" />
-                  <span className="text-sm font-medium opacity-90">AI-Generated Storyboard</span>
+                  <span className="text-sm font-medium opacity-90">{t("storyboardPage.resultBadge")}</span>
                 </div>
                 <h2 className="text-2xl font-bold">{prompt.slice(0, 60)}</h2>
                 <p className="text-white/80 flex items-center gap-4 mt-1">
-                  <span>{result.scenes.length} scenes</span>
+                  <span>{t("storyboardPage.scenesCount", { count: result.scenes.length })}</span>
                 </p>
               </div>
               <div className="flex gap-2">
@@ -316,11 +310,11 @@ Equipment: ${result.equipment_checklist.join(", ")}
                   onClick={copyToClipboard}
                 >
                   {copied ? <CheckCircle className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
-                  {copied ? "Copied!" : "Copy"}
+                  {copied ? t("storyboardPage.copiedExcl") : tc("copy")}
                 </Button>
                 <Button className="bg-white text-violet-600 hover:bg-gray-100">
                   <Download className="w-4 h-4 mr-2" />
-                  Export
+                  {t("storyboardPage.exportLabel")}
                 </Button>
               </div>
             </div>
@@ -363,7 +357,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="font-semibold flex items-center gap-2">
                     <Camera className="w-5 h-5 text-violet-500" />
-                    Recommended Equipment
+                    {t("storyboardPage.equipment")}
                   </h4>
                   <Button variant="ghost" size="sm" onClick={copyLists}>
                     {copiedLists ? <Check className="w-4 h-4 mr-2 text-green-500" /> : <Copy className="w-4 h-4 mr-2" />}
@@ -384,7 +378,7 @@ Equipment: ${result.equipment_checklist.join(", ")}
                 <div className="bg-violet-50 rounded-xl p-4 mt-4">
                   <h4 className="font-semibold mb-3 flex items-center gap-2">
                     <Sparkles className="w-5 h-5 text-violet-500" />
-                    Director&apos;s Tips
+                    {t("storyboardPage.directorsTips")}
                   </h4>
                   <ul className="space-y-2">
                     {result.pro_tips.map((tip, i) => (
@@ -413,14 +407,14 @@ Equipment: ${result.equipment_checklist.join(", ")}
           >
             <h4 className="font-bold text-lg flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-violet-500" />
-              Pro Tips for Better Storyboards
+              {t("storyboardPage.tipsTitle")}
             </h4>
             {showTips ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
           </button>
           
           {showTips && (
             <div className="px-6 pb-6 grid md:grid-cols-2 gap-4">
-              {tips.map((tip, i) => (
+              {storyboardTips.map((tip, i) => (
                 <div key={i} className="p-4 bg-gray-50 rounded-xl">
                   <h4 className="font-semibold mb-2 text-violet-900">{tip.title}</h4>
                   <p className="text-sm text-neutral-600">{tip.content}</p>

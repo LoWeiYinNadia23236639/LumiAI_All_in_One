@@ -135,7 +135,42 @@
     "waitlistButton": "加入等候名單",
     "waitlistSuccess": "已成功加入等候名單！有名額時我們會以電郵通知你。",
     "waitlistDuplicate": "這個電郵已在等候名單中。",
-    "waitlistError": "發生錯誤，請再試一次。"
+    "waitlistError": "發生錯誤，請再試一次。",
+    "supercharge": {
+      "titleBefore": "以三種方式",
+      "titleHighlight": "加速",
+      "titleAfter": "你嘅事業",
+      "aiHubStats": "分鏡、文案等更多功能",
+      "aiHubFeatures": [
+        "分鏡 AI",
+        "文案生成器",
+        "合約掃描器"
+      ],
+      "marketplaceStats": "品牌合作同 campaign",
+      "marketplaceFeatures": [
+        "尋找 Campaign",
+        "發掘創作者",
+        "安全付款"
+      ],
+      "rentalStats": "向創作者租用器材",
+      "rentalFeatures": [
+        "按日期預訂",
+        "聯絡物主",
+        "有保障嘅租賃"
+      ],
+      "explore": "探索 {title}"
+    },
+    "footer": {
+      "aiHub": "AI 中心",
+      "marketplace": "市集",
+      "rentGear": "租用器材",
+      "helpCenter": "幫助中心",
+      "creatorLogin": "創作者登入",
+      "brandLogin": "品牌登入",
+      "documentation": "使用說明",
+      "tutorials": "教學",
+      "contactSupport": "聯絡支援"
+    }
   },
   "auth": {
     "welcomeBack": "歡迎回來",
@@ -155,7 +190,12 @@
     "terms": "繼續即表示你同意我們的服務條款及私隱政策",
     "authRequired": "需要登入",
     "pleaseSignIn": "請登入以瀏覽此頁面。",
-    "adminOnly": "僅限管理員",
+    "adminOnly": {
+      "title": "僅限管理員",
+      "signedInAs": "你目前以 <b>{name}</b>（{role}）身份登入",
+      "description": "呢個頁面只限管理員使用。如果你需要管理員權限，請聯絡支援。",
+      "goToDashboard": "前往儀表板"
+    },
     "findBrandDeals": "尋找品牌合作",
     "rentGear": "租借器材",
     "analytics": "數據分析",
@@ -179,7 +219,21 @@
     "haveAccount": "已經有帳戶？",
     "signingIn": "登入中...",
     "aiFeatures": "AI 分鏡及文案生成",
-    "emailPlaceholder": "you@example.com"
+    "emailPlaceholder": "you@example.com",
+    "accessDenied": {
+      "title": "拒絕存取",
+      "signedInAs": "你目前以 <b>{name}</b>（{role}）身份登入",
+      "descDefault": "你冇權限瀏覽呢個頁面。",
+      "descCreator": "呢個頁面係畀其他用戶類型嘅。不如去睇你嘅創作者儀表板啦。",
+      "descCompany": "呢個頁面係畀其他用戶類型嘅。不如去睇你嘅公司儀表板啦。",
+      "descAdmin": "呢個頁面唔係畀管理員用嘅。",
+      "roleUser": "用戶",
+      "roleCreator": "創作者",
+      "roleCompany": "品牌公司",
+      "roleAdmin": "管理員",
+      "goHome": "返回首頁",
+      "goToDashboard": "去你嘅儀表板"
+    }
   },
   "marketplace": {
     "twoWayMarketplace": "雙向市集",
@@ -370,7 +424,33 @@
         "value": "Lifestyle",
         "label": "生活風格"
       }
-    ]
+    ],
+    "creatorProfile": {
+      "website": "網站",
+      "viewsCount": "{count} 次觀看",
+      "likesCount": "{count} 個讚",
+      "contactTitle": "有興趣一齊合作？",
+      "responseLine": "{name} 通常會喺 24 小時內回覆。",
+      "sendMessage": "發送訊息",
+      "saveToList": "儲存到名單",
+      "gender": "性別",
+      "female": "女性",
+      "male": "男性",
+      "discussStyle": "傾下呢種風格",
+      "contactName": "聯絡 {name}",
+      "rateRangeLine": "收費範圍：{range}",
+      "typicalResponse": "一般回覆時間：24 小時內",
+      "companyNamePlaceholder": "你嘅公司名稱",
+      "yourEmailPlaceholder": "你嘅電郵",
+      "campaignTypePlaceholder": "揀 campaign 類型",
+      "campaignTypes": {
+        "productReview": "產品評測",
+        "sponsoredPost": "贊助帖子",
+        "brandAmbassador": "品牌大使",
+        "eventCoverage": "活動報道"
+      },
+      "campaignGoalsPlaceholder": "同我講下你嘅 campaign 同目標..."
+    }
   },
   "equipment": {
     "rentProfessionalGear": "租用專業器材",
@@ -418,7 +498,18 @@
     "proposeDates": "建議日期",
     "requestToBookShort": "申請預訂",
     "viewItem": "查看項目",
-    "backToEquipment": "返回器材"
+    "backToEquipment": "返回器材",
+    "reviewsCount": "{count} 個評價",
+    "yearLabel": "年份：{year}",
+    "respondsStats": "{time} 內回覆 • {count} 次租用",
+    "viewProfile": "撳入去睇檔案 →",
+    "message": "訊息",
+    "daysCount": "{count} 日",
+    "highDemand": "需求殷切",
+    "serviceFee": "服務費",
+    "total": "總計",
+    "typeMessage": "輸入訊息...",
+    "review": "評價"
   },
   "analytics": {
     "analytics": "數據分析",
@@ -577,7 +668,26 @@
       "campaignMessage": "講吓你嘅活動計劃...",
       "sendMessage": "發送訊息",
       "messageSent": "訊息已發送！創作者會喺 24 小時內回覆。"
-    }
+    },
+    "welcomeBackName": "歡迎返嚟，{name}！",
+    "businessRegistration": "商業登記",
+    "paymentMethod": "付款方式",
+    "noSavedCreators": "仲未儲存任何創作者。",
+    "savedCreatorItem": "創作者 #{id}",
+    "noSavedCampaigns": "仲未儲存任何 campaign。",
+    "savedCampaignItem": "Campaign #{id}",
+    "browseGear": "瀏覽器材",
+    "markAvailable": "標示為可租用",
+    "markUnavailable": "標示為唔可租用",
+    "perDay": "/日",
+    "conditionLabel": "新舊程度",
+    "conditionOptions": {
+      "excellent": "極佳",
+      "good": "良好",
+      "fair": "一般"
+    },
+    "gearNamePlaceholder": "例如：Sony A7IV",
+    "gearDescPlaceholder": "簡單描述呢件物品..."
   },
   "admin": {
     "panelTitle": "管理員面板",
@@ -688,7 +798,16 @@
     "resolved": "已解決",
     "released": "已發還",
     "filed": "已提交",
-    "dismissed": "已駁回"
+    "dismissed": "已駁回",
+    "creator": "創作者",
+    "company": "公司",
+    "submittedAt": "已於 {time} 提交",
+    "openedAt": "已於 {time} 開啟",
+    "dispute": "爭議",
+    "rentedBy": "承租人：{renter} • 掛單人：{lister} • 歸還：{date}",
+    "totalSimulatedCases": "模擬個案總數",
+    "aiImpactTitle": "AI 自動化成效",
+    "aiImpactDesc": "今日系統自動驗證咗 {verified} 個帳戶、解決咗 {resolved} 宗爭議，並喺無需管理員介入下放咗 {deposits} 個按金。"
   },
   "messages": {
     "messages": "訊息",
@@ -724,7 +843,28 @@
     "rentalHistory": "租賃紀錄",
     "notes": "備註",
     "inspectionChecklist": "查驗清單",
-    "submitInspection": "提交查驗"
+    "submitInspection": "提交查驗",
+    "alertApproved": "租用申請已批准！確認訊息已發送俾承租人。",
+    "alertDeclined": "租用申請已被拒絕。原因：{reason}",
+    "submittedAt": "已於 {time} 提交",
+    "exportReport": "匯出",
+    "forDuration": "共 {duration}",
+    "dateAtTime": "{date} 於 {time}",
+    "ratingLabel": "評分",
+    "rentalsCount": "{count} 次租用",
+    "memberSince": "{date} 開始成為會員",
+    "sendEmail": "發電郵",
+    "call": "致電",
+    "fromOwner": "來自 {owner} • {date}",
+    "serialNumber": "序號：{serial}",
+    "purchased": "{year} 年購入",
+    "conversationHistory": "對話紀錄",
+    "openFullChat": "開啟完整對話",
+    "noConflict": "無衝突",
+    "declineReasonUnavailable": "該日期器材未有供應",
+    "declineReasonVerification": "承租人驗證不足",
+    "declineReasonHistory": "以往租用紀錄有問題",
+    "declineReasonOther": "其他（請註明）"
   },
   "common": {
     "logout": "登出",
@@ -960,6 +1100,413 @@
         "比較同類型創作者…",
         "微調你嘅收費範圍…"
       ]
+    },
+    "backToAiHub": "返回 AI 中心",
+    "advisor": {
+      "badge": "AI 市場顧問",
+      "titleBefore": "你嘅專屬",
+      "titleHighlight": "合作助手",
+      "subtitle": "用 AI 洞見幫你建議收費、分析合約、預計項目時間、起草專業訊息，同埋策劃你嘅 campaign。",
+      "tabs": {
+        "rates": "收費計算器",
+        "quote": "工作報價",
+        "messages": "訊息助手",
+        "planner": "項目規劃師",
+        "contract": "合約掃描器"
+      },
+      "nicheLabel": "領域",
+      "followersLabel": "追蹤人數",
+      "engagementLabel": "互動率",
+      "platformLabel": "主要平台",
+      "nicheOptions": [
+        "美容護膚",
+        "時尚",
+        "健身",
+        "科技",
+        "美食",
+        "旅遊",
+        "生活風格"
+      ],
+      "followerOptions": [
+        "10K - 50K",
+        "50K - 100K",
+        "100K - 500K",
+        "500K+"
+      ],
+      "engagementOptions": [
+        "1-3%",
+        "3-5%",
+        "5-8%",
+        "8%+"
+      ],
+      "platformOptions": [
+        "Instagram",
+        "TikTok",
+        "YouTube",
+        "多平台"
+      ],
+      "rateDesc": "根據你嘅個人資料同市場數據，獲取個人化嘅收費建議。",
+      "getRateInsights": "獲取收費分析",
+      "recommendedRange": "建議收費範圍",
+      "perPost": "每條贊助帖子（60 秒影片）",
+      "growthRecs": "增長建議",
+      "quickStartQuote": "快速開始：揀一個示範情境",
+      "quoteTitle": "報價助手",
+      "quoteDesc": "話我知知份工作嘅內容，即可獲得時間預估、定價建議同交付項目明細。",
+      "brandNameLabel": "品牌／客戶名稱",
+      "brandNamePlaceholder": "例如：Glow 護膚",
+      "deliverablesLabel": "需要嘅交付項目",
+      "deliverableLabels": [
+        "Feed 帖",
+        "Instagram Reel",
+        "限時動態系列",
+        "輪播帖",
+        "直播環節",
+        "TikTok 影片",
+        "YouTube 影片"
+      ],
+      "complexityLabel": "項目複雜度",
+      "complexityOptions": {
+        "low": "簡單 — 標準內容",
+        "medium": "適中 — 需要部分創作指導",
+        "high": "複雜 — 高製作規格"
+      },
+      "timelineLabel": "時間安排",
+      "timelineOptions": {
+        "1week": "急件 — 1 星期內",
+        "2weeks": "標準 — 2 星期",
+        "1month": "寬鬆 — 1 個月"
+      },
+      "briefLabel": "項目簡介摘要",
+      "briefPlaceholder": "簡單描述品牌想要嘅內容...",
+      "generateQuote": "生成報價同時間表",
+      "recommendedPrice": "建議收費",
+      "estimatedTime": "預計所需時間",
+      "hoursUnit": "{count} 小時",
+      "estPrefix": "預計",
+      "marketPosition": "市場定位",
+      "pricePerDeliverable": "每項交付項目收費",
+      "pricingFactors": "定價因素",
+      "timelineBreakdown": "時間表細分",
+      "tryAnotherQuote": "再報價一次",
+      "draftMessage": "起草訊息",
+      "quickStartMessage": "快速開始：揀一個訊息情境",
+      "messageDesc": "為任何情境起草專業電郵同訊息。",
+      "scenarioLabel": "訊息情境",
+      "clientNameLabel": "客戶／品牌名稱",
+      "clientNamePlaceholder": "例如：Glow 護膚嘅 Sarah",
+      "toneLabel": "語氣",
+      "toneOptions": {
+        "professional": "專業",
+        "friendly": "友善",
+        "formal": "正式",
+        "enthusiastic": "熱情"
+      },
+      "msgBriefLabel": "簡介描述",
+      "msgBriefPlaceholder": "描述項目或者背景...",
+      "pointsLabel": "想包含嘅重點",
+      "pointsPlaceholder": "任何你想提到嘅具體細節、要求或者重點...",
+      "generateMessage": "生成訊息",
+      "draftBadge": "訊息草稿",
+      "subjectLabel": "主旨：",
+      "copiedExcl": "已複製！",
+      "copyToClipboard": "複製到剪貼簿",
+      "newMessage": "新訊息",
+      "tipsTitle": "呢條訊息嘅小貼士",
+      "tryTones": "試吓其他語氣",
+      "quickStartPlanner": "快速開始：揀一個 Campaign 範本",
+      "twoWeeks": "2 星期",
+      "oneMonth": "1 個月",
+      "twoMonths": "2 個月",
+      "plannerDesc": "建立詳細嘅項目計劃，包括任務細分、時間表同內容日曆。",
+      "campaignNameLabel": "Campaign 名稱",
+      "campaignNamePlaceholder": "例如：夏季系列發佈",
+      "durationLabel": "Campaign 時長",
+      "platformsLabel": "目標平台",
+      "contentCountLabel": "內容數量：",
+      "onePiece": "1 件",
+      "tenPieces": "10 件",
+      "goalsLabel": "Campaign 目標",
+      "goalsPlaceholder": "呢個 campaign 嘅主要目標係咩？",
+      "generatePlan": "生成項目計劃",
+      "campaignPlanFallback": "Campaign 計劃",
+      "totalDuration": "總時長",
+      "daysUnit": "{count} 日",
+      "keyMilestones": "主要里程碑",
+      "contentPieces": "內容數量",
+      "criticalDates": "關鍵日期",
+      "phaseBreakdown": "階段細分",
+      "tasksLabel": "任務",
+      "deliverablesTitle": "交付項目",
+      "createNewPlan": "建立新計劃",
+      "quickStartContract": "睇吓點運作：試吓示範合約",
+      "sampleStandard": "標準品牌合作",
+      "sampleFair": "公平合約",
+      "sampleConcerning": "有隱憂嘅條款",
+      "sampleStandardDesc": "條款參差嘅典型創作者合約",
+      "sampleFairDesc": "對創作者友好嘅平衡合約",
+      "sampleConcerningDesc": "有多個紅旗，包括過度嘅使用權",
+      "scoreBadge": "評分：{score}/100",
+      "reviewNeeded": "需要覆核",
+      "fairDeal": "公平交易",
+      "highRisk": "高風險",
+      "contractDesc": "上傳你嘅品牌合約，我哋嘅 AI 會分析入面嘅漏洞、不公條款同紅旗。",
+      "uploadTitle": "點擊上傳或者拖曳檔案到此",
+      "uploadHint": "PDF、DOC 或 DOCX（上限 10MB）",
+      "privacyLabel": "私隱提示：",
+      "privacyText": "你嘅合約會被安全處理，我哋唔會儲存。建議上傳前移除敏感個人資料。",
+      "scanButton": "掃描問題",
+      "fairnessScore": "合約公平評分",
+      "fairBadge": "✓ 公平",
+      "reviewBadge": "⚠ 需覆核",
+      "riskyBadge": "⚠ 有風險",
+      "redFlags": "紅旗（{count}）",
+      "potentialRisks": "潛在風險",
+      "recommendedChanges": "建議修改",
+      "scanAnother": "再掃描一次",
+      "legendRedFlag": "紅旗",
+      "legendGoodClause": "良好條款"
+    },
+    "hub": {
+      "badge": "AI 驅動創作者工具",
+      "titleBefore": "升級你嘅內容，全靠",
+      "titleHighlight": "AI",
+      "subtitle": "生成視覺分鏡、撰寫爆款文案、獲取市場洞察、分析合約 — 全部由 AI 驅動。",
+      "toolDescs": [
+        "由你嘅劇本生成視覺分鏡同拍攝清單",
+        "撰寫配合你風格、提升互動嘅爆款文案",
+        "你嘅全方位合作助手 — 報價、合約、訊息同項目規劃"
+      ],
+      "toolFeatures": [
+        [
+          "場景分解",
+          "運鏡建議",
+          "燈光備註",
+          "器材清單"
+        ],
+        [
+          "開場金句變化",
+          "Hashtag 建議",
+          "行動呼籲",
+          "語氣配合"
+        ],
+        [
+          "收費計算器",
+          "報價助手",
+          "訊息助手",
+          "項目規劃師",
+          "合約掃描器"
+        ]
+      ],
+      "moreTools": "仲有 {count} 個",
+      "tryNow": "立即試用",
+      "fiveInOne": "5 合 1 工具",
+      "storyboard": {
+        "badge": "視覺內容規劃",
+        "title": "用 Storyboard AI 好似專業人士咁規劃",
+        "desc": "將你嘅創作願景轉化成詳細嘅製作計劃。由簡單劇本即可獲得拍攝清單、燈光備註同器材建議。",
+        "cta": "建立你嘅分鏡",
+        "features": [
+          {
+            "title": "視覺分鏡",
+            "description": "將你嘅劇本轉化成逐場景嘅詳細視覺分鏡。喺拎起相機之前規劃好每一個鏡頭。"
+          },
+          {
+            "title": "運鏡建議",
+            "description": "獲取 AI 推薦嘅拍攝角度、構圖同運鏡方式，最能表達你嘅故事。"
+          },
+          {
+            "title": "燈光備註",
+            "description": "為每個場景獲取專業燈光建議，營造最適合嘅氛圍。"
+          },
+          {
+            "title": "器材清單",
+            "description": "為你嘅拍攝生成完整器材清單，包括相機、鏡頭、燈光同收音設備。"
+          }
+        ]
+      },
+      "caption": {
+        "badge": "爆款內容寫作",
+        "title": "寫出高轉化嘅文案",
+        "desc": "撰寫吸引目光、配合你風格並帶動真實互動嘅文案。由開場金句到 hashtag，我哋都幫你搞掂。",
+        "cta": "寫爆款文案",
+        "features": [
+          {
+            "title": "開場金句變化",
+            "description": "獲取多個搶眼嘅開場句子，喺頭 3 秒留住觀眾，提升內容表現。"
+          },
+          {
+            "title": "智能 Hashtag",
+            "description": "根據你嘅內容、領域同熱門話題獲取 AI 生成嘅 hashtag 建議，最大化曝光。"
+          },
+          {
+            "title": "行動呼籲",
+            "description": "生成推動互動、留言、收藏同轉換嘅吸引 CTA，配合你嘅目標。"
+          },
+          {
+            "title": "語氣配合",
+            "description": "令文案語氣配合你嘅品牌個性 — 無論輕鬆、專業、玩味定鼓舞人心。"
+          }
+        ]
+      },
+      "advisor": {
+        "badge": "精選：市場顧問",
+        "title": "你嘅全方位合作助手",
+        "desc": "由報價到簽約，市場顧問用 AI 洞見引導你完成品牌合作嘅每一步。",
+        "cta": "開啟市場顧問",
+        "features": [
+          {
+            "title": "報價助手",
+            "description": "描述你嘅項目，即刻獲得時間預估、定價建議同交付項目明細。清楚知道自己應該收幾多、要做幾耐。"
+          },
+          {
+            "title": "訊息助手",
+            "description": "為任何情境起草專業電郵同訊息 — 初次接觸、跟進、議價、還價或者禮貌婉拒。揀好語氣，即刻獲得完美文稿。"
+          },
+          {
+            "title": "項目規劃師",
+            "description": "建立包含階段細分、任務時間表、關鍵里程碑同資源需求嘅詳細項目計劃。由啟動到交付都井井有條。"
+          },
+          {
+            "title": "收費計算器",
+            "description": "根據你嘅領域、追蹤人數、互動率同最新市場趨勢，獲取個人化收費建議。了解自己嘅價值。"
+          },
+          {
+            "title": "合約掃描器",
+            "description": "上傳品牌合約，即刻分析紅旗、不公條款同潛在風險。簽名之前了解自己簽緊啲咩。"
+          }
+        ]
+      },
+      "howItWorks": {
+        "title": "運作方式",
+        "subtitle": "每個 AI 工具都為你慳時間、提升內容質素。揀一個最適合你而家需要嘅工具。",
+        "storyboardSteps": [
+          "描述你嘅影片構思或者貼上劇本",
+          "AI 會將佢分解為場景同運鏡建議",
+          "獲取燈光備註同器材清單"
+        ],
+        "captionSteps": [
+          "上傳你嘅相片或者描述內容",
+          "揀選語氣同內容目標",
+          "獲得配埋 hashtag 嘅爆款文案選項"
+        ],
+        "advisorSteps": [
+          "描述你嘅品牌合作機會",
+          "獲取報價、起草訊息、規劃項目",
+          "掃描合約並敲定交易"
+        ]
+      },
+      "highlights": {
+        "title": "內容創作慳返幾個鐘",
+        "desc": "我哋嘅 AI 工具幫你以分鐘計完成內容規劃、寫作同策略。加入 10,000+ 位用 LumiAI 更快創作更好內容嘅創作者。",
+        "stats": [
+          "快 10 倍",
+          "每星期慳 5+ 小時",
+          "效果更好"
+        ],
+        "items": [
+          "Storyboard AI 喺你開拍前規劃好視覺內容",
+          "Caption AI 寫出配合你風格嘅吸引文案",
+          "Market Advisor 幫你處理商業洽談",
+          "所有工具互相配合，創作流程無縫銜接"
+        ]
+      }
+    },
+    "captionPage": {
+      "badge": "AI 文案生成器",
+      "titleBefore": "寫出爆款",
+      "titleHighlight": "文案",
+      "subtitle": "生成契合你風格、喺各個平台提升互動嘅吸引文案。",
+      "examplesTitle": "試吓呢啲內容範例",
+      "platformLabel": "平台",
+      "platformTips": [
+        "用換行令文案更易讀",
+        "保持簡短有力",
+        "喺頭 100 字內抓住注意力",
+        "用故事傳遞價值"
+      ],
+      "topicLabel": "你打算出咩內容？",
+      "promptPlaceholder": "例如：我啱啱完成咗 3 個月嘅健身蛻變之旅，想鼓勵其他人一齊開始...",
+      "toneLabel": "語氣",
+      "tones": [
+        {
+          "label": "自信",
+          "desc": "大膽又充滿自信"
+        },
+        {
+          "label": "玩味",
+          "desc": "有趣又輕鬆"
+        },
+        {
+          "label": "鼓舞",
+          "desc": "勵志又振奮"
+        },
+        {
+          "label": "輕鬆",
+          "desc": "自在又似日常傾偈"
+        },
+        {
+          "label": "專業",
+          "desc": "精緻又具商業感"
+        }
+      ],
+      "toneSuffix": "語氣",
+      "examplePrefix": "範例：",
+      "resultsTitle": "已生成嘅文案",
+      "regenerate": "重新生成",
+      "topPick": "最佳之選",
+      "useThis": "用呢個",
+      "tipsTitle": "寫好文案嘅專業貼士",
+      "tips": [
+        "第一行就要有金句，先可以留住觀眾",
+        "用換行令文案更易掃讀",
+        "加入清晰嘅行動呼籲去提升互動",
+        "配合平台調整文案長度（TikTok 短啲，LinkedIn 長啲）"
+      ],
+      "generate": "生成文案"
+    },
+    "storyboardPage": {
+      "badge": "AI 分鏡生成器",
+      "titleBefore": "將你嘅內容",
+      "titleHighlight": "變成畫面",
+      "subtitle": "描述你嘅影片構思，即可獲得完整分鏡，包括運鏡建議、燈光備註同器材建議。",
+      "examplesTitle": "試吓呢啲範例",
+      "ideaLabel": "描述你嘅影片構思",
+      "ideaPlaceholder": "例如：一段 30 秒嘅早晨護膚流程，展示一個人醒神起身、洗面、塗精華，呈現自然透亮肌膚...",
+      "moodLabel": "氛圍／感覺（可選）",
+      "moodPlaceholder": "例如：溫暖晨光、高能、電影感、簡約...",
+      "tip": "貼士：註明時長、場景同主要動作，效果最好",
+      "generate": "生成分鏡",
+      "resultBadge": "AI 生成嘅分鏡",
+      "scenesCount": "{count} 個場景",
+      "copiedExcl": "已複製！",
+      "exportLabel": "匯出",
+      "equipment": "建議器材",
+      "directorsTips": "導演貼士",
+      "tipsTitle": "整好分鏡嘅專業貼士",
+      "tips": [
+        {
+          "title": "具體啲",
+          "content": "加入時長、場景、拍攝角度同關鍵動作等細節，越具體分鏡越好。"
+        },
+        {
+          "title": "註明時間",
+          "content": "講明影片總長度，我哋就可以為每個場景建議合適節奏。"
+        },
+        {
+          "title": "提供背景",
+          "content": "話我知你嘅觀眾同目的 — 有助度身訂做運鏡建議。"
+        },
+        {
+          "title": "講明風格",
+          "content": "描述想要嘅感覺 — 專業、輕鬆、高能定治癒 — 我哋會配合你嘅風格揀鏡頭。"
+        }
+      ],
+      "copyScenePrefix": "場景",
+      "actionLabel": "動作：",
+      "lightingLabel": "燈光：",
+      "equipmentLabel": "器材：",
+      "tipsLabel": "貼士："
     }
   }
 }

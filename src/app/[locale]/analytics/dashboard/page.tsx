@@ -432,12 +432,12 @@ function InfluencerAnalytics() {
                 <span className="px-2 py-0.5 bg-pink-100 text-pink-700 text-xs rounded-full">{savedCampaigns.length}</span>
               </div>
               {savedCampaigns.length === 0 ? (
-                <p className="text-sm text-neutral-500">No saved campaigns yet.</p>
+                <p className="text-sm text-neutral-500">{t("noSavedCampaigns")}</p>
               ) : (
                 <div className="space-y-2">
                   {savedCampaigns.map((id) => (
                     <div key={id} className="p-3 bg-gray-50 rounded-xl text-sm font-medium">
-                      Campaign #{id}
+                      {t("savedCampaignItem", { id })}
                     </div>
                   ))}
                 </div>
@@ -529,7 +529,7 @@ function InfluencerAnalytics() {
                         <button
                           onClick={() => toggleAvailability(item.id)}
                           className="p-1 hover:bg-gray-100 rounded-lg"
-                          title={item.available ? "Mark unavailable" : "Mark available"}
+                          title={item.available ? t("markUnavailable") : t("markAvailable")}
                         >
                           {item.available ? <ToggleRight className="w-5 h-5 text-green-500" /> : <ToggleLeft className="w-5 h-5 text-gray-400" />}
                         </button>
@@ -546,7 +546,7 @@ function InfluencerAnalytics() {
                     <p className="text-sm text-neutral-500 mb-2">{item.condition}</p>
                     <p className="text-sm text-neutral-600 line-clamp-2 mb-3">{item.description}</p>
                     <div className="flex items-center justify-between pt-3 border-t">
-                      <p className="text-xl font-bold text-neutral-900">${item.dailyRate}<span className="text-xs font-normal text-neutral-500">/day</span></p>
+                      <p className="text-xl font-bold text-neutral-900">${item.dailyRate}<span className="text-xs font-normal text-neutral-500">{t("perDay")}</span></p>
                       <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${item.available ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-600"}`}>
                         {item.available ? t("available") : t("unavailable")}
                       </span>
@@ -564,7 +564,7 @@ function InfluencerAnalytics() {
                   <h3 className="font-bold text-lg">{t("gearIRented")}</h3>
                 </div>
                 <Link href="/equipment">
-                  <Button variant="outline" size="sm">Browse Gear</Button>
+                  <Button variant="outline" size="sm">{t("browseGear")}</Button>
                 </Link>
               </div>
               <div className="grid md:grid-cols-3 gap-4">
@@ -594,7 +594,7 @@ function InfluencerAnalytics() {
                     type="text"
                     value={newGear.name}
                     onChange={(e) => setNewGear({ ...newGear, name: e.target.value })}
-                    placeholder="e.g. Sony A7IV"
+                    placeholder={t("gearNamePlaceholder")}
                     className="w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500"
                   />
                 </div>
@@ -614,15 +614,15 @@ function InfluencerAnalytics() {
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-neutral-700 mb-1">Condition</label>
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">{t("conditionLabel")}</label>
                   <select
                     value={newGear.condition}
                     onChange={(e) => setNewGear({ ...newGear, condition: e.target.value })}
                     className="w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500"
                   >
-                    <option>Excellent</option>
-                    <option>Good</option>
-                    <option>Fair</option>
+                    <option value="Excellent">{t("conditionOptions.excellent")}</option>
+                    <option value="Good">{t("conditionOptions.good")}</option>
+                    <option value="Fair">{t("conditionOptions.fair")}</option>
                   </select>
                 </div>
                 <div>
@@ -630,7 +630,7 @@ function InfluencerAnalytics() {
                   <textarea
                     value={newGear.description}
                     onChange={(e) => setNewGear({ ...newGear, description: e.target.value })}
-                    placeholder="Brief description of the item..."
+                    placeholder={t("gearDescPlaceholder")}
                     className="w-full px-4 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-orange-500 resize-none"
                     rows={3}
                   />
