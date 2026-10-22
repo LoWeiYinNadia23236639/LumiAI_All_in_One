@@ -301,8 +301,12 @@ async function getCandidateModels(): Promise<string[]> {
       m.name.replace(/^models\//, "")
     );
     // Other flash-tier models as fallbacks (preferred model is already first).
+    // Skip models Google has retired for this key (listed but return 404 on use).
+    const BLOCKLIST = [/gemini-2\.5-flash(?!-lite)/];
     for (const id of ids) {
-      if (id.includes("flash") && !models.includes(id)) models.push(id);
+      if (id.includes("flash") && !BLOCKLIST.some((b) => b.test(id)) && !models.includes(id)) {
+        models.push(id);
+      }
     }
   } catch {
     // Model listing failed — stick with the preferred model for now.
