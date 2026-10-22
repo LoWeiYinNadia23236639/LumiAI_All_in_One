@@ -12,7 +12,7 @@ const HARDCODED_FALLBACKS = ["gemini-3.8-flash", "gemini-3.6-flash"];
 type ToolType = "storyboard" | "caption" | "quote" | "message" | "planner" | "rate";
 
 // Serverless functions can run longer when retries kick in.
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 // Cached candidate model list so we only list models once per server lifetime.
 let resolvedModels: string[] | null = null;
@@ -21,11 +21,16 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function isRetryable(err: unknown): boolean {
+// "quota" (429) must NOT be retried in a tight loop — it burns the same-account
+// quota faster and makes congestion worse. We fail fast so the UI can tell the
+// user to wait a minute instead.
+function errorKind(err: unknown): "retryable" | "quota" | "fatal" {
   const msg = err instanceof Error ? err.message : String(err);
-  return /503|UNAVAILABLE|high demand|overloaded|RESOURCE_EXHAUSTED|quota|deadline exceeded|timeout/i.test(
-    msg
-  );
+  if (/429|quota exceeded|RESOURCE_EXHAUSTED/i.test(msg)) return "quota";
+  if (/503|UNAVAILABLE|high demand|overloaded|deadline exceeded|timeout/i.test(msg)) {
+    return "retryable";
+  }
+  return "fatal";
 }
 
 const LOCALE_HINTS: Record<string, string> = {
@@ -326,27 +331,30 @@ async function getCandidateModels(): Promise<string[]> {
 async function generate(type: ToolType, system: string, user: string): Promise<unknown> {
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
   const models = await getCandidateModels();
-  // Try at most 2 models so worst-case latency stays within the function budget.
-  const modelsToTry = models.slice(0, 2);
-  const delays = [0, 1000, 2500]; // per-model backoff with jitter added below
+  // Try at most 3 models; per model: 1 immediate call + 1 retry on transient 503.
+  const modelsToTry = models.slice(0, 3);
   let lastErr: unknown;
   for (const model of modelsToTry) {
-    for (let attempt = 0; attempt < delays.length; attempt++) {
-      if (delays[attempt] > 0) {
-        await sleep(delays[attempt] + Math.floor(Math.random() * 500));
+    try {
+      return await callModel(ai, model, type, system, user);
+    } catch (err) {
+      lastErr = err;
+      const kind = errorKind(err);
+      if (kind === "quota") {
+        // Same-account quota — rotating models won't help. Fail fast.
+        throw err;
       }
-      try {
-        return await callModel(ai, model, type, system, user);
-      } catch (err) {
-        lastErr = err;
-        if (!isRetryable(err)) {
-          // Non-retryable (e.g. model not found / schema unsupported) — rotate model now.
-          break;
-        }
-        if (attempt === delays.length - 1) {
-          console.error(`[ai] ${model} still 503 after ${delays.length} attempts, rotating`);
+      if (kind === "retryable") {
+        await sleep(1500 + Math.floor(Math.random() * 500));
+        try {
+          return await callModel(ai, model, type, system, user);
+        } catch (err2) {
+          lastErr = err2;
+          if (errorKind(err2) === "quota") throw err2;
+          // Otherwise fall through and rotate to the next model.
         }
       }
+      // "fatal" (e.g. model not found / schema unsupported) — rotate model now.
     }
   }
   throw lastErr;
