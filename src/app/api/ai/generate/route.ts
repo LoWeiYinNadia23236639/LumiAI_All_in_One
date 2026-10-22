@@ -9,8 +9,22 @@ const PREFERRED_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
 
 type ToolType = "storyboard" | "caption" | "quote" | "message" | "planner" | "rate";
 
-// Cached fallback model so we only list models once per server lifetime.
-let resolvedModel: string | null = null;
+// Serverless functions can run longer when retries kick in.
+export const maxDuration = 30;
+
+// Cached candidate model list so we only list models once per server lifetime.
+let resolvedModels: string[] | null = null;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function isRetryable(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err);
+  return /503|UNAVAILABLE|high demand|overloaded|RESOURCE_EXHAUSTED|quota|deadline exceeded|timeout/i.test(
+    msg
+  );
+}
 
 const LOCALE_HINTS: Record<string, string> = {
   "zh-hk": "Use natural Traditional Chinese with a Cantonese-friendly tone (廣東話語感).",
@@ -273,34 +287,58 @@ const SCHEMAS: Record<ToolType, unknown> = {
   },
 };
 
-async function pickFallbackModel(): Promise<string> {
-  if (resolvedModel) return resolvedModel;
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`
-  );
-  const data = await res.json();
-  const ids: string[] = (data.models ?? []).map((m: { name: string }) =>
-    m.name.replace(/^models\//, "")
-  );
-  resolvedModel =
-    ids.find((id) => id.includes("flash")) ?? ids[0] ?? PREFERRED_MODEL;
-  console.log(`[ai] model ${PREFERRED_MODEL} unavailable, falling back to: ${resolvedModel}`);
-  return resolvedModel;
+async function getCandidateModels(): Promise<string[]> {
+  if (resolvedModels) return resolvedModels;
+  const models = [PREFERRED_MODEL];
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`
+    );
+    const data = await res.json();
+    const ids: string[] = (data.models ?? []).map((m: { name: string }) =>
+      m.name.replace(/^models\//, "")
+    );
+    // Other flash-tier models as fallbacks (preferred model is already first).
+    for (const id of ids) {
+      if (id.includes("flash") && !models.includes(id)) models.push(id);
+    }
+    if (models.length > 1) {
+      console.log(`[ai] candidate models: ${models.join(", ")}`);
+    }
+  } catch {
+    // Model listing failed — stick with the preferred model.
+  }
+  resolvedModels = models;
+  return models;
 }
 
 async function generate(type: ToolType, system: string, user: string): Promise<unknown> {
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-  const model = resolvedModel ?? PREFERRED_MODEL;
-  try {
-    return await callModel(ai, model, type, system, user);
-  } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
-    if (/not found|404|does not exist|is not supported/i.test(msg)) {
-      const fallback = await pickFallbackModel();
-      return await callModel(ai, fallback, type, system, user);
+  const models = await getCandidateModels();
+  // Try at most 2 models so worst-case latency stays within the function budget.
+  const modelsToTry = models.slice(0, 2);
+  const delays = [0, 1000, 2500]; // per-model backoff with jitter added below
+  let lastErr: unknown;
+  for (const model of modelsToTry) {
+    for (let attempt = 0; attempt < delays.length; attempt++) {
+      if (delays[attempt] > 0) {
+        await sleep(delays[attempt] + Math.floor(Math.random() * 500));
+      }
+      try {
+        return await callModel(ai, model, type, system, user);
+      } catch (err) {
+        lastErr = err;
+        if (!isRetryable(err)) {
+          // Non-retryable (e.g. model not found / schema unsupported) — rotate model now.
+          break;
+        }
+        if (attempt === delays.length - 1) {
+          console.error(`[ai] ${model} still 503 after ${delays.length} attempts, rotating`);
+        }
+      }
     }
-    throw err;
   }
+  throw lastErr;
 }
 
 async function callModel(
