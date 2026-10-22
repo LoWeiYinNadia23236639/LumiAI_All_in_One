@@ -5,7 +5,9 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const PREFERRED_MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+const PREFERRED_MODEL = process.env.GEMINI_MODEL || "gemini-3.8-flash";
+// Hardcoded known-good chain in case the model-listing endpoint fails or returns nothing.
+const HARDCODED_FALLBACKS = ["gemini-3.8-flash", "gemini-3.6-flash"];
 
 type ToolType = "storyboard" | "caption" | "quote" | "message" | "planner" | "rate";
 
@@ -302,11 +304,16 @@ async function getCandidateModels(): Promise<string[]> {
     for (const id of ids) {
       if (id.includes("flash") && !models.includes(id)) models.push(id);
     }
-    if (models.length > 1) {
-      console.log(`[ai] candidate models: ${models.join(", ")}`);
-    }
   } catch {
-    // Model listing failed — stick with the preferred model.
+    // Model listing failed — stick with the preferred model for now.
+  }
+  // Always append the hardcoded chain so a broken/stale env var or a failed
+  // listing can't leave us with a single dead model.
+  for (const id of HARDCODED_FALLBACKS) {
+    if (!models.includes(id)) models.push(id);
+  }
+  if (models.length > 1) {
+    console.log(`[ai] candidate models: ${models.join(", ")}`);
   }
   resolvedModels = models;
   return models;
