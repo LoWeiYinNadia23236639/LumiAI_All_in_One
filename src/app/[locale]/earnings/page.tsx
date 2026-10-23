@@ -1,576 +1,323 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { 
+import {
   ArrowLeft,
   DollarSign,
-  TrendingUp,
   Clock,
-  Calendar,
-  Download,
-  Search,
   Wallet,
-  ArrowUpRight,
-  BarChart3,
-  FileText,
-  Banknote,
-  Shield,
-  ChevronLeft,
-  ChevronRight,
-  Landmark,
-  Plus,
-  Edit2,
-  BadgeCheck,
   CheckCircle,
-  AlertCircle
+  CalendarClock,
+  Percent,
+  Gift,
+  Landmark,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { AuthGuard } from "@/components/auth-guard";
+import { ListRowSkeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/components/ui/toast";
+import { useAuth } from "@/contexts/auth-context";
+import { getSupabaseClient } from "@/lib/supabase/client";
+import { callApi, ApiAuthError } from "@/lib/api/client";
+import { useTranslations, useLocale } from "next-intl";
+import { formatRelativeTime } from "@/lib/relative-time";
+import type { PaymentKind } from "@/types/marketplace";
 
-// Mock earnings data
-const earningsData = {
-  summary: {
-    totalEarned: "$24,580",
-    thisMonth: "$2,450",
-    pendingPayout: "$1,280",
-    availableBalance: "$3,750",
-    onHold: "$800",
-  },
-  
-  stats: {
-    totalBookings: 156,
-    avgBookingValue: "$157.50",
-    repeatCustomerRate: "42%",
-    avgRating: 4.9,
-  },
+type PaymentKindType = PaymentKind;
 
-  monthlyData: [
-    { month: "Jan", earnings: 1850, bookings: 12 },
-    { month: "Feb", earnings: 2120, bookings: 14 },
-    { month: "Mar", earnings: 2890, bookings: 19 },
-    { month: "Apr", earnings: 2450, bookings: 16 },
-    { month: "May", earnings: 1980, bookings: 13 },
-    { month: "Jun", earnings: 2340, bookings: 15 },
-  ],
+interface EarningsPayment {
+  id: string;
+  amount: number;
+  kind: PaymentKindType;
+  status: string;
+  note: string | null;
+  paid_at: string | null;
+  confirmed_at: string | null;
+  created_at: string;
+  campaigns: { id: string; title: string } | null;
+  creator?: { name: string } | null;
+}
 
-  transactions: [
-    {
-      id: "TXN-2847",
-      date: "Apr 15, 2026",
-      description: "Canon R5 rental - Taylor Wilson",
-      gear: "Canon R5",
-      amount: 427.50,
-      status: "completed",
-    },
-    {
-      id: "TXN-2841",
-      date: "Apr 12, 2026",
-      description: "Sony A7IV rental - Jordan Smith",
-      gear: "Sony A7IV",
-      amount: 202.50,
-      status: "completed",
-    },
-    {
-      id: "TXN-2839",
-      date: "Apr 10, 2026",
-      description: "DJI RS 3 Pro rental - Casey Brown",
-      gear: "DJI RS 3 Pro",
-      amount: 148.50,
-      status: "pending",
-    },
-  ],
-
-  gearPerformance: [
-    { gear: "Canon R5", rentals: 38, earnings: 3610, utilization: 72 },
-    { gear: "Sony A7IV", rentals: 45, earnings: 3375, utilization: 78 },
-    { gear: "DJI RS 3 Pro", rentals: 28, earnings: 1540, utilization: 65 },
-  ],
-
-  payouts: [
-    { id: "PO-2026-04", date: "Apr 16, 2026", amount: 850, status: "completed", method: "Bank Transfer" },
-    { id: "PO-2026-04-2", date: "Apr 9, 2026", amount: 1200, status: "completed", method: "Bank Transfer" },
-  ],
+const KIND_ICONS: Record<PaymentKindType, LucideIcon> = {
+  campaign_fee: DollarSign,
+  retainer: CalendarClock,
+  commission: Percent,
+  barter_value: Gift,
 };
 
-const paymentMethods = [
-  { id: 1, type: "bank", name: "Chase Bank", account: "****4521", default: true, verified: true },
-  { id: 2, type: "paypal", name: "PayPal", account: "alex@email.com", default: false, verified: true },
-];
+const STATUS_BADGE: Record<string, string> = {
+  pending: "bg-orange-100 text-orange-700",
+  paid: "bg-blue-100 text-blue-700",
+  confirmed: "bg-green-100 text-green-700",
+};
 
-export default function EarningsPage() {
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState("overview");
-  const [timeRange, setTimeRange] = useState("30days");
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
-  const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(1);
+function sumOf(rows: EarningsPayment[], statuses: string[]): number {
+  return rows
+    .filter((p) => statuses.includes(p.status))
+    .reduce((s, p) => s + p.amount, 0);
+}
+
+function EarningsPage() {
+  const t = useTranslations("earnings");
+  const tc = useTranslations("common");
+  const locale = useLocale();
+  const toast = useToast();
+  const { user } = useAuth();
+
+  const [payments, setPayments] = useState<EarningsPayment[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+
+  const isBrand = !!user && (user.role === "company" || user.role === "admin");
+
+  useEffect(() => {
+    if (!user) return;
+    const supabase = getSupabaseClient();
+    (async () => {
+      if (user.role === "company" || user.role === "admin") {
+        const { data: campaignRows } = await supabase
+          .from("campaigns")
+          .select("id")
+          .eq("brand_id", user.id);
+        const ids = ((campaignRows ?? []) as { id: string }[]).map((c) => c.id);
+        if (ids.length === 0) {
+          setIsLoading(false);
+          return;
+        }
+        const { data } = await supabase
+          .from("payments")
+          .select("*, campaigns(id, title), creator:profiles!payments_creator_id_fkey(name)")
+          .in("campaign_id", ids)
+          .order("created_at", { ascending: false });
+        setPayments((data ?? []) as unknown as EarningsPayment[]);
+      } else {
+        const { data } = await supabase
+          .from("payments")
+          .select("*, campaigns(id, title)")
+          .eq("creator_id", user.id)
+          .order("created_at", { ascending: false });
+        setPayments((data ?? []) as unknown as EarningsPayment[]);
+      }
+      setIsLoading(false);
+    })();
+  }, [user]);
+
+  const handleConfirm = async (paymentId: string) => {
+    setActionLoading(paymentId);
+    try {
+      const result = await callApi<EarningsPayment>("/api/payments/transition", {
+        payment_id: paymentId,
+        action: "confirm",
+      });
+      setPayments((prev) => prev.map((p) => (p.id === paymentId ? { ...p, ...result } : p)));
+      toast.success(tc("savedToast"));
+    } catch (err) {
+      toast.error(err instanceof ApiAuthError ? tc("errorTitle") : t("actionError"));
+    }
+    setActionLoading(null);
+  };
+
+  const pendingTotal = sumOf(payments, ["pending"]);
+  const paidTotal = sumOf(payments, ["paid"]);
+  const confirmedTotal = sumOf(payments, ["confirmed"]);
+
+  const kindTotals = (["campaign_fee", "retainer", "commission", "barter_value"] as PaymentKindType[]).map(
+    (kind) => ({
+      kind,
+      total: payments.filter((p) => p.kind === kind).reduce((s, p) => s + p.amount, 0),
+      count: payments.filter((p) => p.kind === kind).length,
+    })
+  );
 
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-5xl mx-auto px-4">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div className="flex items-center gap-4">
-            <button 
-              onClick={() => router.push("/analytics/gear-owner")}
-              className="p-2 hover:bg-gray-100 rounded-xl"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div>
-              <div className="flex items-center gap-2 text-primary mb-1">
-                <DollarSign className="w-5 h-5" />
-                <span className="font-medium">Earnings Center</span>
-              </div>
-              <h1 className="text-3xl font-bold text-neutral-900">Financial Overview</h1>
-              <p className="text-neutral-600">Track earnings, manage payouts, and view financial reports</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm">
-              <Download className="w-4 h-4 mr-2" />
-              Export Report
+        <div className="flex items-center gap-4 mb-8">
+          <Link href={isBrand ? "/analytics/company" : "/analytics"}>
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              {tc("back")}
             </Button>
-            <Button
-              size="sm"
-              onClick={() => setShowWithdrawModal(true)}
-            >
-              <Wallet className="w-4 h-4 mr-2" />
-              Withdraw
-            </Button>
+          </Link>
+          <div>
+            <div className="flex items-center gap-2 text-primary mb-1">
+              <Landmark className="w-5 h-5" />
+              <span className="font-medium">{t("kicker")}</span>
+            </div>
+            <h1 className="text-3xl font-bold text-neutral-900">{t("title")}</h1>
+            <p className="text-neutral-600">{t("subtitle")}</p>
           </div>
         </div>
 
-        {/* Balance Cards */}
-        <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-primary rounded-lg p-6 text-cream">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-cream/20 flex items-center justify-center">
-                <Wallet className="w-5 h-5" />
-              </div>
-              <span className="text-xs bg-cream/20 px-2 py-1 rounded-full">Available</span>
-            </div>
-            <p className="text-3xl font-bold">{earningsData.summary.availableBalance}</p>
-            <p className="text-sm text-cream/80">Available for withdrawal</p>
-          </div>
-
-          <div className="bg-paper rounded-lg border border-line p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-primary-soft flex items-center justify-center">
-                <Clock className="w-5 h-5 text-primary" />
-              </div>
-              <span className="text-xs bg-primary-soft text-primary px-2 py-1 rounded-full">Pending</span>
-            </div>
-            <p className="text-3xl font-bold text-neutral-900">{earningsData.summary.pendingPayout}</p>
-            <p className="text-sm text-neutral-500">Processing payouts</p>
-          </div>
-
-          <div className="bg-paper rounded-lg border border-line p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-amber-600" />
-              </div>
-              <span className="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full">On Hold</span>
-            </div>
-            <p className="text-3xl font-bold text-neutral-900">{earningsData.summary.onHold}</p>
-            <p className="text-sm text-neutral-500">Security deposits held</p>
-          </div>
-
-          <div className="bg-paper rounded-lg border border-line p-6">
-            <div className="flex items-center justify-between mb-3">
-              <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-green-600" />
-              </div>
-              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">This Month</span>
-            </div>
-            <p className="text-3xl font-bold text-neutral-900">{earningsData.summary.thisMonth}</p>
-            <p className="text-sm text-green-600 flex items-center gap-1">
-              <ArrowUpRight className="w-3 h-3" />
-              +15.6% vs last month
-            </p>
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-2 mb-8 p-1 bg-gray-100 rounded-xl">
-          {[
-            { id: "overview", label: "Overview", icon: BarChart3 },
-            { id: "transactions", label: "Transactions", icon: FileText },
-            { id: "analytics", label: "Analytics", icon: BarChart3 },
-            { id: "payouts", label: "Payouts", icon: Banknote },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                activeTab === tab.id
-                  ? "bg-paper text-primary shadow-sm"
-                  : "text-neutral-600 hover:text-neutral-900"
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Overview Tab */}
-        {activeTab === "overview" && (
-          <div className="space-y-6">
-            <div className="grid md:grid-cols-4 gap-4">
-              <div className="bg-paper rounded-lg border border-line p-5">
-                <p className="text-sm text-neutral-500 mb-1">Total Bookings</p>
-                <p className="text-2xl font-bold">{earningsData.stats.totalBookings}</p>
-                <p className="text-xs text-green-600 mt-1">+8 this month</p>
-              </div>
-              <div className="bg-paper rounded-lg border border-line p-5">
-                <p className="text-sm text-neutral-500 mb-1">Avg. Booking Value</p>
-                <p className="text-2xl font-bold">{earningsData.stats.avgBookingValue}</p>
-                <p className="text-xs text-neutral-400 mt-1">After platform fees</p>
-              </div>
-              <div className="bg-paper rounded-lg border border-line p-5">
-                <p className="text-sm text-neutral-500 mb-1">Repeat Customers</p>
-                <p className="text-2xl font-bold">{earningsData.stats.repeatCustomerRate}</p>
-                <p className="text-xs text-green-600 mt-1">+5% vs last year</p>
-              </div>
-              <div className="bg-paper rounded-lg border border-line p-5">
-                <p className="text-sm text-neutral-500 mb-1">Your Rating</p>
-                <p className="text-2xl font-bold">{earningsData.stats.avgRating}</p>
-                <p className="text-xs text-neutral-400 mt-1">Out of 5.0</p>
-              </div>
-            </div>
-
-            <div className="grid lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2 bg-paper rounded-lg border border-line p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="font-bold">Earnings Trend</h3>
-                  <select 
-                    value={timeRange}
-                    onChange={(e) => setTimeRange(e.target.value)}
-                    className="px-3 py-1.5 border rounded-lg text-sm"
-                  >
-                    <option value="30days">Last 30 days</option>
-                    <option value="90days">Last 90 days</option>
-                  </select>
-                </div>
-                <div className="h-64 flex items-end gap-4">
-                  {earningsData.monthlyData.map((month, i) => (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-2">
-                      <div 
-                        className="w-full bg-primary rounded-t-lg"
-                        style={{ height: `${(month.earnings / 3000) * 200}px` }}
-                      />
-                      <span className="text-xs text-neutral-500">{month.month}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="bg-paper rounded-lg border border-line p-6">
-                <h3 className="font-bold mb-4">Top Performing Gear</h3>
-                <div className="space-y-4">
-                  {earningsData.gearPerformance.map((gear, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                      <span className="text-xl">
-                        {i === 0 ? "🥇" : i === 1 ? "🥈" : "🥉"}
-                      </span>
-                      <div className="flex-1">
-                        <p className="font-medium text-sm">{gear.gear}</p>
-                        <div className="flex items-center gap-2 text-xs text-neutral-500">
-                          <span>{gear.rentals} rentals</span>
-                          <span>•</span>
-                          <span>{gear.utilization}% utilized</span>
-                        </div>
-                      </div>
-                      <span className="font-bold text-sm">${gear.earnings}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-paper rounded-lg border border-line p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold">Recent Transactions</h3>
-                <Button variant="ghost" size="sm" onClick={() => setActiveTab("transactions")}>
-                  View All
-                </Button>
-              </div>
-              <div className="divide-y">
-                {earningsData.transactions.map((txn) => (
-                  <div key={txn.id} className="py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-primary-soft flex items-center justify-center">
-                        <TrendingUp className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-sm">{txn.description}</p>
-                        <p className="text-xs text-neutral-500">{txn.date} • {txn.gear}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-medium text-green-600">+${txn.amount.toFixed(2)}</p>
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${
-                        txn.status === "completed" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
-                      }`}>
-                        {txn.status}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Transactions Tab */}
-        {activeTab === "transactions" && (
-          <div className="bg-paper rounded-lg border border-line overflow-hidden">
-            <div className="p-4 border-b flex items-center gap-3">
-              <div className="relative flex-1 max-w-sm">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                <input 
-                  type="text"
-                  placeholder="Search transactions..."
-                  className="w-full pl-9 pr-4 py-2 border rounded-lg text-sm"
-                />
-              </div>
-              <select className="px-3 py-2 border rounded-lg text-sm">
-                <option>All Types</option>
-                <option>Rental Income</option>
-              </select>
-            </div>
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-neutral-500">Transaction ID</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-neutral-500">Date</th>
-                  <th className="px-4 py-3 text-left text-sm font-medium text-neutral-500">Description</th>
-                  <th className="px-4 py-3 text-right text-sm font-medium text-neutral-500">Amount</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-neutral-500">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
-                {earningsData.transactions.map((txn) => (
-                  <tr key={txn.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-3 text-sm font-medium">{txn.id}</td>
-                    <td className="px-4 py-3 text-sm text-neutral-500">{txn.date}</td>
-                    <td className="px-4 py-3">
-                      <p className="text-sm font-medium">{txn.description}</p>
-                      <p className="text-xs text-neutral-500">{txn.gear}</p>
-                    </td>
-                    <td className="px-4 py-3 text-right text-sm font-medium text-green-600">
-                      +${txn.amount.toFixed(2)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        txn.status === "completed" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"
-                      }`}>
-                        {txn.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Analytics Tab */}
-        {activeTab === "analytics" && (
-          <div className="space-y-6">
-            <div className="bg-paper rounded-lg border border-line p-6">
-              <h3 className="font-bold mb-4">Gear Performance Analysis</h3>
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-neutral-500">Gear</th>
-                    <th className="px-4 py-3 text-center text-sm font-medium text-neutral-500">Rentals</th>
-                    <th className="px-4 py-3 text-center text-sm font-medium text-neutral-500">Utilization</th>
-                    <th className="px-4 py-3 text-right text-sm font-medium text-neutral-500">Earnings</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {earningsData.gearPerformance.map((gear, i) => (
-                    <tr key={i} className="hover:bg-gray-50">
-                      <td className="px-4 py-3 font-medium">{gear.gear}</td>
-                      <td className="px-4 py-3 text-center">{gear.rentals}</td>
-                      <td className="px-4 py-3 text-center">{gear.utilization}%</td>
-                      <td className="px-4 py-3 text-right font-bold">${gear.earnings}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Payouts Tab */}
-        {activeTab === "payouts" && (
-          <div className="space-y-6">
-            <div className="bg-paper rounded-lg border border-line p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold">Payment Methods</h3>
-                <Button size="sm" variant="outline">
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add New
-                </Button>
-              </div>
-              <div className="space-y-3">
-                {paymentMethods.map((method) => (
-                  <div 
-                    key={method.id}
-                    className={`p-4 rounded-xl border-2 ${
-                      method.default ? "border-primary bg-primary-soft" : "border-line"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-primary-soft`}>
-                          {method.type === "bank" ? (
-                            <Landmark className="w-5 h-5 text-primary" />
-                          ) : (
-                            <Wallet className="w-5 h-5 text-primary" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium">{method.name}</p>
-                          <p className="text-sm text-neutral-500">{method.account}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {method.verified && (
-                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full flex items-center gap-1">
-                            <BadgeCheck className="w-3 h-3" />
-                            Verified
-                          </span>
-                        )}
-                        <Button variant="ghost" size="sm">
-                          <Edit2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="bg-paper rounded-lg border border-line overflow-hidden">
-              <div className="p-4 border-b">
-                <h3 className="font-bold">Payout History</h3>
-              </div>
-              <div className="divide-y">
-                {earningsData.payouts.map((payout) => (
-                  <div key={payout.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
-                    <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center">
-                        <Banknote className="w-5 h-5 text-green-600" />
-                      </div>
-                      <div>
-                        <p className="font-medium">{payout.id}</p>
-                        <p className="text-sm text-neutral-500">{payout.date}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold">${payout.amount}</p>
-                      <p className="text-sm text-neutral-500">{payout.method}</p>
-                    </div>
-                    <span className="px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full">
-                      {payout.status}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Withdraw Modal */}
-      {showWithdrawModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        {/* Summary cards */}
+        <div className="grid md:grid-cols-3 gap-4 mb-8">
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-paper rounded-lg w-full max-w-md p-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-paper rounded-lg border border-line p-6"
           >
-            <h3 className="font-bold text-lg mb-4">Withdraw Funds</h3>
-            
-            <div className="p-4 bg-gray-50 rounded-xl mb-4">
-              <p className="text-sm text-neutral-500">Available Balance</p>
-              <p className="text-3xl font-bold">$3,750</p>
-            </div>
-
-            <div className="mb-4">
-              <label className="text-sm font-medium mb-2 block">Amount to Withdraw</label>
-              <div className="relative">
-                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <input
-                  type="number"
-                  value={withdrawAmount}
-                  onChange={(e) => setWithdrawAmount(e.target.value)}
-                  placeholder="Enter amount"
-                  className="w-full pl-10 pr-4 py-3 border rounded-xl text-lg"
-                />
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-orange-600" />
               </div>
+              <p className="text-sm text-neutral-500">
+                {isBrand ? t("outstanding") : t("pendingReceipt")}
+              </p>
             </div>
-
-            <div className="mb-4">
-              <label className="text-sm font-medium mb-2 block">To</label>
-              <div className="space-y-2">
-                {paymentMethods.map((method) => (
-                  <button
-                    key={method.id}
-                    onClick={() => setSelectedPaymentMethod(method.id)}
-                    className={`w-full p-3 rounded-xl border-2 text-left ${
-                      selectedPaymentMethod === method.id 
-                        ? "border-primary bg-primary-soft"
-                        : "border-line"
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center bg-primary-soft`}>
-                        {method.type === "bank" ? (
-                          <Landmark className="w-5 h-5 text-primary" />
-                        ) : (
-                          <Wallet className="w-5 h-5 text-primary" />
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-medium">{method.name}</p>
-                        <p className="text-sm text-neutral-500">{method.account}</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+            <p className="text-3xl font-bold text-neutral-900">
+              ${pendingTotal.toLocaleString()}
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="bg-paper rounded-lg border border-line p-6"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                <Wallet className="w-5 h-5 text-blue-600" />
               </div>
+              <p className="text-sm text-neutral-500">
+                {isBrand ? t("awaitingConfirm") : t("awaitingMyConfirm")}
+              </p>
             </div>
-
-            <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={() => setShowWithdrawModal(false)}
-              >
-                Cancel
-              </Button>
-              <Button
-                className="flex-1"
-                disabled={!withdrawAmount || parseInt(withdrawAmount) < 50}
-                onClick={() => {
-                  alert(`Withdrawal of $${withdrawAmount} initiated!`);
-                  setShowWithdrawModal(false);
-                  setWithdrawAmount("");
-                }}
-              >
-                Confirm Withdrawal
-              </Button>
+            <p className="text-3xl font-bold text-neutral-900">
+              ${paidTotal.toLocaleString()}
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-primary rounded-lg p-6 text-cream"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-cream/20 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5" />
+              </div>
+              <p className="text-sm text-cream/80">{t("confirmed")}</p>
             </div>
+            <p className="text-3xl font-bold">
+              ${confirmedTotal.toLocaleString()}
+            </p>
           </motion.div>
         </div>
-      )}
+
+        {/* By-kind breakdown */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {kindTotals.map(({ kind, total, count }) => {
+            const Icon = KIND_ICONS[kind];
+            return (
+              <div
+                key={kind}
+                className="bg-paper rounded-lg border border-line p-4 flex items-center gap-3"
+              >
+                <div className="w-10 h-10 rounded-lg bg-primary-soft flex items-center justify-center shrink-0">
+                  <Icon className="w-5 h-5 text-primary" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-lg font-bold text-neutral-900 truncate">
+                    ${total.toLocaleString()}
+                  </p>
+                  <p className="text-xs text-neutral-500 truncate">
+                    {t(`kind.${kind}`)} · {t("countLabel", { count })}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Payment list */}
+        <div className="bg-paper rounded-lg p-6 border border-line">
+          <h3 className="font-bold text-lg mb-4">{t("historyTitle")}</h3>
+          {isLoading ? (
+            <div className="space-y-3">
+              <ListRowSkeleton />
+              <ListRowSkeleton />
+              <ListRowSkeleton />
+            </div>
+          ) : payments.length === 0 ? (
+            <div className="text-center py-10">
+              <DollarSign className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
+              <p className="text-sm text-neutral-500">{t("empty")}</p>
+              <Link href="/marketplace/campaigns" className="inline-block mt-4">
+                <Button size="sm" variant="outline">
+                  {t("emptyCta")}
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {payments.map((payment) => {
+                const Icon = KIND_ICONS[payment.kind];
+                return (
+                  <div
+                    key={payment.id}
+                    className="flex flex-wrap items-center gap-3 p-4 rounded-xl border border-gray-100"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-primary-soft flex items-center justify-center shrink-0">
+                      <Icon className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-[180px]">
+                      <p className="text-sm font-medium text-neutral-900">
+                        {t(`kind.${payment.kind}`)}
+                        {payment.note && (
+                          <span className="text-neutral-400 font-normal">
+                            {" "}
+                            · {payment.note}
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xs text-neutral-500">
+                        {payment.campaigns?.title ?? "—"}
+                        {isBrand && payment.creator?.name
+                          ? ` · ${payment.creator.name}`
+                          : ""}
+                        {" · "}
+                        {formatRelativeTime(payment.created_at, locale)}
+                      </p>
+                    </div>
+                    <p className="font-quote text-lg">
+                      ${payment.amount.toLocaleString()}
+                    </p>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_BADGE[payment.status]}`}
+                    >
+                      {t(`status.${payment.status}`)}
+                    </span>
+                    {!isBrand && payment.status === "paid" && (
+                      <Button
+                        size="sm"
+                        className="bg-green-500 text-white hover:bg-green-600"
+                        isLoading={actionLoading === payment.id}
+                        disabled={actionLoading !== null}
+                        onClick={() => void handleConfirm(payment.id)}
+                      >
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        {t("confirmButton")}
+                      </Button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
     </main>
+  );
+}
+
+export default function EarningsPageWrapper() {
+  return (
+    <AuthGuard>
+      <EarningsPage />
+    </AuthGuard>
   );
 }

@@ -1,161 +1,209 @@
 "use client";
 
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { 
+import {
   ArrowLeft,
-  Play,
-  Heart,
-  MessageSquare,
-  Mail,
-  Star,
   MapPin,
-  Users,
-  CheckCircle,
+  Star,
   Instagram,
   Youtube,
-  Twitter,
-  Bookmark,
-  Share2,
-  Grid3X3,
-  Video,
+  Music2,
+  BookOpen,
+  Link2,
+  ExternalLink,
   FileText,
-  ExternalLink
+  MessageSquare,
+  Pencil,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
 import { ShareButton } from "@/components/share-button";
+import { Skeleton, ListRowSkeleton } from "@/components/ui/skeleton";
+import { ErrorState } from "@/components/ui/error-state";
+import { useAuth } from "@/contexts/auth-context";
+import { getSupabaseClient } from "@/lib/supabase/client";
+import { useToast } from "@/components/ui/toast";
+import { callApi } from "@/lib/api/client";
+import { useTranslations, useLocale } from "next-intl";
+import { formatRelativeTime } from "@/lib/relative-time";
+import type { CreatorProfile } from "@/types/marketplace";
 
-// This would normally come from an API based on the ID
-const creatorData = {
-  id: "1",
-  name: "Sarah Chen",
-  handle: "@sarahstyles",
-  verified: true,
-  avatar: "SC",
-  avatarColor: "from-pink-400 to-rose-500",
-  bio: "Fashion enthusiast sharing affordable style tips. Helping you look expensive on a budget! 💕 Based in Los Angeles.",
-  location: "Los Angeles, CA",
-  niche: "Fashion & Style",
-  email: "sarah@sarahstyles.com",
-  website: "sarahstyles.com",
-  
-  stats: {
-    followers: "125K",
-    engagement: "4.8%",
-    avgViews: "45K",
-    totalPosts: 342,
-    collaborations: 48,
-    rating: 4.9,
-  },
-  
-  platforms: [
-    { name: "Instagram", followers: "125K", url: "instagram.com/sarahstyles" },
-    { name: "TikTok", followers: "85K", url: "tiktok.com/@sarahstyles" },
-    { name: "YouTube", followers: "45K", url: "youtube.com/sarahchen" },
-  ],
-  
-  rateRange: "$800 - $2,500",
-  
-  portfolio: [
-    { 
-      id: 1,
-      type: "video", 
-      title: "Summer Lookbook 2026", 
-      views: "145K", 
-      likes: "12.3K",
-      thumbnail: "👗", 
-      duration: "3:24",
-      description: "10 summer outfits under $50 each! Perfect for hot days and beach trips.",
-      brand: "H&M"
-    },
-    { 
-      id: 2,
-      type: "video", 
-      title: "Thrift Flip Challenge", 
-      views: "98K", 
-      likes: "8.7K",
-      thumbnail: "🛍️", 
-      duration: "5:12",
-      description: "Transforming thrift store finds into trendy pieces. From $5 to fabulous!",
-      brand: "Thrifted"
-    },
-    { 
-      id: 3,
-      type: "video", 
-      title: "Office Outfit Ideas", 
-      views: "76K", 
-      likes: "6.2K",
-      thumbnail: "👔", 
-      duration: "4:45",
-      description: "Professional yet stylish outfits for the modern working woman.",
-      brand: "Zara"
-    },
-    { 
-      id: 4,
-      type: "image", 
-      title: "Weekend Casual", 
-      views: "52K", 
-      likes: "4.1K",
-      thumbnail: "👟",
-      description: "Comfy weekend vibes with my favorite sneakers.",
-      brand: "Nike"
-    },
-    { 
-      id: 5,
-      type: "video", 
-      title: "Budget Fashion Haul", 
-      views: "89K", 
-      likes: "7.8K",
-      thumbnail: "💰", 
-      duration: "8:30",
-      description: "$200 challenge - can I build a full wardrobe? Let's find out!",
-      brand: "SHEIN"
-    },
-    { 
-      id: 6,
-      type: "image", 
-      title: "Date Night Look", 
-      views: "67K", 
-      likes: "5.4K",
-      thumbnail: "💄",
-      description: "Feeling confident in this red dress for date night.",
-      brand: "Revolve"
-    },
-  ],
-  
-  previousWork: [
-    { brand: "Zara", campaign: "Spring Collection", results: "2.1M views, 6.2% engagement", date: "Feb 2026" },
-    { brand: "Sephora", campaign: "Makeup Tutorial Series", results: "1.8M views, 5.8% engagement", date: "Jan 2026" },
-    { brand: "H&M", campaign: "Sustainable Fashion", results: "1.5M views, 5.1% engagement", date: "Dec 2025" },
-    { brand: "Nordstrom", campaign: "Holiday Gift Guide", results: "1.2M views, 4.9% engagement", date: "Nov 2025" },
-  ],
-  
-  audience: {
-    demographics: { female: 68, male: 30, other: 2 },
-    topLocations: ["United States (45%)", "Canada (12%)", "UK (10%)"],
-    ageGroups: ["18-24 (35%)", "25-34 (42%)", "35-44 (18%)"],
-    interests: ["Fashion", "Beauty", "Lifestyle", "Shopping"]
-  },
-  
-  contentTypes: ["Outfit styling", "Thrift flips", "Lookbooks", "Shopping hauls", "GRWM"],
-  tags: ["Fashion", "Affordable", "Styling", "OOTD", "Thrifted", "Sustainable"],
-  
-  reviews: [
-    { brand: "Glow Skincare", rating: 5, text: "Sarah was professional, delivered on time, and the content exceeded our expectations. Highly recommend!", date: "2 weeks ago" },
-    { brand: "Fashion Nova", rating: 5, text: "Great engagement and beautiful content. Would work with again!", date: "1 month ago" },
-    { brand: "Sephora", rating: 4, text: "Professional and easy to work with. Content quality was excellent.", date: "2 months ago" },
-  ]
+const PLATFORM_ICONS: Record<string, LucideIcon> = {
+  Instagram,
+  YouTube: Youtube,
+  TikTok: Music2,
+  小紅書: BookOpen,
+  Other: Link2,
 };
 
-function CreatorDetailPage({ params }: { params: { id: string } }) {
+function platformIcon(name: string): LucideIcon {
+  return PLATFORM_ICONS[name] ?? Link2;
+}
+
+function formatFollowers(count: number): string {
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
+  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
+  return String(count);
+}
+
+function formatRateRange(min: number | null, max: number | null): string {
+  if (min == null && max == null) return "—";
+  if (min != null && max != null) return `$${min.toLocaleString()} – $${max.toLocaleString()}`;
+  if (min != null) return `$${min.toLocaleString()}+`;
+  return `≤ $${max!.toLocaleString()}`;
+}
+
+interface CollaborationRow {
+  id: string;
+  status: string;
+  campaigns: { id: string; title: string; status: string } | null;
+}
+
+interface ProfileReview {
+  id: string;
+  rating: number;
+  comment: string;
+  created_at: string;
+  reviewer: { name: string } | null;
+  campaigns: { title: string } | null;
+}
+
+function CreatorDetailPage() {
   const t = useTranslations("marketplace");
-  const tc = useTranslations("common");
-  const [activeTab, setActiveTab] = useState("portfolio");
-  const [showContactModal, setShowContactModal] = useState(false);
-  const [showWorkModal, setShowWorkModal] = useState<typeof creatorData.portfolio[0] | null>(null);
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
+  const params = useParams();
+  const creatorId = params.id as string;
+  const { user } = useAuth();
+  const toast = useToast();
+
+  const [profile, setProfile] = useState<CreatorProfile | null>(null);
+  const [reviews, setReviews] = useState<ProfileReview[]>([]);
+  const [collaborations, setCollaborations] = useState<CollaborationRow[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
+
+  const [offerOpen, setOfferOpen] = useState(false);
+  const [offerCampaigns, setOfferCampaigns] = useState<{ id: string; title: string }[]>([]);
+  const [offerCampaignId, setOfferCampaignId] = useState("");
+  const [offerPrice, setOfferPrice] = useState("");
+  const [offerMessage, setOfferMessage] = useState("");
+  const [offerSending, setOfferSending] = useState(false);
+
+  const isBrandViewer = !!user && (user.role === "company" || user.role === "admin");
+  const canOffer = isBrandViewer && !!profile && profile.id !== user?.id;
+
+  const openOfferModal = async () => {
+    setOfferOpen(true);
+    if (offerCampaigns.length > 0) return;
+    const supabase = getSupabaseClient();
+    const { data } = await supabase
+      .from("campaigns")
+      .select("id, title")
+      .eq("brand_id", user?.id ?? "")
+      .eq("status", "active")
+      .order("created_at", { ascending: false });
+    const rows = (data ?? []) as { id: string; title: string }[];
+    setOfferCampaigns(rows);
+    setOfferCampaignId((prev) => prev || rows[0]?.id || "");
+  };
+
+  const sendOffer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canOffer || !offerCampaignId || offerSending) return;
+    setOfferSending(true);
+    try {
+      await callApi("/api/offers", {
+        creator_id: profile!.id,
+        campaign_id: offerCampaignId,
+        offered_price: offerPrice.trim() !== "" ? Number(offerPrice) : null,
+        message: offerMessage.trim() || undefined,
+      });
+      toast.success(t("offerSent"));
+      setOfferOpen(false);
+      setOfferMessage("");
+      setOfferPrice("");
+    } catch {
+      toast.error(t("offerError"));
+    }
+    setOfferSending(false);
+  };
+
+  useEffect(() => {
+    if (!creatorId) return;
+    const supabase = getSupabaseClient();
+    (async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", creatorId)
+        .single();
+      if (error || !data) {
+        setLoadError(true);
+        setIsLoading(false);
+        return;
+      }
+      setProfile(data as unknown as CreatorProfile);
+      setIsLoading(false);
+
+      const { data: collabRows } = await supabase
+        .from("applications")
+        .select("id, status, campaigns(id, title, status)")
+        .eq("creator_id", creatorId)
+        .in("status", ["accepted"])
+        .order("created_at", { ascending: false });
+      setCollaborations((collabRows ?? []) as unknown as CollaborationRow[]);
+
+      const { data: reviewRows } = await supabase
+        .from("reviews")
+        .select(
+          "id, rating, comment, created_at, reviewer:profiles!reviews_reviewer_id_fkey(name), campaigns(title)"
+        )
+        .eq("reviewee_id", creatorId)
+        .order("created_at", { ascending: false });
+      setReviews((reviewRows ?? []) as unknown as ProfileReview[]);
+    })();
+  }, [creatorId]);
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen bg-cream pt-24 pb-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <Skeleton className="w-40 h-9 mb-6" />
+          <div className="bg-paper rounded-xl border border-line p-8 mb-8 space-y-4">
+            <div className="flex gap-6">
+              <Skeleton className="w-32 h-32 rounded-xl" />
+              <div className="flex-1 space-y-3 pt-4">
+                <Skeleton className="w-64 h-8" />
+                <Skeleton className="w-40 h-4" />
+                <Skeleton className="w-72 h-4" />
+              </div>
+            </div>
+          </div>
+          <Skeleton className="w-56 h-6 mb-4" />
+          <ListRowSkeleton />
+        </div>
+      </main>
+    );
+  }
+
+  if (loadError || !profile) {
+    return (
+      <main className="min-h-screen bg-cream pt-24 pb-16">
+        <div className="max-w-6xl mx-auto px-4">
+          <ErrorState />
+        </div>
+      </main>
+    );
+  }
+
+  const isOwnProfile = !!user && user.id === profile.id;
+  const portfolioUrls = (profile.portfolio_urls ?? []).filter(Boolean);
+  const platforms = profile.platforms ?? [];
 
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16">
@@ -169,433 +217,350 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
         </Link>
 
         {/* Profile Header */}
-        <div className="bg-paper rounded-xl border border-line overflow-hidden mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-paper rounded-xl border border-line overflow-hidden mb-8"
+        >
           <div className="h-48 bg-primary" />
-          
+
           <div className="px-8 pb-8">
             <div className="flex flex-col md:flex-row gap-6 -mt-16 mb-6">
-              <div className="w-32 h-32 rounded-xl bg-primary flex items-center justify-center text-cream text-4xl font-bold border-4 border-paper">
-                {creatorData.avatar}
-              </div>
+              {profile.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={profile.avatar_url}
+                  alt={profile.name}
+                  className="w-32 h-32 rounded-xl object-cover border-4 border-paper"
+                />
+              ) : (
+                <div className="w-32 h-32 rounded-xl bg-primary flex items-center justify-center text-cream text-4xl font-bold border-4 border-paper">
+                  {profile.name
+                    .split(" ")
+                    .map((w) => w[0])
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .join("")
+                    .toUpperCase() || "?"}
+                </div>
+              )}
               <div className="flex-1 pt-4 md:pt-16">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-3xl font-bold text-neutral-900">{creatorData.name}</h1>
-                  {creatorData.verified && (
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3" />
-                      {t("verifiedCreator")}
+                <h1 className="text-3xl font-bold text-neutral-900">
+                  {profile.name || "—"}
+                </h1>
+                <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-neutral-600">
+                  {profile.location && (
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      {profile.location}
                     </span>
                   )}
-                </div>
-                <p className="text-neutral-500">{creatorData.handle}</p>
-                <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-neutral-600">
-                  <span className="flex items-center gap-1">
-                    <MapPin className="w-4 h-4" />
-                    {creatorData.location}
-                  </span>
-                  <span className="px-3 py-1 bg-primary-soft text-primary rounded-full text-xs font-medium">
-                    {creatorData.niche}
-                  </span>
+                  {profile.niche && (
+                    <span className="px-3 py-1 bg-primary-soft text-primary rounded-full text-xs font-medium">
+                      {profile.niche}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="pt-4 md:pt-16 flex flex-col gap-2">
                 <div className="text-right mb-2">
                   <p className="text-sm text-neutral-500">{t("rateRange")}</p>
-                  <p className="text-xl font-bold text-neutral-900">{creatorData.rateRange}</p>
+                  <p className="text-xl font-bold text-neutral-900">
+                    {formatRateRange(profile.rate_min, profile.rate_max)}
+                  </p>
                 </div>
                 <div className="flex gap-2">
                   <ShareButton />
-                  <Button 
-                    variant="outline"
-                    onClick={() => setShowContactModal(true)}
-                  >
-                    <Mail className="w-4 h-4 mr-2" />
-                    {tc("contact")}
-                  </Button>
-                  <Button>
-                    <MessageSquare className="w-4 h-4 mr-2" />
-                    {t("sendOffer")}
-                  </Button>
+                  {isOwnProfile ? (
+                    <Link href="/creators/edit">
+                      <Button variant="outline">
+                        <Pencil className="w-4 h-4 mr-2" />
+                        {t("editProfile")}
+                      </Button>
+                    </Link>
+                  ) : canOffer ? (
+                    <Button onClick={openOfferModal}>
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      {t("sendOffer")}
+                    </Button>
+                  ) : (
+                    <Button disabled title={t("sendOfferSoon")}>
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      {t("sendOffer")}
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Bio */}
-            <p className="text-neutral-700 mb-6">{creatorData.bio}</p>
+            {profile.bio && (
+              <p className="text-neutral-700 mb-6 whitespace-pre-line">
+                {profile.bio}
+              </p>
+            )}
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-3 md:grid-cols-6 gap-4 mb-6">
+            <div className="grid grid-cols-3 gap-4 mb-6">
               {[
-                { label: t("followers"), value: creatorData.stats.followers },
-                { label: t("engagement"), value: creatorData.stats.engagement },
-                { label: t("avgViews"), value: creatorData.stats.avgViews },
-                { label: t("posts"), value: creatorData.stats.totalPosts },
-                { label: t("collaborations"), value: creatorData.stats.collaborations },
-                { label: t("rating"), value: creatorData.stats.rating, icon: Star },
+                { label: t("followers"), value: formatFollowers(profile.follower_count ?? 0) },
+                { label: t("platforms"), value: String(platforms.length) },
+                { label: t("collaborations"), value: String(collaborations.length) },
               ].map((stat, i) => (
                 <div key={i} className="text-center p-3 bg-gray-50 rounded-xl">
-                  <p className="text-lg font-bold text-neutral-900 flex items-center justify-center gap-1">
-                    {stat.value}
-                    {stat.icon && <stat.icon className="w-4 h-4 text-yellow-500 fill-yellow-500" />}
-                  </p>
+                  <p className="text-lg font-bold text-neutral-900">{stat.value}</p>
                   <p className="text-xs text-neutral-500">{stat.label}</p>
                 </div>
               ))}
             </div>
 
             {/* Social Links */}
-            <div className="flex flex-wrap gap-2 mb-6">
-              {creatorData.platforms.map((platform, i) => (
-                <a
-                  key={i}
-                  href={`https://${platform.url}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm hover:bg-gray-200 transition-colors"
-                >
-                  <ExternalLink className="w-3 h-3" />
-                  {platform.name}: {platform.followers}
-                </a>
-              ))}
-              <a
-                href={`https://${creatorData.website}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-4 py-2 bg-primary-soft text-primary rounded-full text-sm hover:bg-line hover:text-ink transition-colors"
-              >
-                <ExternalLink className="w-3 h-3" />
-                {t("creatorProfile.website")}
-              </a>
-            </div>
-
-            {/* Tags */}
-            <div className="flex flex-wrap gap-2">
-              {creatorData.tags.map((tag, i) => (
-                <span key={i} className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-sm">
-                  #{tag}
-                </span>
-              ))}
-            </div>
+            {platforms.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                {platforms.map((platform, i) => {
+                  const Icon = platformIcon(platform.name);
+                  return (
+                    <a
+                      key={i}
+                      href={platform.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full text-sm hover:bg-gray-200 transition-colors"
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      {platform.name}
+                      {platform.followers > 0 && (
+                        <span className="text-neutral-500">
+                          · {formatFollowers(platform.followers)}
+                        </span>
+                      )}
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        </div>
+        </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2">
-            {/* Tabs */}
-            <div className="flex gap-4 border-b border-line mb-6">
-              {[
-                { id: "portfolio", label: t("portfolio"), icon: Grid3X3 },
-                { id: "work", label: t("previousWork"), icon: FileText },
-                { id: "audience", label: t("audience"), icon: Users },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-2 px-4 py-3 font-medium border-b-2 transition-colors ${
-                    activeTab === tab.id
-                      ? "border-primary text-primary"
-                      : "border-transparent text-neutral-500 hover:text-neutral-700"
-                  }`}
-                >
-                  <tab.icon className="w-4 h-4" />
-                  {tab.label}
-                </button>
-              ))}
+          <div className="lg:col-span-2 space-y-8">
+            {/* Portfolio */}
+            <div>
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                <ExternalLink className="w-5 h-5 text-primary" />
+                {t("portfolio")}
+              </h3>
+              {portfolioUrls.length === 0 ? (
+                <div className="bg-paper rounded-lg border border-line p-6">
+                  <p className="text-sm text-neutral-500">{t("noPortfolio")}</p>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 gap-4">
+                  {portfolioUrls.map((url, i) => (
+                    <a
+                      key={i}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-3 p-4 bg-paper rounded-lg border border-line hover:border-primary transition-colors"
+                    >
+                      <FileText className="w-5 h-5 text-primary shrink-0" />
+                      <span className="text-sm text-neutral-700 truncate flex-1">
+                        {url.replace(/^https?:\/\//, "")}
+                      </span>
+                      <ExternalLink className="w-4 h-4 text-neutral-400 shrink-0" />
+                    </a>
+                  ))}
+                </div>
+              )}
             </div>
 
-            {/* Portfolio Tab */}
-            {activeTab === "portfolio" && (
-              <div className="grid md:grid-cols-3 gap-4">
-                {creatorData.portfolio.map((item, i) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    onClick={() => setShowWorkModal(item)}
-                    className="group relative bg-gray-100 rounded-lg aspect-square flex items-center justify-center cursor-pointer overflow-hidden transition-all"
-                  >
-                    <span className="text-6xl group-hover:scale-110 transition-transform">{item.thumbnail}</span>
-                    {item.type === "video" && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-12 h-12 rounded-full bg-paper/80 flex items-center justify-center">
-                          <Play className="w-6 h-6 text-neutral-900 ml-1" />
-                        </div>
-                      </div>
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/70 to-transparent text-white">
-                      <p className="font-medium text-sm truncate">{item.title}</p>
-                      <p className="text-xs opacity-80">{t("creatorProfile.viewsCount", { count: item.views })} • {item.brand}</p>
-                    </div>
-                    {item.duration && (
-                      <span className="absolute top-2 right-2 px-2 py-1 bg-black/60 text-white text-xs rounded">
-                        {item.duration}
-                      </span>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
-            )}
-
-            {/* Previous Work Tab */}
-            {activeTab === "work" && (
-              <div className="space-y-4">
-                {creatorData.previousWork.map((work, i) => (
-                  <div key={i} className="p-4 bg-paper rounded-lg border border-line">
-                    <div className="flex items-center justify-between mb-2">
-                      <div>
-                        <h4 className="font-bold">{work.brand}</h4>
-                        <p className="text-sm text-neutral-500">{work.campaign}</p>
-                      </div>
-                      <span className="text-sm text-neutral-400">{work.date}</span>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm">
-                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full">
-                        {work.results}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Audience Tab */}
-            {activeTab === "audience" && (
-              <div className="space-y-6">
-                {/* Demographics */}
+            {/* Previous Collaborations */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">{t("previousWork")}</h3>
+              {collaborations.length === 0 ? (
                 <div className="bg-paper rounded-lg border border-line p-6">
-                  <h4 className="font-bold mb-4">{t("demographics")}</h4>
-                  <div className="mb-4">
-                    <p className="text-sm text-neutral-500 mb-2">{t("creatorProfile.gender")}</p>
-                    <div className="flex h-4 rounded-full overflow-hidden">
-                      <div className="w-[68%] bg-pink-400" />
-                      <div className="w-[30%] bg-blue-400" />
-                      <div className="w-[2%] bg-purple-400" />
-                    </div>
-                    <div className="flex gap-3 mt-2 text-xs">
-                      <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-pink-400" /> {t("creatorProfile.female")} 68%</span>
-                      <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-blue-400" /> {t("creatorProfile.male")} 30%</span>
-                    </div>
-                  </div>
+                  <p className="text-sm text-neutral-500">
+                    {t("noCollaborations")}
+                  </p>
                 </div>
-
-                {/* Top Locations */}
-                <div className="bg-paper rounded-lg border border-line p-6">
-                  <h4 className="font-bold mb-4">{t("topLocations")}</h4>
-                  <div className="space-y-2">
-                    {creatorData.audience.topLocations.map((loc, i) => (
-                      <div key={i} className="flex items-center gap-2">
-                        <div className="w-full bg-gray-100 rounded-full h-2">
-                          <div 
-                            className="bg-primary h-2 rounded-full"
-                            style={{ width: `${100 - i * 20}%` }}
-                          />
-                        </div>
-                        <span className="text-sm whitespace-nowrap">{loc}</span>
+              ) : (
+                <div className="space-y-4">
+                  {collaborations.map((collab) => (
+                    <Link
+                      key={collab.id}
+                      href={`/marketplace/campaigns/${collab.campaigns?.id ?? ""}`}
+                      className="block p-4 bg-paper rounded-lg border border-line hover:border-primary transition-colors"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="font-bold truncate">
+                          {collab.campaigns?.title ?? "—"}
+                        </h4>
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium shrink-0 ${
+                            collab.campaigns?.status === "completed"
+                              ? "bg-neutral-200 text-neutral-500"
+                              : "bg-green-100 text-green-700"
+                          }`}
+                        >
+                          {collab.campaigns?.status === "completed"
+                            ? t("collabStatus.completed")
+                            : t("collabStatus.ongoing")}
+                        </span>
                       </div>
-                    ))}
-                  </div>
+                    </Link>
+                  ))}
                 </div>
-
-                {/* Interests */}
-                <div className="bg-paper rounded-lg border border-line p-6">
-                  <h4 className="font-bold mb-4">{t("interests")}</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {creatorData.audience.interests.map((interest, i) => (
-                      <span key={i} className="px-3 py-1 bg-primary-soft text-primary rounded-full text-sm">
-                        {interest}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            {/* Contact Card */}
-            <div className="bg-primary rounded-lg p-6 text-cream">
-              <h3 className="font-bold text-lg mb-2">{t("creatorProfile.contactTitle")}</h3>
-              <p className="text-cream/80 text-sm mb-4">
-                {t("creatorProfile.responseLine", { name: creatorData.name })}
-              </p>
-              <Button 
-                className="w-full bg-cream text-primary hover:bg-cream/90 mb-2"
-                onClick={() => setShowContactModal(true)}
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                {t("creatorProfile.sendMessage")}
-              </Button>
-              <Button variant="outline" className="w-full border-cream text-cream hover:bg-cream/10">
-                <Bookmark className="w-4 h-4 mr-2" />
-                {t("creatorProfile.saveToList")}
-              </Button>
-            </div>
-
             {/* Reviews */}
             <div className="bg-paper rounded-lg border border-line p-6">
-              <h3 className="font-bold mb-4">{t("brandReviews")}</h3>
-              <div className="space-y-4">
-                {creatorData.reviews.map((review, i) => (
-                  <div key={i} className="border-b last:border-b-0 pb-4 last:pb-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <p className="font-medium text-sm">{review.brand}</p>
-                      <div className="flex">
-                        {Array(5).fill(0).map((_, j) => (
-                          <Star 
-                            key={j} 
-                            className={`w-3 h-3 ${j < review.rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`} 
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-sm text-neutral-600 mb-1">{review.text}</p>
-                    <p className="text-xs text-neutral-400">{review.date}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Content Types */}
-            <div className="bg-paper rounded-lg border border-line p-6">
-              <h3 className="font-bold mb-4">{t("contentTypes")}</h3>
-              <div className="flex flex-wrap gap-2">
-                {creatorData.contentTypes.map((type, i) => (
-                  <span key={i} className="px-3 py-1 bg-gray-100 rounded-full text-sm">
-                    {type}
+              <h3 className="font-bold mb-4 flex items-center gap-2">
+                <Star className="w-5 h-5 text-yellow-500" />
+                {t("brandReviews")}
+                {reviews.length > 0 && (
+                  <span className="ml-auto flex items-center gap-1 text-sm font-medium text-neutral-700">
+                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                    {(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)}
+                    <span className="text-neutral-400 font-normal">
+                      ({reviews.length})
+                    </span>
                   </span>
-                ))}
-              </div>
+                )}
+              </h3>
+              {reviews.length === 0 ? (
+                <div className="text-center py-6">
+                  <Star className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                  <p className="text-sm text-neutral-500">{t("reviewsEmpty")}</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {reviews.map((review) => (
+                    <div key={review.id} className="border-b last:border-b-0 pb-4 last:pb-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-medium text-sm">
+                          {review.reviewer?.name ?? "—"}
+                        </p>
+                        <div className="flex">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star
+                              key={i}
+                              className={`w-3 h-3 ${
+                                i < review.rating
+                                  ? "text-yellow-500 fill-yellow-500"
+                                  : "text-gray-300"
+                              }`}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      {review.campaigns?.title && (
+                        <p className="text-xs text-primary mb-1">
+                          {review.campaigns.title}
+                        </p>
+                      )}
+                      {review.comment && (
+                        <p className="text-sm text-neutral-600 mb-1 whitespace-pre-line">
+                          {review.comment}
+                        </p>
+                      )}
+                      <p className="text-xs text-neutral-400">
+                        {formatRelativeTime(review.created_at, locale)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Work Detail Modal */}
-      {showWorkModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-paper rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-lg">{showWorkModal.title}</h3>
-              <button 
-                onClick={() => setShowWorkModal(null)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="bg-gray-100 rounded-lg h-64 flex items-center justify-center mb-4">
-              <span className="text-8xl">{showWorkModal.thumbnail}</span>
-            </div>
-
-            <div className="flex items-center gap-4 mb-4 text-sm">
-              <span className="flex items-center gap-1">
-                <Play className="w-4 h-4" />
-                {t("creatorProfile.viewsCount", { count: showWorkModal.views })}
-              </span>
-              <span className="flex items-center gap-1">
-                <Heart className="w-4 h-4" />
-                {t("creatorProfile.likesCount", { count: showWorkModal.likes })}
-              </span>
-              <span className="px-2 py-1 bg-primary-soft text-primary rounded text-xs">
-                {showWorkModal.brand}
-              </span>
-            </div>
-
-            <p className="text-neutral-600 mb-4">{showWorkModal.description}</p>
-
-            <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={() => setShowWorkModal(null)}
-              >
-                {tc("close")}
-              </Button>
-              <Button 
-                className="flex-1"
-                onClick={() => {
-                  setShowWorkModal(null);
-                  setShowContactModal(true);
-                }}
-              >
-                {t("creatorProfile.discussStyle")}
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-
-      {/* Contact Modal */}
-      {showContactModal && (
+      {/* Send Offer modal */}
+      {offerOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-paper rounded-lg p-6 w-full max-w-md"
           >
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-bold text-lg">{t("creatorProfile.contactName", { name: creatorData.name })}</h3>
-              <button 
-                onClick={() => setShowContactModal(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="bg-gray-50 rounded-xl p-4 mb-4">
-              <p className="text-sm text-neutral-600">{t("creatorProfile.rateRangeLine", { range: creatorData.rateRange })}</p>
-              <p className="text-xs text-neutral-500">{t("creatorProfile.typicalResponse")}</p>
-            </div>
-
-            <input
-              type="text"
-              placeholder={t("creatorProfile.companyNamePlaceholder")}
-              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <input
-              type="email"
-              placeholder={t("creatorProfile.yourEmailPlaceholder")}
-              className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-            <select className="w-full px-4 py-3 rounded-xl border mb-3 focus:outline-none focus:ring-2 focus:ring-primary">
-              <option>{t("creatorProfile.campaignTypePlaceholder")}</option>
-              <option>{t("creatorProfile.campaignTypes.productReview")}</option>
-              <option>{t("creatorProfile.campaignTypes.sponsoredPost")}</option>
-              <option>{t("creatorProfile.campaignTypes.brandAmbassador")}</option>
-              <option>{t("creatorProfile.campaignTypes.eventCoverage")}</option>
-            </select>
-            <textarea
-              placeholder={t("creatorProfile.campaignGoalsPlaceholder")}
-              className="w-full h-32 px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none mb-4"
-            />
-
-            <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                className="flex-1"
-                onClick={() => setShowContactModal(false)}
-              >
-                {tc("cancel")}
-              </Button>
-              <Button 
-                className="flex-1"
-                onClick={() => {
-                  setShowContactModal(false);
-                  alert(`Message sent to ${creatorData.name}! They will respond within 24 hours.`);
-                }}
-              >
-                {t("creatorProfile.sendMessage")}
-              </Button>
-            </div>
+            <h3 className="font-bold text-lg mb-1">
+              {t("offerModalTitle", { name: profile?.name ?? "" })}
+            </h3>
+            <p className="text-sm text-neutral-500 mb-4">{t("offerModalDesc")}</p>
+            <form onSubmit={sendOffer} className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium mb-1.5">
+                  {t("offerCampaignLabel")}
+                  <span className="text-red-500"> *</span>
+                </label>
+                <select
+                  required
+                  value={offerCampaignId}
+                  onChange={(e) => setOfferCampaignId(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  {offerCampaigns.length === 0 && (
+                    <option value="">{t("offerNoCampaigns")}</option>
+                  )}
+                  {offerCampaigns.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1.5">
+                  {t("offerPriceLabel")}
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={offerPrice}
+                  onChange={(e) => setOfferPrice(e.target.value)}
+                  placeholder={t("offerPricePlaceholder")}
+                  className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1.5">
+                  {t("offerMessageLabel")}
+                </label>
+                <textarea
+                  rows={4}
+                  maxLength={500}
+                  value={offerMessage}
+                  onChange={(e) => setOfferMessage(e.target.value)}
+                  placeholder={t("offerMessagePlaceholder")}
+                  className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                />
+              </div>
+              <div className="flex gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setOfferOpen(false)}
+                >
+                  {tCommon("cancel")}
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1"
+                  isLoading={offerSending}
+                  disabled={!offerCampaignId}
+                >
+                  {t("offerSendButton")}
+                </Button>
+              </div>
+            </form>
           </motion.div>
         </div>
       )}
@@ -603,10 +568,10 @@ function CreatorDetailPage({ params }: { params: { id: string } }) {
   );
 }
 
-export default function CreatorDetailPageWrapper({ params }: { params: { id: string } }) {
+export default function CreatorDetailPageWrapper() {
   return (
     <AuthGuard>
-      <CreatorDetailPage params={params} />
+      <CreatorDetailPage />
     </AuthGuard>
   );
 }

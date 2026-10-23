@@ -10,7 +10,8 @@ export class DuplicateApplicationError extends Error {}
  */
 export async function callApply(
   campaignId: string,
-  message: string
+  message: string,
+  shippingAddress?: string
 ): Promise<{ id: string; status: string }> {
   const supabase = getSupabaseClient();
   const { data } = await supabase.auth.getSession();
@@ -23,7 +24,11 @@ export async function callApply(
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ campaign_id: campaignId, message }),
+    body: JSON.stringify({
+      campaign_id: campaignId,
+      message,
+      shipping_address: shippingAddress?.trim() || null,
+    }),
   });
 
   if (res.status === 401) throw new ApplyAuthError("Session expired");

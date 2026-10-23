@@ -35,6 +35,17 @@ export async function verifyToken(
   return { id: data.user.id, email: data.user.email };
 }
 
+export const STORYBOARD_BUCKET = "storyboard-media";
+
+/** Creates the public storyboard storage bucket if it doesn't exist yet. */
+export async function ensureStoryboardBucket(admin: SupabaseClient): Promise<void> {
+  const { data: existing } = await admin.storage.getBucket(STORYBOARD_BUCKET);
+  if (existing) return;
+  const { error } = await admin.storage.createBucket(STORYBOARD_BUCKET, { public: true });
+  // Race with another invocation is fine — bucket exists either way.
+  if (error && !/already exists/i.test(error.message)) throw error;
+}
+
 // "quota" (429) must NOT be retried in a tight loop — it burns the same-account
 // quota faster and makes congestion worse.
 export function geminiErrorKind(err: unknown): "retryable" | "quota" | "fatal" {

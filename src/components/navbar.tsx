@@ -5,14 +5,78 @@ import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, Globe, Bell, LogOut, Shield, BarChart3 } from "lucide-react";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  Globe,
+  Bell,
+  LogOut,
+  Shield,
+  BarChart3,
+  CheckCircle,
+  XCircle,
+  Gift,
+  FileSignature,
+  Package,
+  Megaphone,
+  Star,
+  Info,
+  MessageSquare,
+  DollarSign,
+  Percent,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "./ui/button";
 import { useTranslations, useLocale } from "next-intl";
-import { useNotifications } from "@/contexts/notifications-context";
+import { useNotifications, type AppNotification } from "@/contexts/notifications-context";
 import { useAuth } from "@/contexts/auth-context";
+
+const NOTIF_ICONS: Record<string, { icon: LucideIcon; className: string }> = {
+  application_accepted: { icon: CheckCircle, className: "text-green-500" },
+  application_rejected: { icon: XCircle, className: "text-neutral-400" },
+  offer_received: { icon: Gift, className: "text-violet-500" },
+  offer_accepted: { icon: CheckCircle, className: "text-green-500" },
+  offer_declined: { icon: XCircle, className: "text-neutral-400" },
+  contract_pending_signature: { icon: FileSignature, className: "text-yellow-500" },
+  contract_agreed: { icon: FileSignature, className: "text-green-500" },
+  submission_received: { icon: Package, className: "text-orange-500" },
+  submission_approved: { icon: CheckCircle, className: "text-green-500" },
+  submission_revision: { icon: XCircle, className: "text-red-500" },
+  shipment_shipped: { icon: Package, className: "text-blue-500" },
+  shipment_received: { icon: Package, className: "text-green-500" },
+  campaign_completed: { icon: Star, className: "text-yellow-500" },
+  message: { icon: MessageSquare, className: "text-primary" },
+  payment_recorded: { icon: DollarSign, className: "text-green-500" },
+  payment_paid: { icon: DollarSign, className: "text-blue-500" },
+  payment_confirmed: { icon: CheckCircle, className: "text-green-500" },
+  commission_recorded: { icon: Percent, className: "text-violet-500" },
+  review_received: { icon: Star, className: "text-yellow-500" },
+};
+
+function notifMeta(type: string) {
+  return NOTIF_ICONS[type] ?? { icon: Info, className: "text-primary" };
+}
+
+function notificationText(
+  n: AppNotification,
+  tn: ReturnType<typeof useTranslations>
+): string {
+  const raw = n.payload as Record<string, unknown>;
+  const values: Record<string, string | number | Date> = {};
+  for (const [key, value] of Object.entries(raw)) {
+    if (value != null) values[key] = value as string | number;
+  }
+  try {
+    return tn(`notif.${n.type}`, values);
+  } catch {
+    return tn("notif.fallback");
+  }
+}
 
 export function Navbar() {
   const t = useTranslations("nav");
+  const tn = useTranslations("nav.notif");
   const locale = useLocale();
   const router = useRouter();
   const { user, isLoading, logout } = useAuth();
@@ -203,22 +267,35 @@ export function Navbar() {
                       {notifications.length === 0 && (
                         <p className="text-sm text-neutral-500 px-2 py-4 text-center">{t("noNotifications")}</p>
                       )}
-                      {notifications.map((n) => (
-                        <button
-                          key={n.id}
-                          onClick={() => { markAsRead(n.id); setNotifOpen(false); }}
-                          className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${n.read ? "bg-paper" : "bg-primary-soft"}`}
-                        >
-                          <div className="flex items-start gap-2">
-                            <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${n.read ? "bg-gray-300" : "bg-primary"}`} />
-                            <div className="flex-1">
-                              <p className={`text-sm ${n.read ? "font-medium text-neutral-700" : "font-semibold text-neutral-900"}`}>{n.title}</p>
-                              <p className="text-xs text-neutral-500">{n.message}</p>
-                              <p className="text-[10px] text-neutral-400 mt-0.5">{n.createdAt}</p>
+                      {notifications.map((n) => {
+                        const meta = notifMeta(n.type);
+                        const Icon = meta.icon;
+                        const link = n.payload.link as string | undefined;
+                        return (
+                          <button
+                            key={n.id}
+                            onClick={() => {
+                              markAsRead(n.id);
+                              setNotifOpen(false);
+                              if (link) router.push(`/${locale}${link}`);
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${n.read ? "bg-paper" : "bg-primary-soft"}`}
+                          >
+                            <div className="flex items-start gap-2">
+                              <Icon className={`w-4 h-4 mt-0.5 shrink-0 ${meta.className}`} />
+                              <div className="flex-1">
+                                <p className={`text-sm ${n.read ? "text-neutral-600" : "font-medium text-neutral-900"}`}>
+                                  {notificationText(n, tn)}
+                                </p>
+                                <p className="text-[10px] text-neutral-400 mt-0.5">{n.timeAgo}</p>
+                              </div>
+                              {!n.read && (
+                                <div className="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                              )}
                             </div>
-                          </div>
-                        </button>
-                      ))}
+                          </button>
+                        );
+                      })}
                     </div>
                   </motion.div>
                 )}

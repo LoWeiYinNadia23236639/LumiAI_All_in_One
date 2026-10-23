@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { 
@@ -19,7 +19,9 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
-  AlertCircle
+  AlertCircle,
+  Film,
+  Square
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
@@ -65,11 +67,45 @@ const examples = [
   }
 ];
 
+type Aspect = "16:9" | "9:16" | "3:4" | "4:3";
+
+const ASPECTS: Aspect[] = ["16:9", "9:16", "3:4", "4:3"];
+
+const PLATFORMS = [
+  "general",
+  "youtube",
+  "tiktok",
+  "instagram_reels",
+  "instagram_feed",
+  "xiaohongshu",
+] as const;
+
+type Platform = (typeof PLATFORMS)[number];
+
+const PLATFORM_ASPECT: Record<Platform, Aspect> = {
+  general: "16:9",
+  youtube: "16:9",
+  tiktok: "9:16",
+  instagram_reels: "9:16",
+  instagram_feed: "4:3",
+  xiaohongshu: "3:4",
+};
+
+const SCENE_SECONDS_OPTIONS = [1, 1.5, 2, 2.5, 3, 4, 5];
+
+type VideoMode = "animatic" | "ai";
+
+// Gemini omni video: each scene becomes one ~10s clip at ~$0.10/s (720p, audio included).
+const OMNI_CLIP_SECONDS = 10;
+const OMNI_RATE_PER_SECOND = 0.1;
+
+const aspectStyle = (a: Aspect) => ({ aspectRatio: a.replace(":", "/") });
+
 export default function StoryboardAIPage() {
   const t = useTranslations("aiTools");
   const tc = useTranslations("common");
   const locale = useLocale();
-  const { success, error: toastError } = useToast();
+  const { success, error: toastError, info: toastInfo } = useToast();
   const [prompt, setPrompt] = useState("");
   const [mood, setMood] = useState("");
   const [loading, setLoading] = useState(false);
@@ -87,6 +123,12 @@ export default function StoryboardAIPage() {
   const [generatingAll, setGeneratingAll] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoLoading, setVideoLoading] = useState(false);
+  const [aspect, setAspect] = useState<Aspect>("16:9");
+  const [platform, setPlatform] = useState<Platform>("general");
+  const [sceneSeconds, setSceneSeconds] = useState(2.5);
+  const [videoMode, setVideoMode] = useState<VideoMode>("animatic");
+  const [clipProgress, setClipProgress] = useState<{ current: number; total: number } | null>(null);
+  const abortAiVideo = useRef(false);
   const example = t.raw("examples.storyboard") as { idea: string; mood: string };
   const storyboardTips = t.raw("storyboardPage.tips") as { title: string; content: string }[];
 
@@ -144,6 +186,22 @@ export default function StoryboardAIPage() {
     return body as T;
   };
 
+  const changeAspect = (next: Aspect) => {
+    if (next === aspect) return;
+    setAspect(next);
+    // Previously generated visuals no longer match the chosen format.
+    if (Object.keys(sceneImages).length > 0 || videoUrl) {
+      setSceneImages({});
+      setVideoUrl(null);
+      toastInfo(t("storyboardPage.formatChanged"));
+    }
+  };
+
+  const changePlatform = (next: Platform) => {
+    setPlatform(next);
+    changeAspect(PLATFORM_ASPECT[next]);
+  };
+
   const generateSceneImage = async (scene: Scene): Promise<boolean> => {
     if (imageLoading[scene.scene_number] || !result) return false;
     setImageLoading((s) => ({ ...s, [scene.scene_number]: true }));
@@ -154,6 +212,7 @@ export default function StoryboardAIPage() {
         shot_angle: scene.shot_angle,
         lighting: scene.lighting,
         mood,
+        aspect,
       });
       setSceneImages((s) => ({ ...s, [scene.scene_number]: url }));
       setVideoUrl(null); // previous animatic no longer matches
@@ -163,7 +222,8 @@ export default function StoryboardAIPage() {
         window.location.href = `/${locale}/login`;
         return false;
       }
-      toastError(t("storyboardPage.imageFailed"));
+      const detail = err instanceof Error ? err.message : String(err);
+      toastError(t("storyboardPage.imageFailedDetail", { detail: detail.slice(0, 160) }));
       return false;
     } finally {
       setImageLoading((s) => ({ ...s, [scene.scene_number]: false }));
@@ -198,6 +258,8 @@ export default function StoryboardAIPage() {
           url: sceneImages[s.scene_number],
           scene_number: s.scene_number,
         })),
+        aspect,
+        seconds_per_scene: sceneSeconds,
       });
       setVideoUrl(url);
       success(t("storyboardPage.videoReady"));
@@ -206,13 +268,69 @@ export default function StoryboardAIPage() {
         window.location.href = `/${locale}/login`;
         return;
       }
-      toastError(t("storyboardPage.videoFailed"));
+      const detail = err instanceof Error ? err.message : String(err);
+      toastError(t("storyboardPage.videoFailedDetail", { detail: detail.slice(0, 160) }));
     } finally {
       setVideoLoading(false);
     }
   };
 
   const printBrief = () => window.print();
+
+  const generateAiVideo = async () => {
+    if (!result || videoLoading) return;
+    const missing = result.scenes.some((s) => !sceneImages[s.scene_number]);
+    if (missing) {
+      toastError(t("storyboardPage.needAllImages"));
+      return;
+    }
+    setVideoLoading(true);
+    abortAiVideo.current = false;
+    const scenes = result.scenes;
+    try {
+      const clipUrls: string[] = [];
+      for (let i = 0; i < scenes.length; i++) {
+        if (abortAiVideo.current) {
+          toastInfo(t("storyboardPage.aiVideoCancelled"));
+          return;
+        }
+        const scene = scenes[i];
+        setClipProgress({ current: i + 1, total: scenes.length });
+        // Synchronous generation: one request per clip (~30–60s), no polling.
+        const { url } = await postVisual<{ url: string }>("/api/ai/scene-video", {
+          scene_number: scene.scene_number,
+          description: scene.description,
+          shot_angle: scene.shot_angle,
+          mood,
+          image_url: sceneImages[scene.scene_number],
+        });
+        if (abortAiVideo.current) {
+          toastInfo(t("storyboardPage.aiVideoCancelled"));
+          return;
+        }
+        clipUrls.push(url);
+      }
+      setClipProgress(null);
+      const { url } = await postVisual<{ url: string }>("/api/ai/storyboard-video", {
+        mode: "clips",
+        clips: clipUrls,
+        aspect,
+        transitions: true,
+      });
+      setVideoUrl(url);
+      success(t("storyboardPage.videoReady"));
+    } catch (err) {
+      if (err instanceof AiAuthError) {
+        window.location.href = `/${locale}/login`;
+        return;
+      }
+      const detail = err instanceof Error ? err.message : String(err);
+      toastError(t("storyboardPage.clipFailedDetail", { detail: detail.slice(0, 160) }));
+    } finally {
+      setVideoLoading(false);
+      setClipProgress(null);
+    }
+  };
 
   const copyToClipboard = () => {
     if (!result) return;
@@ -345,6 +463,69 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
             value={mood}
             onChange={(e) => setMood(e.target.value)}
           />
+          <div className="grid md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block mb-2">
+                <span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "03" })}</span>
+                <span className="uppercase tracking-widest text-xs text-ink-soft"> {t("storyboardPage.formatLabel")}</span>
+              </label>
+              <div className="flex gap-2 flex-wrap">
+                {ASPECTS.map((a) => (
+                  <button
+                    key={a}
+                    type="button"
+                    onClick={() => changeAspect(a)}
+                    className={`px-3 py-2 rounded-lg border text-sm transition-colors ${
+                      aspect === a
+                        ? "bg-primary text-cream border-primary"
+                        : "border-line text-ink-soft hover:border-primary hover:text-primary"
+                    }`}
+                  >
+                    {a}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <label className="block mb-2">
+                <span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "04" })}</span>
+                <span className="uppercase tracking-widest text-xs text-ink-soft"> {t("storyboardPage.platformLabel")}</span>
+              </label>
+              <select
+                value={platform}
+                onChange={(e) => changePlatform(e.target.value as Platform)}
+                className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary bg-paper"
+              >
+                {PLATFORMS.map((p) => (
+                  <option key={p} value={p}>
+                    {t(`storyboardPage.platforms.${p}`)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block mb-2">
+                <span className="font-quote text-sm text-ink/40">{t("stepLabel", { num: "05" })}</span>
+                <span className="uppercase tracking-widest text-xs text-ink-soft"> {t("storyboardPage.durationLabel")}</span>
+              </label>
+              <select
+                value={sceneSeconds}
+                onChange={(e) => setSceneSeconds(Number(e.target.value))}
+                className="w-full px-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary bg-paper"
+              >
+                {SCENE_SECONDS_OPTIONS.map((s) => (
+                  <option key={s} value={s}>
+                    {t("storyboardPage.secondsPerScene", { count: s })}
+                  </option>
+                ))}
+              </select>
+              {result && (
+                <p className="text-xs text-neutral-500 mt-2">
+                  {t("storyboardPage.totalDuration", { duration: Math.round(result.scenes.length * sceneSeconds) })}
+                </p>
+              )}
+            </div>
+          </div>
           {error && (
             <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-xl flex items-center justify-between gap-3 text-sm">
               <span className="flex items-center gap-2">
@@ -399,8 +580,18 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
                   <span className="text-sm font-medium opacity-90">{t("storyboardPage.resultBadge")}</span>
                 </div>
                 <h2 className="text-2xl font-bold">{prompt.slice(0, 60)}</h2>
-                <p className="text-cream/80 flex items-center gap-4 mt-1">
+                <p className="text-cream/80 flex items-center gap-4 mt-1 flex-wrap">
                   <span>{t("storyboardPage.scenesCount", { count: result.scenes.length })}</span>
+                  <span>{aspect}</span>
+                  <span>{t(`storyboardPage.platforms.${platform}`)}</span>
+                  <span>{t("storyboardPage.totalDuration", { duration: Math.round(result.scenes.length * sceneSeconds) })}</span>
+                  {videoMode === "ai" && (
+                    <span>
+                      {t("storyboardPage.priceEstimate", {
+                        price: (result.scenes.length * OMNI_CLIP_SECONDS * OMNI_RATE_PER_SECOND).toFixed(2),
+                      })}
+                    </span>
+                  )}
                 </p>
               </div>
               <div className="flex gap-2 flex-wrap">
@@ -413,14 +604,49 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
                   {generatingAll ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Wand2 className="w-4 h-4 mr-2" />}
                   {t("storyboardPage.generateAllImages")}
                 </Button>
-                <Button
-                  className="bg-cream text-primary hover:bg-paper"
-                  onClick={generateVideo}
+                <select
+                  value={videoMode}
+                  onChange={(e) => setVideoMode(e.target.value as VideoMode)}
                   disabled={videoLoading}
+                  className="px-3 py-2 rounded-lg border border-cream/60 bg-transparent text-cream text-sm focus:outline-none disabled:opacity-60 [&>option]:text-ink"
                 >
-                  {videoLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
-                  {t("storyboardPage.previewVideo")}
-                </Button>
+                  <option value="animatic">{t("storyboardPage.modeAnimatic")}</option>
+                  <option value="ai">{t("storyboardPage.modeAi")}</option>
+                </select>
+                {videoMode === "animatic" ? (
+                  <Button
+                    className="bg-cream text-primary hover:bg-paper"
+                    onClick={generateVideo}
+                    disabled={videoLoading}
+                  >
+                    {videoLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
+                    {t("storyboardPage.previewVideo")}
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      className="bg-cream text-primary hover:bg-paper"
+                      onClick={generateAiVideo}
+                      disabled={videoLoading}
+                    >
+                      {videoLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Film className="w-4 h-4 mr-2" />}
+                      {t("storyboardPage.generateAiVideo")}
+                    </Button>
+                    {videoLoading && (
+                      <Button
+                        variant="outline"
+                        className="border-cream text-cream hover:bg-cream/20"
+                        onClick={() => (abortAiVideo.current = true)}
+                      >
+                        <Square className="w-4 h-4 mr-2" />
+                        {tc("cancel")}
+                      </Button>
+                    )}
+                  </>
+                )}
+                {videoMode === "ai" && (
+                  <p className="w-full text-xs text-cream/70">{t("storyboardPage.aiVideoNote")}</p>
+                )}
                 <Button
                   variant="outline"
                   className="border-cream text-cream hover:bg-cream/20"
@@ -444,9 +670,16 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
             {(videoUrl || videoLoading) && (
               <div className="bg-ink p-4 md:p-6">
                 {videoLoading ? (
-                  <div className="aspect-video bg-ink-soft/20 rounded-lg flex flex-col items-center justify-center text-cream gap-3">
+                  <div
+                    className="bg-ink-soft/20 rounded-lg flex flex-col items-center justify-center text-cream gap-3 w-full max-w-3xl mx-auto"
+                    style={aspectStyle(aspect)}
+                  >
                     <Loader2 className="w-8 h-8 animate-spin" />
-                    <span className="text-sm opacity-80">{t("storyboardPage.videoLoading")}</span>
+                    <span className="text-sm opacity-80">
+                      {clipProgress
+                        ? t("storyboardPage.generatingClip", clipProgress)
+                        : t("storyboardPage.videoLoading")}
+                    </span>
                   </div>
                 ) : (
                   <video
@@ -454,7 +687,8 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
                     controls
                     autoPlay
                     loop
-                    className="w-full max-w-3xl mx-auto aspect-video bg-black rounded-lg"
+                    className="w-full max-w-3xl mx-auto bg-black rounded-lg"
+                    style={aspectStyle(aspect)}
                   />
                 )}
               </div>
@@ -482,7 +716,8 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
                           <img
                             src={sceneImages[scene.scene_number]}
                             alt={scene.shot_angle}
-                            className="w-full aspect-video object-cover rounded-lg border border-line"
+                            className="w-full object-cover rounded-lg border border-line"
+                            style={aspectStyle(aspect)}
                           />
                           <button
                             onClick={() => generateSceneImage(scene)}
@@ -498,14 +733,18 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
                           </button>
                         </div>
                       ) : imageLoading[scene.scene_number] ? (
-                        <div className="w-full aspect-video rounded-lg border border-dashed border-line bg-primary-soft/40 flex flex-col items-center justify-center text-ink-soft gap-2">
+                        <div
+                          className="w-full rounded-lg border border-dashed border-line bg-primary-soft/40 flex flex-col items-center justify-center text-ink-soft gap-2"
+                          style={aspectStyle(aspect)}
+                        >
                           <Loader2 className="w-5 h-5 animate-spin" />
                           <span className="text-xs">{t("storyboardPage.generatingImage")}</span>
                         </div>
                       ) : (
                         <button
                           onClick={() => generateSceneImage(scene)}
-                          className="w-full aspect-video rounded-lg border border-dashed border-ink/30 hover:border-primary hover:text-primary transition-colors flex flex-col items-center justify-center text-ink-soft gap-2"
+                          className="w-full rounded-lg border border-dashed border-ink/30 hover:border-primary hover:text-primary transition-colors flex flex-col items-center justify-center text-ink-soft gap-2"
+                          style={aspectStyle(aspect)}
                         >
                           <Image className="w-6 h-6" />
                           <span className="text-xs">{t("storyboardPage.generateImage")}</span>
@@ -588,12 +827,15 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
             <div className="storyboard-print-area hidden">
               <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>LumiAI — {t("storyboardPage.resultBadge")}</h1>
               <p style={{ marginBottom: 2 }}><strong>{t("storyboardPage.ideaLabel")}</strong> {prompt}</p>
-              {mood && <p style={{ marginBottom: 12 }}><strong>{t("storyboardPage.moodLabel")}</strong> {mood}</p>}
+              {mood && <p style={{ marginBottom: 2 }}><strong>{t("storyboardPage.moodLabel")}</strong> {mood}</p>}
+              <p style={{ marginBottom: 12 }}>
+                <strong>{t("storyboardPage.formatLabel")}</strong> {aspect} · {t("storyboardPage.platformLabel")} {t(`storyboardPage.platforms.${platform}`)} · {t("storyboardPage.totalDuration", { duration: Math.round(result.scenes.length * sceneSeconds) })}
+              </p>
               {result.scenes.map((s) => (
                 <div key={s.scene_number} className="storyboard-print-scene" style={{ display: "flex", gap: 12, marginBottom: 14, borderTop: "1px solid #ddd", paddingTop: 10 }}>
                   {sceneImages[s.scene_number] && (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={sceneImages[s.scene_number]} alt="" style={{ width: 200, height: "auto", borderRadius: 6 }} />
+                    <img src={sceneImages[s.scene_number]} alt="" style={{ maxWidth: 200, maxHeight: 220, borderRadius: 6 }} />
                   )}
                   <div>
                     <p style={{ fontWeight: 700 }}>{t("storyboardPage.copyScenePrefix")} {s.scene_number} — {s.shot_angle}</p>

@@ -1,200 +1,136 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { 
-  Search, 
-  Filter, 
+import {
+  Search,
+  Filter,
   Users,
-  ArrowRight,
+  ArrowUpRight,
   Instagram,
   Youtube,
-  Twitter,
-  Star,
+  Music2,
+  BookOpen,
+  Link2,
   MapPin,
   Heart,
-  MessageSquare,
   CheckCircle,
   BarChart3,
-  Zap,
-  Play,
-  Eye,
-  ArrowUpRight
+  Star,
+  UserRound,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AuthGuard } from "@/components/auth-guard";
+import { ErrorState } from "@/components/ui/error-state";
 import { useSavedLists } from "@/contexts/saved-lists-context";
+import { getSupabaseClient } from "@/lib/supabase/client";
 import { useTranslations } from "next-intl";
+import type { CreatorProfile } from "@/types/marketplace";
 
-const influencers = [
-  {
-    id: "1",
-    name: "Sarah Chen",
-    handle: "@sarahstyles",
-    avatar: "SC",
-    avatarColor: "from-pink-400 to-rose-500",
-    niche: "Fashion & Style",
-    location: "Los Angeles, CA",
-    followers: "125K",
-    engagement: "4.8%",
-    avgViews: "45K",
-    platforms: ["instagram", "tiktok"],
-    bio: "Fashion enthusiast sharing affordable style tips. Helping you look expensive on a budget! 💕",
-    recentWork: [
-      { type: "video", title: "Summer Lookbook", views: "145K", thumbnail: "👗" },
-      { type: "video", title: "Thrift Flip", views: "98K", thumbnail: "🛍️" },
-      { type: "image", title: "Office Style", views: "76K", thumbnail: "👔" },
-    ],
-    verified: true,
-    rating: 4.9,
-    reviewCount: 28,
-    rateRange: "$800-2K",
-    tags: ["Fashion", "Affordable", "Styling"],
-  },
-  {
-    id: "2",
-    name: "Mike Chen",
-    handle: "@techwithmike",
-    avatar: "MC",
-    avatarColor: "from-blue-400 to-cyan-500",
-    niche: "Tech Reviews",
-    location: "Seattle, WA",
-    followers: "450K",
-    engagement: "5.2%",
-    avgViews: "120K",
-    platforms: ["youtube", "instagram"],
-    bio: "Making tech simple for everyone. Honest reviews, no BS. PC enthusiast & gaming addict 🎮",
-    recentWork: [
-      { type: "video", title: "iPhone 16 Review", views: "1.2M", thumbnail: "📱" },
-      { type: "video", title: "Gaming Setup", views: "890K", thumbnail: "🎮" },
-      { type: "video", title: "Budget Laptops", views: "650K", thumbnail: "💻" },
-    ],
-    verified: true,
-    rating: 4.8,
-    reviewCount: 45,
-    rateRange: "$2K-5K",
-    tags: ["Tech", "Gaming", "Reviews"],
-  },
-  {
-    id: "3",
-    name: "Emma Davis",
-    handle: "@emmacooks",
-    avatar: "ED",
-    avatarColor: "from-orange-400 to-amber-500",
-    niche: "Food & Cooking",
-    location: "Miami, FL",
-    followers: "210K",
-    engagement: "6.1%",
-    avgViews: "65K",
-    platforms: ["instagram", "tiktok", "youtube"],
-    bio: "Quick, healthy recipes for busy people. 15-min meals that actually taste good! 🍝✨",
-    recentWork: [
-      { type: "video", title: "Meal Prep Sunday", views: "220K", thumbnail: "🥗" },
-      { type: "video", title: "Healthy Snacks", views: "180K", thumbnail: "🍎" },
-      { type: "video", title: "One-Pot Pasta", views: "165K", thumbnail: "🍝" },
-    ],
-    verified: true,
-    rating: 5.0,
-    reviewCount: 62,
-    rateRange: "$1.5K-4K",
-    tags: ["Food", "Healthy", "Quick Recipes"],
-  },
-  {
-    id: "4",
-    name: "Alex Rivera",
-    handle: "@alextech",
-    avatar: "AR",
-    avatarColor: "from-violet-400 to-purple-500",
-    niche: "Tech & Gadgets",
-    location: "Austin, TX",
-    followers: "680K",
-    engagement: "3.9%",
-    avgViews: "200K",
-    platforms: ["youtube", "twitter"],
-    bio: "In-depth tech reviews and buying guides. Helping you make smart purchasing decisions 💻",
-    recentWork: [
-      { type: "video", title: "MacBook Pro M3", views: "2.1M", thumbnail: "💻" },
-      { type: "video", title: "Smart Home Setup", views: "1.5M", thumbnail: "🏠" },
-      { type: "video", title: "Camera Review", views: "980K", thumbnail: "📷" },
-    ],
-    verified: true,
-    rating: 4.7,
-    reviewCount: 89,
-    rateRange: "$3K-8K",
-    tags: ["Tech", "Reviews", "Education"],
-  },
-  {
-    id: "5",
-    name: "Jessica Kim",
-    handle: "@jessicakitchen",
-    avatar: "JK",
-    avatarColor: "from-green-400 to-emerald-500",
-    niche: "Food & Baking",
-    location: "New York, NY",
-    followers: "175K",
-    engagement: "5.8%",
-    avgViews: "55K",
-    platforms: ["instagram", "tiktok"],
-    bio: "Baker sharing easy, delicious recipes. Food is my love language! 🍰🍜",
-    recentWork: [
-      { type: "video", title: "No-Bake Cheesecake", views: "145K", thumbnail: "🍰" },
-      { type: "video", title: "Korean BBQ at Home", views: "120K", thumbnail: "🥩" },
-      { type: "image", title: "Weeknight Dinners", views: "95K", thumbnail: "🍽️" },
-    ],
-    verified: false,
-    rating: 4.8,
-    reviewCount: 34,
-    rateRange: "$1K-3K",
-    tags: ["Baking", "Asian Cuisine", "Desserts"],
-  },
-  {
-    id: "6",
-    name: "David Park",
-    handle: "@davidtravels",
-    avatar: "DP",
-    avatarColor: "from-cyan-400 to-blue-500",
-    niche: "Travel & Adventure",
-    location: "Denver, CO",
-    followers: "320K",
-    engagement: "4.5%",
-    avgViews: "90K",
-    platforms: ["youtube", "instagram"],
-    bio: "Capturing the world one destination at a time. Budget travel tips & hidden gems 🌍✈️",
-    recentWork: [
-      { type: "video", title: "Japan Travel Vlog", views: "1.8M", thumbnail: "🇯🇵" },
-      { type: "video", title: "Europe on $50/day", views: "1.2M", thumbnail: "🇪🇺" },
-      { type: "video", title: "Solo Travel Tips", views: "890K", thumbnail: "🎒" },
-    ],
-    verified: true,
-    rating: 4.9,
-    reviewCount: 56,
-    rateRange: "$2.5K-6K",
-    tags: ["Travel", "Budget", "Vlogs"],
-  },
-];
-
-const filters = {
-  followerRanges: ["All", "10K-50K", "50K-100K", "100K-500K", "500K+"],
-  engagementRanges: ["All", "1-3%", "3-5%", "5%+"],
+const PLATFORM_ICONS: Record<string, LucideIcon> = {
+  Instagram,
+  YouTube: Youtube,
+  TikTok: Music2,
+  小紅書: BookOpen,
+  Other: Link2,
 };
+
+function platformIcon(name: string): LucideIcon {
+  return PLATFORM_ICONS[name] ?? Link2;
+}
+
+function formatFollowers(count: number): string {
+  if (count >= 1_000_000) return `${(count / 1_000_000).toFixed(1)}M`;
+  if (count >= 1_000) return `${(count / 1_000).toFixed(1)}K`;
+  return String(count);
+}
+
+function formatRateRange(min: number | null, max: number | null): string {
+  if (min == null && max == null) return "—";
+  if (min != null && max != null) return `$${min.toLocaleString()} – $${max.toLocaleString()}`;
+  if (min != null) return `$${min.toLocaleString()}+`;
+  return `≤ $${max!.toLocaleString()}`;
+}
+
+type RateFilter = "all" | "u500" | "r500_2000" | "r2000_5000" | "o5000";
+
+function rateFilterMatch(filter: RateFilter, profile: CreatorProfile): boolean {
+  if (filter === "all") return true;
+  const min = profile.rate_min ?? 0;
+  const max = profile.rate_max ?? Number.MAX_SAFE_INTEGER;
+  switch (filter) {
+    case "u500":
+      return min < 500;
+    case "r500_2000":
+      return min <= 2000 && max >= 500;
+    case "r2000_5000":
+      return min <= 5000 && max >= 2000;
+    case "o5000":
+      return max >= 5000;
+    default:
+      return true;
+  }
+}
 
 function TalentPage() {
   const t = useTranslations("marketplace");
   const tCommon = useTranslations("common");
   const [selectedNiche, setSelectedNiche] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [locationQuery, setLocationQuery] = useState("");
+  const [rateFilter, setRateFilter] = useState<RateFilter>("all");
+  const [creators, setCreators] = useState<CreatorProfile[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const { isCreatorSaved, toggleCreator } = useSavedLists();
 
   const nicheOptions = t.raw("nicheOptions") as { value: string; label: string }[];
+  const rateOptions: { value: RateFilter; labelKey: string }[] = [
+    { value: "all", labelKey: "rateFilterAll" },
+    { value: "u500", labelKey: "rateFilterU500" },
+    { value: "r500_2000", labelKey: "rateFilter500to2000" },
+    { value: "r2000_5000", labelKey: "rateFilter2000to5000" },
+    { value: "o5000", labelKey: "rateFilterO5000" },
+  ];
 
-  const filteredInfluencers = influencers.filter(i => {
-    if (selectedNiche !== "All" && !i.niche.toLowerCase().includes(selectedNiche.toLowerCase())) return false;
-    if (searchQuery && !i.name.toLowerCase().includes(searchQuery.toLowerCase()) && 
-        !i.handle.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  });
+  useEffect(() => {
+    const supabase = getSupabaseClient();
+    supabase
+      .from("profiles")
+      .select("*")
+      .eq("role", "creator")
+      .order("follower_count", { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          setLoadError(true);
+        } else {
+          setCreators((data ?? []) as unknown as CreatorProfile[]);
+        }
+        setIsLoading(false);
+      });
+  }, []);
+
+  const filteredCreators = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    const loc = locationQuery.trim().toLowerCase();
+    return creators.filter((c) => {
+      if (selectedNiche !== "All" && c.niche !== selectedNiche) return false;
+      if (!rateFilterMatch(rateFilter, c)) return false;
+      if (loc && !(c.location ?? "").toLowerCase().includes(loc)) return false;
+      if (q && !c.name.toLowerCase().includes(q) && !(c.bio ?? "").toLowerCase().includes(q))
+        return false;
+      return true;
+    });
+  }, [creators, selectedNiche, rateFilter, locationQuery, searchQuery]);
+
+  const avgFollowers = creators.length
+    ? Math.round(creators.reduce((sum, c) => sum + (c.follower_count ?? 0), 0) / creators.length)
+    : 0;
+  const locationsCount = new Set(
+    creators.map((c) => (c.location ?? "").trim()).filter(Boolean)
+  ).size;
 
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16">
@@ -218,9 +154,9 @@ function TalentPage() {
         {/* Stats Bar */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { value: "10,000+", label: t("activeCreators"), icon: Users },
-            { value: "50+", label: t("statNicheCategories"), icon: Filter },
-            { value: "95%", label: t("statAvgEngagement"), icon: BarChart3 },
+            { value: creators.length.toLocaleString(), label: t("activeCreators"), icon: Users },
+            { value: locationsCount.toLocaleString(), label: t("statLocations"), icon: MapPin },
+            { value: formatFollowers(avgFollowers), label: t("statAvgFollowers"), icon: BarChart3 },
             { value: "4.8", label: t("statCreatorRating"), icon: Star },
           ].map((stat, i) => (
             <div key={i} className="bg-paper rounded-lg p-4 border border-line flex items-center gap-3">
@@ -237,10 +173,10 @@ function TalentPage() {
 
         {/* Search & Filters */}
         <div className="bg-paper rounded-lg border border-line p-6 mb-8">
-          <div className="flex gap-4 mb-4">
+          <div className="flex flex-col md:flex-row gap-4 mb-4">
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
-              <input 
+              <input
                 type="text"
                 placeholder={t("searchCreatorsPlaceholder")}
                 className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
@@ -248,10 +184,30 @@ function TalentPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
-            <Button variant="outline">
-              <Filter className="w-4 h-4 mr-2" />
-              {t("filters")}
-            </Button>
+            <div className="md:w-64 relative">
+              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+              <input
+                type="text"
+                placeholder={t("searchLocationPlaceholder")}
+                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
+                value={locationQuery}
+                onChange={(e) => setLocationQuery(e.target.value)}
+              />
+            </div>
+            <div className="md:w-56 relative">
+              <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />
+              <select
+                value={rateFilter}
+                onChange={(e) => setRateFilter(e.target.value as RateFilter)}
+                className="w-full pl-12 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
+              >
+                {rateOptions.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {t(opt.labelKey)}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -271,11 +227,40 @@ function TalentPage() {
           </div>
         </div>
 
+        {/* Loading / Error */}
+        {isLoading && (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className="bg-paper rounded-lg p-6 border border-line animate-pulse h-72"
+              />
+            ))}
+          </div>
+        )}
+        {!isLoading && loadError && (
+          <ErrorState onRetry={() => window.location.reload()} />
+        )}
+
+        {/* Empty state */}
+        {!isLoading && !loadError && creators.length === 0 && (
+          <div className="bg-paper rounded-lg p-12 border border-line text-center">
+            <UserRound className="w-14 h-14 text-neutral-300 mx-auto mb-4" />
+            <p className="font-medium text-neutral-700 mb-1">{t("talentEmptyTitle")}</p>
+            <p className="text-sm text-neutral-500">{t("talentEmptyDesc")}</p>
+          </div>
+        )}
+        {!isLoading && !loadError && creators.length > 0 && filteredCreators.length === 0 && (
+          <div className="py-16 text-center">
+            <p className="text-neutral-500">{t("talentNoResults")}</p>
+          </div>
+        )}
+
         {/* Creators Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredInfluencers.map((influencer, index) => (
+          {filteredCreators.map((creator, index) => (
             <motion.div
-              key={influencer.id}
+              key={creator.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
@@ -284,95 +269,92 @@ function TalentPage() {
               {/* Header */}
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-cream text-lg font-bold">
-                    {influencer.avatar}
-                  </div>
+                  {creator.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={creator.avatar_url}
+                      alt={creator.name}
+                      className="w-14 h-14 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center text-cream text-lg font-bold">
+                      {creator.name
+                        .split(" ")
+                        .map((w) => w[0])
+                        .filter(Boolean)
+                        .slice(0, 2)
+                        .join("")
+                        .toUpperCase() || "?"}
+                    </div>
+                  )}
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-lg">{influencer.name}</h3>
-                      {influencer.verified && (
+                      <h3 className="font-bold text-lg">{creator.name || "—"}</h3>
+                      {creator.is_admin && (
                         <CheckCircle className="w-4 h-4 text-blue-500" />
                       )}
                     </div>
-                    <p className="text-sm text-neutral-500">{influencer.handle}</p>
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      {(creator.platforms ?? []).slice(0, 3).map((p, i) => {
+                        const Icon = platformIcon(p.name);
+                        return <Icon key={i} className="w-3.5 h-3.5 text-neutral-400" />;
+                      })}
+                    </div>
                   </div>
                 </div>
                 <button
-                  onClick={() => toggleCreator(influencer.id)}
+                  onClick={() => toggleCreator(creator.id)}
                   className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                 >
-                  <Heart className={`w-5 h-5 ${isCreatorSaved(influencer.id) ? "text-pink-500 fill-pink-500" : "text-gray-400"}`} />
+                  <Heart className={`w-5 h-5 ${isCreatorSaved(creator.id) ? "text-pink-500 fill-pink-500" : "text-gray-400"}`} />
                 </button>
               </div>
 
               {/* Niche & Location */}
               <div className="flex flex-wrap gap-2 mb-3">
-                <span className="px-3 py-1 bg-primary-soft text-primary rounded-full text-xs font-medium">
-                  {influencer.niche}
-                </span>
-                <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium flex items-center gap-1">
-                  <MapPin className="w-3 h-3" />
-                  {influencer.location}
-                </span>
+                {creator.niche && (
+                  <span className="px-3 py-1 bg-primary-soft text-primary rounded-full text-xs font-medium">
+                    {creator.niche}
+                  </span>
+                )}
+                {creator.location && (
+                  <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    {creator.location}
+                  </span>
+                )}
               </div>
 
               {/* Bio */}
-              <p className="text-sm text-neutral-600 mb-4 line-clamp-2">{influencer.bio}</p>
+              <p className="text-sm text-neutral-600 mb-4 line-clamp-2 min-h-[2.5rem]">
+                {creator.bio ?? ""}
+              </p>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-3 mb-4">
+              <div className="grid grid-cols-2 gap-3 mb-4">
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="font-bold text-neutral-900">{influencer.followers}</p>
+                  <p className="font-bold text-neutral-900">
+                    {formatFollowers(creator.follower_count ?? 0)}
+                  </p>
                   <p className="text-xs text-neutral-500">{t("followers")}</p>
                 </div>
                 <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="font-bold text-green-600">{influencer.engagement}</p>
-                  <p className="text-xs text-neutral-500">{t("engagement")}</p>
+                  <p className="font-bold text-primary">
+                    {(creator.platforms ?? []).length}
+                  </p>
+                  <p className="text-xs text-neutral-500">{t("platforms")}</p>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="font-bold text-primary">{influencer.avgViews}</p>
-                  <p className="text-xs text-neutral-500">{t("avgViews")}</p>
-                </div>
-              </div>
-
-              {/* Recent Work / Portfolio Preview */}
-              <div className="mb-4">
-                <p className="text-xs text-neutral-500 mb-2">{t("recentWork")}</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {influencer.recentWork.map((work, i) => (
-                    <div key={i} className="relative aspect-square bg-gray-100 rounded-lg flex items-center justify-center group/work cursor-pointer overflow-hidden">
-                      <span className="text-2xl">{work.thumbnail}</span>
-                      {work.type === "video" && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover/work:opacity-100 transition-opacity">
-                          <div className="w-8 h-8 rounded-full bg-paper/80 flex items-center justify-center">
-                            <Play className="w-4 h-4 text-neutral-900 ml-0.5" />
-                          </div>
-                        </div>
-                      )}
-                      <div className="absolute bottom-0 left-0 right-0 p-1 bg-gradient-to-t from-black/60 to-transparent text-white text-center">
-                        <p className="text-[10px] truncate">{work.views}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Tags */}
-              <div className="flex flex-wrap gap-1 mb-4">
-                {influencer.tags.slice(0, 3).map((tag, i) => (
-                  <span key={i} className="px-2 py-1 bg-gray-100 text-gray-600 rounded text-xs">
-                    {tag}
-                  </span>
-                ))}
               </div>
 
               {/* Footer */}
               <div className="flex items-center justify-between pt-4 border-t">
                 <div>
-                  <p className="text-xs text-neutral-500">{t("startingAt")}</p>
-                  <p className="font-bold text-neutral-900">{influencer.rateRange}</p>
+                  <p className="text-xs text-neutral-500">{t("rateRange")}</p>
+                  <p className="font-bold text-neutral-900">
+                    {formatRateRange(creator.rate_min, creator.rate_max)}
+                  </p>
                 </div>
-                <Link href={`/creators/${influencer.id}`}>
+                <Link href={`/creators/${creator.id}`}>
                   <Button size="sm">
                     <ArrowUpRight className="w-4 h-4 mr-1" />
                     {tCommon("moreInfo")}

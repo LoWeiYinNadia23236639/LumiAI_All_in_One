@@ -17,6 +17,7 @@ import {
   ArrowRight,
   Star,
   Award,
+  Gift,
   LogOut,
   Settings,
   Bookmark,
@@ -37,6 +38,7 @@ import { InfluencerGuard } from "@/components/role-guard";
 import { useAuth } from "@/contexts/auth-context";
 import { useSavedLists } from "@/contexts/saved-lists-context";
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { callApi } from "@/lib/api/client";
 import { formatDate } from "@/lib/format";
 import { useTranslations, useLocale } from "next-intl";
 
@@ -45,6 +47,15 @@ interface MyApplication {
   status: string;
   created_at: string;
   campaigns: { id: string; title: string; niche: string | null; profiles: { name: string } | null } | null;
+}
+
+interface PendingOffer {
+  id: string;
+  status: string;
+  offered_price: number | null;
+  message: string | null;
+  created_at: string;
+  campaigns: { id: string; title: string; profiles: { name: string } | null } | null;
 }
 
 interface MyGear {
@@ -117,6 +128,36 @@ function InfluencerAnalytics() {
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [myApplications, setMyApplications] = useState<MyApplication[]>([]);
   const [myAppsLoaded, setMyAppsLoaded] = useState(false);
+  const [pendingOffers, setPendingOffers] = useState<PendingOffer[]>([]);
+  const [offersLoaded, setOffersLoaded] = useState(false);
+  const [offerActionLoading, setOfferActionLoading] = useState<string | null>(null);
+  const [offerDeclineTarget, setOfferDeclineTarget] = useState<string | null>(null);
+
+  const loadOffers = async (userId: string) => {
+    const supabase = getSupabaseClient();
+    const { data } = await supabase
+      .from("applications")
+      .select("id, status, offered_price, message, created_at, campaigns(id, title, profiles(name))")
+      .eq("creator_id", userId)
+      .eq("offer", true)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false });
+    setPendingOffers((data ?? []) as unknown as PendingOffer[]);
+    setOffersLoaded(true);
+  };
+
+  const respondToOffer = async (offerId: string, action: "accepted" | "rejected") => {
+    setOfferActionLoading(offerId);
+    try {
+      await callApi("/api/offers/respond", { application_id: offerId, action });
+      setPendingOffers((prev) => prev.filter((o) => o.id !== offerId));
+      toast.success(tc("savedToast"));
+    } catch {
+      toast.error(t("offerActionError"));
+    }
+    setOfferActionLoading(null);
+    setOfferDeclineTarget(null);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -161,6 +202,7 @@ function InfluencerAnalytics() {
         setMyApplications((data ?? []) as unknown as MyApplication[]);
         setMyAppsLoaded(true);
       });
+    void loadOffers(user.id);
   }, [user]);
 
   const toggleGearStatus = async (gear: MyGear) => {
@@ -391,6 +433,73 @@ function InfluencerAnalytics() {
             </Link>
           </div>
         </div>
+
+        {/* Offers from brands */}
+        {offersLoaded && pendingOffers.length > 0 && (
+          <div className="bg-paper rounded-lg p-6 border border-line mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Gift className="w-5 h-5 text-primary" />
+              <h3 className="font-bold text-lg">{t("offersTitle")}</h3>
+              <span className="px-2 py-0.5 rounded-full bg-primary-soft text-primary text-xs font-semibold">
+                {pendingOffers.length}
+              </span>
+            </div>
+            <div className="space-y-3">
+              {pendingOffers.map((offer) => (
+                <div
+                  key={offer.id}
+                  className="flex flex-wrap items-center gap-3 p-4 rounded-xl border border-gray-100"
+                >
+                  <div className="flex-1 min-w-[200px]">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Link
+                        href={`/marketplace/campaigns/${offer.campaigns?.id}`}
+                        className="font-medium text-neutral-900 hover:text-primary transition-colors underline-offset-4 decoration-primary/40 hover:underline"
+                      >
+                        {offer.campaigns?.title ?? "—"}
+                      </Link>
+                    </div>
+                    <p className="text-xs text-neutral-500">
+                      {offer.campaigns?.profiles?.name ?? "—"} •{" "}
+                      {offer.offered_price != null
+                        ? t("offeredPrice", { price: offer.offered_price.toLocaleString() })
+                        : t("offeredPriceOpen")}
+                      {" • "}
+                      {formatDate(offer.created_at, locale)}
+                    </p>
+                    {offer.message && (
+                      <p className="text-sm text-neutral-600 mt-1 whitespace-pre-line">
+                        {offer.message}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      isLoading={offerActionLoading === offer.id}
+                      disabled={offerActionLoading !== null}
+                      onClick={() => void respondToOffer(offer.id, "accepted")}
+                      className="bg-green-500 text-white hover:bg-green-600"
+                    >
+                      <CheckCircle className="w-4 h-4 mr-1" />
+                      {t("offerAccept")}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      disabled={offerActionLoading !== null}
+                      onClick={() => setOfferDeclineTarget(offer.id)}
+                      className="text-neutral-600"
+                    >
+                      <XCircle className="w-4 h-4 mr-1" />
+                      {t("offerDecline")}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* My Applications */}
         {activeTab === "analytics" && (
@@ -960,6 +1069,20 @@ function InfluencerAnalytics() {
             setRejectTarget(null);
           }}
           onCancel={() => setRejectTarget(null)}
+        />
+
+        {/* Decline Offer Confirm */}
+        <ConfirmDialog
+          open={offerDeclineTarget !== null}
+          danger
+          title={t("confirmDeclineOffer.title")}
+          description={t("confirmDeclineOffer.description")}
+          confirmLabel={t("confirmDeclineOffer.confirm")}
+          onConfirm={() => {
+            if (offerDeclineTarget) void respondToOffer(offerDeclineTarget, "rejected");
+            setOfferDeclineTarget(null);
+          }}
+          onCancel={() => setOfferDeclineTarget(null)}
         />
       </div>
     </main>

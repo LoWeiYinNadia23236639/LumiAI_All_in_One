@@ -24,6 +24,11 @@ import { getSupabaseClient } from "@/lib/supabase/client";
 import { formatDate } from "@/lib/format";
 import { daysUntil } from "@/lib/relative-time";
 import { useTranslations, useLocale } from "next-intl";
+import {
+  CAMPAIGN_TYPES,
+  type CampaignRow,
+  type CampaignType,
+} from "@/types/marketplace";
 
 function isNewCampaign(createdAt: string | null | undefined): boolean {
   if (!createdAt) return false;
@@ -67,16 +72,58 @@ const CATEGORIES = [
   "Lifestyle",
 ];
 
-interface CampaignRow {
-  id: string;
-  title: string;
-  description: string | null;
-  budget: number | null;
-  niche: string | null;
-  deadline: string | null;
-  created_at: string;
+interface CampaignListRow extends CampaignRow {
   profiles: { name: string } | null;
   applications: { count: number }[];
+}
+
+function campaignTypeValue(
+  t: ReturnType<typeof useTranslations>,
+  campaign: CampaignRow
+): string {
+  const type: CampaignType = CAMPAIGN_TYPES.includes(
+    campaign.campaign_type as CampaignType
+  )
+    ? campaign.campaign_type
+    : "paid";
+  if (type === "barter") {
+    return t("typeBadgeValue.barter", {
+      value: (campaign.product_value ?? 0).toLocaleString(),
+    });
+  }
+  if (type === "affiliate") {
+    return t("typeBadgeValue.affiliate", {
+      rate: (campaign.commission_rate ?? 0).toLocaleString(),
+    });
+  }
+  if (type === "ambassador") {
+    return t("typeBadgeValue.ambassador", {
+      months: campaign.contract_months ?? 0,
+    });
+  }
+  return campaign.budget != null ? `$${campaign.budget.toLocaleString()}` : "—";
+}
+
+function CampaignTypeBadge({ campaign }: { campaign: CampaignRow }) {
+  const t = useTranslations("marketplace.campaignList");
+  const type: CampaignType = CAMPAIGN_TYPES.includes(
+    campaign.campaign_type as CampaignType
+  )
+    ? campaign.campaign_type
+    : "paid";
+  const styles: Record<CampaignType, string> = {
+    paid: "bg-green-100 text-green-700",
+    barter: "bg-orange-100 text-orange-700",
+    affiliate: "bg-violet-100 text-violet-700",
+    ambassador: "bg-blue-100 text-blue-700",
+  };
+  return (
+    <span
+      className={`px-2 py-0.5 rounded-full text-xs font-semibold ${styles[type]}`}
+    >
+      {t(`typeBadge.${type}`)} · {campaignTypeValue(t, campaign)}
+    </span>
+  );
 }
 
 function CampaignsPage() {
@@ -84,8 +131,9 @@ function CampaignsPage() {
   const locale = useLocale();
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedType, setSelectedType] = useState<"all" | CampaignType>("all");
   const [searchQuery, setSearchQuery] = useState("");
-  const [campaigns, setCampaigns] = useState<CampaignRow[]>([]);
+  const [campaigns, setCampaigns] = useState<CampaignListRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const { isCampaignSaved, toggleCampaign } = useSavedLists();
@@ -101,7 +149,7 @@ function CampaignsPage() {
     if (error) {
       setLoadError(true);
     } else {
-      setCampaigns((data ?? []) as unknown as CampaignRow[]);
+      setCampaigns((data ?? []) as unknown as CampaignListRow[]);
     }
     setIsLoading(false);
   }, []);
@@ -122,6 +170,7 @@ function CampaignsPage() {
     const q = searchQuery.trim().toLowerCase();
     return campaigns.filter((c) => {
       if (selectedCategory !== "All" && c.niche !== selectedCategory) return false;
+      if (selectedType !== "all" && c.campaign_type !== selectedType) return false;
       if (q) {
         const brandName = c.profiles?.name?.toLowerCase() ?? "";
         if (
@@ -133,9 +182,9 @@ function CampaignsPage() {
       }
       return true;
     });
-  }, [campaigns, selectedCategory, searchQuery]);
+  }, [campaigns, selectedCategory, selectedType, searchQuery]);
 
-  const appliedCount = (c: CampaignRow) => c.applications?.[0]?.count ?? 0;
+  const appliedCount = (c: CampaignListRow) => c.applications?.[0]?.count ?? 0;
 
   return (
     <main className="min-h-screen bg-cream pt-24 pb-16 overflow-x-clip">
@@ -178,7 +227,7 @@ function CampaignsPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 mb-4">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
@@ -190,6 +239,32 @@ function CampaignsPage() {
                 }`}
               >
                 {cat === "All" ? t("categoryAll") : cat}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedType("all")}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                selectedType === "all"
+                  ? "bg-ink text-cream"
+                  : "bg-neutral-100 text-neutral-700 hover:bg-primary-soft"
+              }`}
+            >
+              {t("typeAll")}
+            </button>
+            {CAMPAIGN_TYPES.map((type) => (
+              <button
+                key={type}
+                onClick={() => setSelectedType(type)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  selectedType === type
+                    ? "bg-ink text-cream"
+                    : "bg-neutral-100 text-neutral-700 hover:bg-primary-soft"
+                }`}
+              >
+                {t(`typeBadge.${type}`)}
               </button>
             ))}
           </div>
@@ -272,6 +347,7 @@ function CampaignsPage() {
                 <div className="flex-1">
                   <div className={`flex items-center gap-3 mb-2 ${closingSoon ? "mt-3" : ""}`}>
                     <h3 className="font-bold text-lg">{campaign.profiles?.name ?? "—"}</h3>
+                    <CampaignTypeBadge campaign={campaign} />
                     {campaign.niche && (
                       <span className="rounded-full border border-primary px-3 py-0.5 text-xs uppercase tracking-wider text-primary">
                         {campaign.niche}
@@ -306,9 +382,7 @@ function CampaignsPage() {
                     <div className="flex items-baseline gap-1 text-sm">
                       <DollarSign className="w-4 h-4 self-center text-green-500" />
                       <span className="font-quote text-lg">
-                        {campaign.budget != null
-                          ? `$${campaign.budget.toLocaleString()}`
-                          : "—"}
+                        {campaignTypeValue(t, campaign)}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-neutral-600">

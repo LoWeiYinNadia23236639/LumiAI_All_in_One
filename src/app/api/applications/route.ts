@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: { campaign_id?: string; message?: string };
+  let body: { campaign_id?: string; message?: string; shipping_address?: string | null };
   try {
     body = await req.json();
   } catch {
@@ -123,6 +123,7 @@ export async function POST(req: NextRequest) {
       creator_id: userData.user.id,
       status: "pending",
       message: body.message?.trim() || null,
+      shipping_address: body.shipping_address?.trim() || null,
     })
     .select("id, status")
     .single();
