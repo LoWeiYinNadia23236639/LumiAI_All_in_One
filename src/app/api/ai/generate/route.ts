@@ -332,6 +332,10 @@ async function generate(type: ToolType, system: string, user: string): Promise<u
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
   const models = await getCandidateModels();
   // Try at most 3 models; per model: 1 immediate call + 1 retry on transient 503.
+  // Hard deadline so we answer within the function budget even when every model
+  // is slow-failing under load.
+  const DEADLINE_MS = 45_000;
+  const startedAt = Date.now();
   const modelsToTry = models.slice(0, 3);
   let lastErr: unknown;
   for (const model of modelsToTry) {
@@ -345,6 +349,7 @@ async function generate(type: ToolType, system: string, user: string): Promise<u
         throw err;
       }
       if (kind === "retryable") {
+        if (Date.now() - startedAt > DEADLINE_MS) break;
         await sleep(1500 + Math.floor(Math.random() * 500));
         try {
           return await callModel(ai, model, type, system, user);

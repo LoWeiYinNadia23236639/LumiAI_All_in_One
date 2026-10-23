@@ -44,16 +44,15 @@ function buildImagePrompt(body: {
 async function generateImage(prompt: string): Promise<string> {
   if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  const contents = [{ role: "user" as const, parts: [{ text: prompt }] }];
   let lastErr: unknown = new Error("no image model succeeded");
   for (const model of IMAGE_MODELS) {
     try {
-      const res = await ai.models.generateImages({
-        model,
-        prompt,
-        config: { numberOfImages: 1 },
-      });
-      const b64 = res.generatedImages?.[0]?.image?.imageBytes;
-      if (b64) return b64;
+      const res = await ai.models.generateContent({ model, contents });
+      const parts = res.candidates?.[0]?.content?.parts ?? [];
+      for (const part of parts) {
+        if (part.inlineData?.data) return part.inlineData.data;
+      }
       lastErr = new Error(`${model} returned no image`);
     } catch (err) {
       lastErr = err;
@@ -62,13 +61,11 @@ async function generateImage(prompt: string): Promise<string> {
       if (kind === "retryable") {
         await sleep(1200);
         try {
-          const res2 = await ai.models.generateImages({
-            model,
-            prompt,
-            config: { numberOfImages: 1 },
-          });
-          const b64b = res2.generatedImages?.[0]?.image?.imageBytes;
-          if (b64b) return b64b;
+          const res2 = await ai.models.generateContent({ model, contents });
+          const parts2 = res2.candidates?.[0]?.content?.parts ?? [];
+          for (const part of parts2) {
+            if (part.inlineData?.data) return part.inlineData.data;
+          }
         } catch (err2) {
           lastErr = err2;
           if (geminiErrorKind(err2) === "quota") throw err2;
