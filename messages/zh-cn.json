@@ -1670,7 +1670,17 @@
       "actionLabel": "动作：",
       "lightingLabel": "灯光：",
       "equipmentLabel": "器材：",
-      "tipsLabel": "贴士："
+      "tipsLabel": "贴士：",
+      "generateImage": "生成分镜画面",
+      "generatingImage": "正在生成画面…",
+      "regenerateImage": "重新生成",
+      "generateAllImages": "生成全部画面",
+      "previewVideo": "预览动画",
+      "videoLoading": "正在合成动画…",
+      "videoReady": "动画已生成",
+      "needAllImages": "请先生成所有分镜画面",
+      "imageFailed": "画面生成失败，请再试一次",
+      "videoFailed": "动画合成失败，请再试一次"
     },
     "kicker": "AI 工具箱",
     "marqueeItems": [

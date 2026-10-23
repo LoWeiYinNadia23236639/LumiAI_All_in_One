@@ -1670,7 +1670,17 @@
       "actionLabel": "動作：",
       "lightingLabel": "燈光：",
       "equipmentLabel": "器材：",
-      "tipsLabel": "貼士："
+      "tipsLabel": "貼士：",
+      "generateImage": "生成分鏡畫面",
+      "generatingImage": "正在生成畫面…",
+      "regenerateImage": "重新生成",
+      "generateAllImages": "生成全部畫面",
+      "previewVideo": "預覽動畫",
+      "videoLoading": "正在合成動畫…",
+      "videoReady": "動畫已生成",
+      "needAllImages": "請先生成所有分鏡畫面",
+      "imageFailed": "畫面生成失敗，請再試一次",
+      "videoFailed": "動畫合成失敗，請再試一次"
     },
     "kicker": "AI 工具箱",
     "marqueeItems": [

@@ -1670,7 +1670,17 @@
       "actionLabel": "Action:",
       "lightingLabel": "Lighting:",
       "equipmentLabel": "Equipment:",
-      "tipsLabel": "Tips:"
+      "tipsLabel": "Tips:",
+      "generateImage": "Generate scene image",
+      "generatingImage": "Generating image…",
+      "regenerateImage": "Regenerate",
+      "generateAllImages": "Generate all scene images",
+      "previewVideo": "Preview animatic",
+      "videoLoading": "Assembling animatic video…",
+      "videoReady": "Animatic video ready",
+      "needAllImages": "Please generate all scene images first",
+      "imageFailed": "Image generation failed, please try again",
+      "videoFailed": "Video assembly failed, please try again"
     },
     "kicker": "THE AI TOOLKIT",
     "marqueeItems": [

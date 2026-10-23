@@ -81,6 +81,12 @@ export default function StoryboardAIPage() {
   const [copiedLists, setCopiedLists] = useState(false);
   const [showTips, setShowTips] = useState(true);
   const [showExamples, setShowExamples] = useState(true);
+  // Visual preview state: scene images + animatic video
+  const [sceneImages, setSceneImages] = useState<Record<number, string>>({});
+  const [imageLoading, setImageLoading] = useState<Record<number, boolean>>({});
+  const [generatingAll, setGeneratingAll] = useState(false);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [videoLoading, setVideoLoading] = useState(false);
   const example = t.raw("examples.storyboard") as { idea: string; mood: string };
   const storyboardTips = t.raw("storyboardPage.tips") as { title: string; content: string }[];
 
@@ -95,6 +101,8 @@ export default function StoryboardAIPage() {
         locale,
       });
       setResult(data);
+      setSceneImages({});
+      setVideoUrl(null);
       setHistoryKey((k) => k + 1);
       window.scrollTo({ top: 400, behavior: "smooth" });
     } catch (err) {
@@ -118,6 +126,93 @@ export default function StoryboardAIPage() {
     setPrompt(example.idea);
     setMood(example.mood);
   };
+
+  // --- Visual preview helpers (scene images + animatic video) ---
+  const postVisual = async <T,>(api: string, payload: unknown): Promise<T> => {
+    const supabase = (await import("@/lib/supabase/client")).getSupabaseClient();
+    const { data } = await supabase.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) throw new AiAuthError("Not signed in");
+    const res = await fetch(api, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify(payload),
+    });
+    if (res.status === 401) throw new AiAuthError("Session expired");
+    const body = await res.json();
+    if (!res.ok) throw new Error(body.detail || body.error || "Request failed");
+    return body as T;
+  };
+
+  const generateSceneImage = async (scene: Scene): Promise<boolean> => {
+    if (imageLoading[scene.scene_number] || !result) return false;
+    setImageLoading((s) => ({ ...s, [scene.scene_number]: true }));
+    try {
+      const { url } = await postVisual<{ url: string }>("/api/ai/scene-image", {
+        scene_number: scene.scene_number,
+        description: scene.description,
+        shot_angle: scene.shot_angle,
+        lighting: scene.lighting,
+        mood,
+      });
+      setSceneImages((s) => ({ ...s, [scene.scene_number]: url }));
+      setVideoUrl(null); // previous animatic no longer matches
+      return true;
+    } catch (err) {
+      if (err instanceof AiAuthError) {
+        window.location.href = `/${locale}/login`;
+        return false;
+      }
+      toastError(t("storyboardPage.imageFailed"));
+      return false;
+    } finally {
+      setImageLoading((s) => ({ ...s, [scene.scene_number]: false }));
+    }
+  };
+
+  const generateAllImages = async () => {
+    if (!result || generatingAll) return;
+    setGeneratingAll(true);
+    try {
+      for (const scene of result.scenes) {
+        if (sceneImages[scene.scene_number]) continue;
+        // Sequential: respects the shared Gemini quota better than parallel.
+        await generateSceneImage(scene);
+      }
+    } finally {
+      setGeneratingAll(false);
+    }
+  };
+
+  const generateVideo = async () => {
+    if (!result || videoLoading) return;
+    const missing = result.scenes.some((s) => !sceneImages[s.scene_number]);
+    if (missing) {
+      toastError(t("storyboardPage.needAllImages"));
+      return;
+    }
+    setVideoLoading(true);
+    try {
+      const { url } = await postVisual<{ url: string }>("/api/ai/storyboard-video", {
+        images: result.scenes.map((s) => ({
+          url: sceneImages[s.scene_number],
+          scene_number: s.scene_number,
+        })),
+      });
+      setVideoUrl(url);
+      success(t("storyboardPage.videoReady"));
+    } catch (err) {
+      if (err instanceof AiAuthError) {
+        window.location.href = `/${locale}/login`;
+        return;
+      }
+      toastError(t("storyboardPage.videoFailed"));
+    } finally {
+      setVideoLoading(false);
+    }
+  };
+
+  const printBrief = () => window.print();
 
   const copyToClipboard = () => {
     if (!result) return;
@@ -308,21 +403,62 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
                   <span>{t("storyboardPage.scenesCount", { count: result.scenes.length })}</span>
                 </p>
               </div>
-              <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  variant="outline"
+                  className="border-cream text-cream hover:bg-cream/20"
+                  onClick={generateAllImages}
+                  disabled={generatingAll}
+                >
+                  {generatingAll ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Wand2 className="w-4 h-4 mr-2" />}
+                  {t("storyboardPage.generateAllImages")}
+                </Button>
+                <Button
+                  className="bg-cream text-primary hover:bg-paper"
+                  onClick={generateVideo}
+                  disabled={videoLoading}
+                >
+                  {videoLoading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Play className="w-4 h-4 mr-2" />}
+                  {t("storyboardPage.previewVideo")}
+                </Button>
+                <Button
+                  variant="outline"
                   className="border-cream text-cream hover:bg-cream/20"
                   onClick={copyToClipboard}
                 >
                   {copied ? <CheckCircle className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
                   {copied ? t("storyboardPage.copiedExcl") : tc("copy")}
                 </Button>
-                <Button className="bg-cream text-primary hover:bg-paper">
+                <Button
+                  variant="outline"
+                  className="border-cream text-cream hover:bg-cream/20"
+                  onClick={printBrief}
+                >
                   <Download className="w-4 h-4 mr-2" />
                   {t("storyboardPage.exportLabel")}
                 </Button>
               </div>
             </div>
+
+            {/* Animatic video player */}
+            {(videoUrl || videoLoading) && (
+              <div className="bg-ink p-4 md:p-6">
+                {videoLoading ? (
+                  <div className="aspect-video bg-ink-soft/20 rounded-lg flex flex-col items-center justify-center text-cream gap-3">
+                    <Loader2 className="w-8 h-8 animate-spin" />
+                    <span className="text-sm opacity-80">{t("storyboardPage.videoLoading")}</span>
+                  </div>
+                ) : (
+                  <video
+                    src={videoUrl!}
+                    controls
+                    autoPlay
+                    loop
+                    className="w-full max-w-3xl mx-auto aspect-video bg-black rounded-lg"
+                  />
+                )}
+              </div>
+            )}
 
             <div className="p-6">
               {/* Scenes */}
@@ -333,10 +469,48 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="flex gap-4 p-4 bg-paper rounded-lg border-t-2 border-ink/40"
+                    className="flex flex-col md:flex-row gap-4 p-4 bg-paper rounded-lg border-t-2 border-ink/40"
                   >
                     <div className="font-quote text-3xl text-ink/30 leading-none pt-1 flex-shrink-0">
                       {String(scene.scene_number).padStart(2, "0")}
+                    </div>
+                    {/* Scene visual */}
+                    <div className="w-full md:w-60 flex-shrink-0">
+                      {sceneImages[scene.scene_number] ? (
+                        <div className="relative group">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={sceneImages[scene.scene_number]}
+                            alt={scene.shot_angle}
+                            className="w-full aspect-video object-cover rounded-lg border border-line"
+                          />
+                          <button
+                            onClick={() => generateSceneImage(scene)}
+                            disabled={imageLoading[scene.scene_number]}
+                            className="absolute inset-0 flex items-center justify-center bg-ink/60 text-cream text-xs opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"
+                          >
+                            {imageLoading[scene.scene_number] ? (
+                              <Loader2 className="w-4 h-4 animate-spin mr-1" />
+                            ) : (
+                              <Image className="w-4 h-4 mr-1" />
+                            )}
+                            {t("storyboardPage.regenerateImage")}
+                          </button>
+                        </div>
+                      ) : imageLoading[scene.scene_number] ? (
+                        <div className="w-full aspect-video rounded-lg border border-dashed border-line bg-primary-soft/40 flex flex-col items-center justify-center text-ink-soft gap-2">
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span className="text-xs">{t("storyboardPage.generatingImage")}</span>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => generateSceneImage(scene)}
+                          className="w-full aspect-video rounded-lg border border-dashed border-ink/30 hover:border-primary hover:text-primary transition-colors flex flex-col items-center justify-center text-ink-soft gap-2"
+                        >
+                          <Image className="w-6 h-6" />
+                          <span className="text-xs">{t("storyboardPage.generateImage")}</span>
+                        </button>
+                      )}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
@@ -398,6 +572,42 @@ ${t("storyboardPage.equipmentLabel")} ${result.equipment_checklist.join(", ")}
             </div>
           </motion.div>
           </div>
+        )}
+
+        {/* Print-only client brief (Save as PDF via browser print dialog) */}
+        {result && (
+          <>
+            <style>{`
+              @media print {
+                body * { visibility: hidden; }
+                .storyboard-print-area, .storyboard-print-area * { visibility: visible; }
+                .storyboard-print-area { position: absolute; inset: 0; padding: 24px; background: white; }
+                .storyboard-print-scene { break-inside: avoid; }
+              }
+            `}</style>
+            <div className="storyboard-print-area hidden">
+              <h1 style={{ fontSize: 22, fontWeight: 700, marginBottom: 4 }}>LumiAI — {t("storyboardPage.resultBadge")}</h1>
+              <p style={{ marginBottom: 2 }}><strong>{t("storyboardPage.ideaLabel")}</strong> {prompt}</p>
+              {mood && <p style={{ marginBottom: 12 }}><strong>{t("storyboardPage.moodLabel")}</strong> {mood}</p>}
+              {result.scenes.map((s) => (
+                <div key={s.scene_number} className="storyboard-print-scene" style={{ display: "flex", gap: 12, marginBottom: 14, borderTop: "1px solid #ddd", paddingTop: 10 }}>
+                  {sceneImages[s.scene_number] && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={sceneImages[s.scene_number]} alt="" style={{ width: 200, height: "auto", borderRadius: 6 }} />
+                  )}
+                  <div>
+                    <p style={{ fontWeight: 700 }}>{t("storyboardPage.copyScenePrefix")} {s.scene_number} — {s.shot_angle}</p>
+                    <p style={{ margin: "2px 0" }}>{s.description}</p>
+                    <p style={{ color: "#555", fontSize: 12 }}>{t("storyboardPage.lightingLabel")} {s.lighting}</p>
+                  </div>
+                </div>
+              ))}
+              <p style={{ marginTop: 8 }}><strong>{t("storyboardPage.equipmentLabel")}</strong> {result.equipment_checklist.join(", ")}</p>
+              {result.pro_tips.length > 0 && (
+                <p><strong>{t("storyboardPage.tipsLabel")}</strong> {result.pro_tips.join(" · ")}</p>
+              )}
+            </div>
+          </>
         )}
 
         {/* History */}
