@@ -50,11 +50,21 @@ function buildPrompt(type: ToolType, input: Record<string, unknown>): { system: 
         system: `You are a professional video director creating storyboards for content creators. ${languageRule}`,
         user: `Create a detailed storyboard for this content idea.\nIdea: ${input.prompt}\nMood/Atmosphere: ${input.mood || "not specified"}\nProvide 4-7 scenes, each with scene_number, description, shot_angle, lighting; plus an equipment_checklist array and a pro_tips array.`,
       };
-    case "caption":
+    case "caption": {
+      const captionLanguage = LOCALE_HINTS[String(input.outputLanguage)] ?? languageRule;
+      const system = `You write accurate, creator-first social media captions for nano influencers. Never invent personal experiences, product results, credentials, brand names, dates or claims. Use only supplied facts and creator experience. Do not promise virality or engagement. Preserve the creator's natural voice rather than writing generic marketing copy. ${captionLanguage}`;
+      const sharedContext = `Platform: ${input.platform}\nContent: ${input.prompt}\nActual creator experience: ${input.experience || "not supplied; do not invent any"}\nRequired facts: ${input.facts || "none supplied"}\nForbidden or unconfirmed claims: ${input.forbiddenClaims || "none supplied"}\nAudience: ${input.audience || "not supplied"}\nCTA goal: ${input.cta || "no forced CTA"}\nTone preset: ${input.tone}\nApproximate length: ${input.length}\nRequired disclosure: ${input.disclosureRequired ? input.disclosure : "none"}\nExact maximum hashtag count: ${input.hashtagCount}\nEmoji preference: ${input.emojiLevel}\nVoice matching enabled: ${input.voiceMatching}\nCreator writing samples (match observable style only, never copy private facts): ${JSON.stringify(input.voiceSamples ?? [])}`;
+      if (input.mode === "refine") {
+        return {
+          system,
+          user: `Rewrite exactly 1 caption. Instruction: ${input.refineInstruction}\nOriginal caption: ${input.originalCaption}\nOriginal hashtags: ${JSON.stringify(input.originalHashtags ?? [])}\nLocked phrase that must remain verbatim if supplied: ${input.lockedPhrase || "none"}\n${sharedContext}\nReturn text, hashtags without #, emoji, direction="refined", cta and disclosure. Keep changes scoped to the instruction.`,
+        };
+      }
       return {
-        system: `You write high-engagement, high-click-rate social media captions. ${languageRule}`,
-        user: `Write exactly 3 caption options for ${input.platform}. Tone: ${input.tone}. Topic: ${input.prompt}\nEach caption must include: text (the caption itself), hashtags (8-12 relevant tags without the # symbol), emoji (a few suggested emoji to sprinkle in).`,
+        system,
+        user: `Write exactly 3 genuinely different caption options: direct, story-led and conversation-led. ${sharedContext}\nEach option must include text, hashtags without #, emoji, direction (exactly direct, story-led or conversation-led), cta and disclosure. Include required disclosure directly in the caption text. If a fact or experience is missing, write neutrally instead of filling the gap.`,
       };
+    }
     case "quote":
       return {
         system: `You are a pricing advisor for influencer marketing. ${languageRule}`,
@@ -119,8 +129,11 @@ const SCHEMAS: Record<ToolType, unknown> = {
             text: { type: Type.STRING },
             hashtags: { type: Type.ARRAY, items: { type: Type.STRING } },
             emoji: { type: Type.STRING },
+            direction: { type: Type.STRING },
+            cta: { type: Type.STRING },
+            disclosure: { type: Type.STRING },
           },
-          required: ["text", "hashtags", "emoji"],
+          required: ["text", "hashtags", "emoji", "direction", "cta", "disclosure"],
         },
       },
     },
@@ -439,11 +452,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Voice samples are used for the request but redacted from generation history.
+  const loggedInput = type === "caption" && Array.isArray(input.voiceSamples) && input.voiceSamples.length
+    ? { ...input, voiceSamples: "[redacted voice samples]" }
+    : input;
   // Record the generation (non-fatal if the insert fails).
   const { error: insertError } = await userClient.from("generations").insert({
     user_id: userData.user.id,
     type,
-    prompt: JSON.stringify(input),
+    prompt: JSON.stringify(loggedInput),
     result: JSON.stringify(result),
   });
   if (insertError) {
