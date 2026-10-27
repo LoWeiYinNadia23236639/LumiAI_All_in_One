@@ -34,29 +34,59 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+interface ReferenceImage { data: string; mimeType: string }
+
+async function loadReferenceImage(url?: string): Promise<ReferenceImage | undefined> {
+  if (!url) return undefined;
+  const allowedPrefix = `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/public/${STORYBOARD_BUCKET}/`;
+  if (!url.startsWith(allowedPrefix)) throw new Error("Reference image must come from the LumiAI storyboard bucket");
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("Could not load the storyboard identity reference");
+  const mimeType = response.headers.get("content-type")?.split(";")[0] || "image/png";
+  if (!["image/png", "image/jpeg", "image/webp"].includes(mimeType)) throw new Error("Unsupported reference image format");
+  const buffer = Buffer.from(await response.arrayBuffer());
+  if (buffer.byteLength > 10 * 1024 * 1024) throw new Error("Reference image exceeds 10 MB");
+  return { data: buffer.toString("base64"), mimeType };
+}
+
 function buildImagePrompt(body: {
   description: string;
   shot_angle: string;
   lighting: string;
   mood?: string;
   aspect: string;
+  creator_profile?: string;
+  has_reference?: boolean;
+  refinement_note?: string;
+  refinement_scope?: string;
 }): string {
   const mood = body.mood ? ` Overall mood: ${body.mood}.` : "";
+  const creator = body.creator_profile ? ` Creator identity specified by the user: ${body.creator_profile}.` : " Use one adult creator throughout this storyboard; do not introduce extra people unless explicitly requested.";
+  const identityReference = body.has_reference
+    ? " The attached reference image is the identity lock. Reproduce the exact same creator: same gender presentation, facial structure, skin tone, hairstyle, hair colour, apparent age, body characteristics and clothing, unless the user explicitly requests a wardrobe change. If the reference is a photograph, transfer only the creator's identity into the storyboard sketch; do not copy the photograph's background, framing or colour treatment. Change only the camera angle, pose and action required by this scene. Never cast a new person."
+    : "";
+  const refinement = body.refinement_note
+    ? ` Revision requested (${body.refinement_scope || "full"} scene scope): ${body.refinement_note}. Preserve every creator, product, location, lighting and style detail not explicitly requested to change.`
+    : "";
   return [
-    "Cinematic storyboard frame for a social media video shoot.",
-    `Shot: ${body.shot_angle}.`,
+    "A professional realistic editorial storyboard sketch for a social media video shoot.",
+    `Shot and camera composition: ${body.shot_angle}.`,
     `Scene: ${body.description}.`,
-    `Lighting: ${body.lighting}.${mood}`,
-    "Photorealistic, shallow depth of field, professional colour grading,",
+    `Lighting: ${body.lighting}.${mood}${creator}${identityReference}`,
+    "Use clean confident pencil linework, recognizable facial features, anatomically sound hands, subtle grayscale shading and enough spatial detail to make the camera angle unmistakable.",
+    "Keep the same creator identity, product shape, room and visual language as the rest of the storyboard. Show the shot as a usable filming plan, not a polished advertisement.",
+    "Leave calm negative space suitable for a later semi-transparent text overlay. Do not draw a text box and do not add any lettering.",
     `${ASPECT_PROMPTS[body.aspect as keyof typeof ASPECT_PROMPTS] ?? ASPECT_PROMPTS["16:9"]}.`,
-    "No text, no watermark, no borders.",
+    `${refinement} No text, no watermark, no borders, no colour.`,
   ].join(" ");
 }
 
-async function generateImage(prompt: string, aspect: string): Promise<string> {
+async function generateImage(prompt: string, aspect: string, reference?: ReferenceImage): Promise<string> {
   if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is not configured");
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
-  const contents = [{ role: "user" as const, parts: [{ text: prompt }] }];
+  const parts: ({ text: string } | { inlineData: ReferenceImage })[] = [{ text: prompt }];
+  if (reference) parts.push({ inlineData: reference });
+  const contents = [{ role: "user" as const, parts }];
   const config = { imageConfig: { aspectRatio: aspect } };
   let lastErr: unknown = new Error("no image model succeeded");
   for (const model of IMAGE_MODELS) {
@@ -103,6 +133,10 @@ export async function POST(req: NextRequest) {
     lighting?: string;
     mood?: string;
     aspect?: string;
+    creator_profile?: string;
+    reference_image_url?: string;
+    refinement_note?: string;
+    refinement_scope?: string;
   };
   try {
     body = await req.json();
@@ -115,9 +149,13 @@ export async function POST(req: NextRequest) {
   const aspect = ASPECTS.includes(body.aspect as (typeof ASPECTS)[number])
     ? (body.aspect as (typeof ASPECTS)[number])
     : "16:9";
+  const refinementNote = typeof body.refinement_note === "string" ? body.refinement_note.trim().slice(0, 1200) : "";
+  const refinementScope = ["image", "action", "full"].includes(body.refinement_scope || "") ? body.refinement_scope : undefined;
+  const creatorProfile = typeof body.creator_profile === "string" ? body.creator_profile.trim().slice(0, 800) : "";
 
   let imageBytes: string;
   try {
+    const reference = await loadReferenceImage(body.reference_image_url);
     imageBytes = await generateImage(
       buildImagePrompt({
         description: body.description,
@@ -125,8 +163,13 @@ export async function POST(req: NextRequest) {
         lighting: body.lighting,
         mood: body.mood,
         aspect,
+        creator_profile: creatorProfile,
+        has_reference: Boolean(reference),
+        refinement_note: refinementNote,
+        refinement_scope: refinementScope,
       }),
-      aspect
+      aspect,
+      reference
     );
   } catch (err) {
     console.error("[scene-image] generation failed:", err);
