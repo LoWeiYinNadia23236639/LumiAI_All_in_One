@@ -1546,7 +1546,7 @@
       "subtitle": "用 AI 洞察帮你建议收费、分析合同、预估项目时间、起草专业消息，并策划你的推广活动。",
       "tabs": {
         "rates": "收费计算器",
-        "quote": "工作报价",
+        "quote": "收费与报价",
         "messages": "消息助手",
         "planner": "项目规划师",
         "contract": "合同扫描器"
@@ -1728,8 +1728,7 @@
           "语气匹配"
         ],
         [
-          "收费计算器",
-          "报价助手",
+          "收费与报价",
           "消息助手",
           "项目规划师",
           "合同扫描器"
@@ -1737,7 +1736,7 @@
       ],
       "moreTools": "还有 {count} 个",
       "tryNow": "立即试用",
-      "fiveInOne": "5 合 1 工具",
+      "fiveInOne": "4 合 1 工具",
       "storyboard": {
         "badge": "视觉内容规划",
         "title": "用 Storyboard AI 像专业人士一样规划",
@@ -1793,8 +1792,8 @@
         "cta": "打开市场顾问",
         "features": [
           {
-            "title": "报价助手",
-            "description": "描述你的项目，立即获得时间预估、定价建议与交付项目明细。清楚知道自己应该收多少、要做多久。"
+            "title": "收费与报价",
+            "description": "将创作者凭据、合作范围、使用权和独家限制整合成一次估价，获得有依据的价格范围、工时拆分和洽谈方案，不需要重复输入资料。"
           },
           {
             "title": "消息助手",
@@ -1803,10 +1802,6 @@
           {
             "title": "项目规划师",
             "description": "建立包含阶段细分、任务时间表、关键里程碑与资源需求的详细项目计划。从启动到交付都井井有条。"
-          },
-          {
-            "title": "收费计算器",
-            "description": "根据你的领域、粉丝数、互动率与最新市场趋势，获取个性化收费建议。了解自己的价值。"
           },
           {
             "title": "合同扫描器",
@@ -2247,6 +2242,88 @@
       "pending": "待付款",
       "paid": "已付款",
       "confirmed": "已确认"
+    }
+  },
+  "advisorNext": {
+    "common": {
+      "example": "试用真实情境示例",
+      "continue": "继续",
+      "back": "返回",
+      "optional": "可选",
+      "retry": "重试",
+      "generateFailed": "生成失败。你输入的资料仍然保留，请再试一次。",
+      "download": "下载 .txt",
+      "saveDraft": "保存在这台设备",
+      "saved": "草稿已保存在这台设备",
+      "editDetails": "修改资料"
+    },
+    "page": {
+      "title": "从合作机会，到更有把握的行动",
+      "subtitle": "四个相互衔接的工具，帮助 nano creator 定价、保障工作范围、清晰沟通，同时避免工作量超载。",
+      "flow": { "price": "定价", "scope": "范围", "communicate": "沟通", "deliver": "交付", "protect": "保障" }
+    },
+    "rate": {
+      "steps": ["创作者凭据", "工作与权利", "收费方案"],
+      "title": "建立有依据的收费，不再只靠粉丝数估价",
+      "description": "以真实账号数据为基础，将自然内容、付费使用权和独家限制分开考虑。",
+      "niche": "你的内容定位", "nicheHint": "具体到品牌一看就明白你的受众和定位。", "nichePlaceholder": "例如：香港上班族的平价护肤分享",
+      "platform": "主要平台", "followers": "当前粉丝数", "followersHint": "输入实际数字，不要只填范围。", "engagement": "平均互动率", "engagementHint": "使用近期可自行核实的平均值，填 0–100%。",
+      "region": "创作者／品牌市场", "regionHint": "不同市场的收费和购买力都有差异。", "regionPlaceholder": "例如：香港", "currency": "货币",
+      "deliverable": "要估价的交付内容", "averageReach": "平均触达", "averageReachHint": "使用近期同类帖子的平均值，不要只用表现最好的一篇。",
+      "usage": "品牌使用权", "usageHint": "自然转载是品牌在自己频道分享；付费广告使用需要另外考虑。", "exclusivity": "品类独家限制", "exclusivityHint": "独家限制会减少其他收费合作机会，不应免费送出。",
+      "proof": "品牌可以核实的凭据", "proofHint": "加入相关过往作品、受众资料或平均触达，不要编造成果。", "proofPlaceholder": "例如：三次护肤合作；受众及触达数字来自平台后台。",
+      "privacyNote": "尽量使用平台后台数据。估价有多有用，取决于你提供的凭据。", "loading": "正在衡量触达、工作范围、使用权和独家限制……", "generate": "建立收费方案",
+      "resultTitle": "规划估价", "disclaimer": "这是 AI 规划估价，不是实时市场数据或保证市价。报价前请确认最终工作范围，并用自己的判断作决定。", "drivers": "影响估价的因素", "assumptions": "需要核对的假设", "nextActions": "你的下一步", "improveEstimate": "可以怎样让估价更准确", "useInQuote": "用这个估价建立完整报价",
+      "options": { "feed-post": "静态帖子", "short-video": "短视频", "story-set": "Story 组合", "long-video": "长视频", "organic": "仅限自然转载", "30-days": "30 天付费使用", "90-days": "90 天付费使用", "12-months": "12 个月付费使用", "none": "没有独家限制", "180-days": "180 天独家限制" }
+    },
+    "quote": {
+      "steps": ["创作者凭据", "合作范围", "权利与工作量", "报价与洽谈"],
+      "profileNotice": "你的账号凭据和合作需求会一并用于本次估价，不需要重复输入相同资料。",
+      "rateDrivers": "影响你报价的因素",
+      "improveEstimate": "可以怎样让估价更准确",
+      "onePassNotice": "这份报价已同时考虑创作者凭据、合作范围和权利。",
+      "title": "将模糊需求变成清晰报价", "description": "计算实际工作、找出隐藏成本，并在品牌议价前准备好替代方案。",
+      "brand": "品牌或客户", "brandPlaceholder": "这一步可以留空", "platform": "主要平台", "deliverables": "所需交付内容", "deliverablesHint": "选择当前要求中的所有项目。",
+      "brief": "品牌实际要求了什么？", "briefHint": "包括格式、长度、创意要求、拍摄地点和谁负责剪辑，最少 20 个字符。", "briefPlaceholder": "粘贴或描述实际要求，将已确认事实和假设分开。",
+      "region": "合作市场", "regionPlaceholder": "例如：香港", "currency": "货币", "deadline": "最终期限", "deadlineHint": "未确认可以留空，不要在需求中猜测。", "revisions": "包含修改轮数", "revisionsHint": "设置上限，避免无限修改悄悄扩大工作量。",
+      "usage": "品牌使用权", "usageHint": "付费广告、whitelisting 和二次剪辑权应逐项列明。", "exclusivity": "品类独家限制", "exclusivityHint": "考虑限制期长短，以及受限品类有多广。", "complexity": "制作复杂度",
+      "productionCost": "预计自付成本", "productionCostHint": "道具、交通、租赁、剪辑支持等直接成本，使用所选货币。", "hourlyFloor": "你的最低时薪价值", "hourlyFloorHint": "可选下限，避免报价连你的时间都无法覆盖。", "rightsNote": "创作费较低，不代表自动包含付费使用、永久权利或广泛独家限制，每项都应分开确认。",
+      "loading": "正在计算范围、工作量和洽谈方案……", "generate": "生成报价方案", "resultTitle": "合作报价方案", "recommended": "AI 规划范围", "estimatedHours": "预计总工时", "yourPrice": "你可以修改的报价", "disclaimer": "仅属规划估价，并非实时市场数据。发送前请调整你的价格，同时核实每项条款。",
+      "scopeSummary": "工作范围摘要", "workBreakdown": "时间会用在哪里", "deliverableBreakdown": "交付项目价格拆分", "terms": "答应前要确认的条款", "negotiation": "如果品牌说预算不足", "assumptions": "估价背后的假设", "draftMessage": "转成品牌消息", "messageInstruction": "将可编辑报价作为建议，不要声称是市场平均价；要求品牌确认范围和权利。",
+      "options": { "feed-post": "静态帖子", "short-video": "短视频", "story-set": "Story 组合", "long-video": "长视频", "organic": "仅限自然转载", "30-days": "30 天付费使用", "90-days": "90 天付费使用", "12-months": "12 个月付费使用", "none": "没有独家限制", "180-days": "180 天独家限制", "low": "简单——单一地点、基础剪辑", "medium": "中等——需要构思及结构化剪辑", "high": "复杂——多个场景或进阶制作" }
+    },
+    "message": {
+      "steps": ["情境与目标", "凭据与语气", "修改与发送"],
+      "title": "清楚又专业地说出难开口的事", "description": "起草开发、跟进和洽谈消息，不会虚构凭据，也不会擅自替你让步。",
+      "scenario": "你想处理什么情境？", "scenarioHint": "不同情境需要不同结构和详细程度。", "channel": "渠道", "client": "收件人或品牌", "clientPlaceholder": "只在确定时才填名字", "goal": "你想达成的结果", "goalHint": "目标清晰，才不会写出客气但没有作用的消息。", "goalPlaceholder": "例如：保留合作，但将付费使用权和创作费分开",
+      "brief": "目前对话发展到哪一步？", "briefHint": "包括最新提议或消息，以及已经同意的內容。", "briefPlaceholder": "描述实际对话、提议或情境。", "tone": "语气", "cta": "一个清晰下一步", "ctaHint": "只要求对方作一个决定、回答或行动。", "ctaPlaceholder": "例如：询问对方预算可以涵盖哪个使用期",
+      "points": "必须包含的事实与重点", "pointsHint": "价格、日期、交付、底线，以及任何不能遗漏的內容。", "pointsPlaceholder": "列出已确认事实，不要让 AI 替你补完。", "proof": "可核实凭据", "proofHint": "只填你可以提出证明的数据或过往成果。", "proofPlaceholder": "例如：最近 10 条 Reel 的平均触达；相关过往作品。", "boundaries": "底线与避免事项", "boundariesHint": "避免草稿作出你未批准的承诺、让步或声称。", "boundariesPlaceholder": "例如：不要接受永久使用权，也不要编造成果。",
+      "voiceSample": "你的短写作样本", "voiceHint": "AI 只学习可观察语气，样本会在生成纪录中隐去。", "voicePlaceholder": "粘贴 2–4 句像你平时写法的文字。", "voicePrivacy": "语气样本只用于本次生成，不会保存在 AI 生成纪录；本机草稿也会省略。", "loading": "正在根据目标、凭据和底线起草……", "generate": "生成可编辑草稿",
+      "reviewNotice": "系统不会自动发送。请修改实际主旨和內容，发送前核对名字、数字和条款。", "draft": "可编辑草稿", "subject": "主旨", "body": "消息內容", "characters": "字符", "refineTitle": "只修改需要改的部分", "refineDescription": "快捷操作会保留事实和立场，你可以还原上一次 AI 精修。",
+      "refine": { "shorter": "缩短消息", "firmer": "立场更清晰", "warmer": "语气更温和" }, "refineInstructions": { "shorter": "将消息明显缩短，但保留所有价格、日期、底线和单一行动呼吁。", "firmer": "让底线更清晰、更有信心，但不要无礼，也不要新增要求。", "warmer": "让语气更温和、更合作，但不要削弱创作者立场。" }, "undo": "还原精修",
+      "beforeSending": "AI 检查提示", "checklist": "你的最后人工检查", "checks": { "numbers": "对照原始对话，检查每个价格、日期和数据。", "names": "检查收件人、品牌和交付项目名称。", "terms": "确认你愿意接受消息中的每项承诺和让步。" },
+      "options": { "dm": "开启对话", "proposal": "合作提案", "followup": "跟进", "decline": "婉拒", "negotiation": "洽谈", "warm-professional": "温和专业", "friendly": "亲切", "firm": "坚定有界线", "concise": "精简" }
+    },
+    "planner": {
+      "steps": ["合作目标", "时间与审批", "行动计划"],
+      "title": "按你的真实生活规划，而不是理想中的一周", "description": "将合作工作拆成现实任务、审批缓冲和真正用得到的日历。",
+      "campaign": "活动或项目名称", "campaignPlaceholder": "例如：早晨护肤流程发布", "startDate": "开始日期", "startDateHint": "任务会用这个日期计算相对天数。", "duration": "活动时长", "contentCount": "内容件数", "contentCountHint": "包括重用版本在内的所有交付内容。",
+      "platforms": "目标平台", "goals": "计划需要完成什么？", "goalsHint": "描述交付和协调需要，不要依赖保证观看或销售。", "goalsPlaceholder": "例如：完成四项已协议素材，并预留品牌事实审核时间。",
+      "hoursPerWeek": "你每周可用时数", "hoursPerWeekHint": "扣除工作、学业和照顾责任后，填写现实可用时间。", "filmingDays": "每周可拍摄天数", "filmingDaysHint": "会影响批量拍摄和地点安排。", "revisionRounds": "包含修改轮数", "approvalDays": "预计品牌审批时间（天）", "approvalDaysHint": "等待审批虽然不用工作，但一样会影响时间表。",
+      "constraints": "现实生活限制", "constraintsHint": "加入工作、学业、拍摄、地点或精力限制。", "constraintsPlaceholder": "例如：平日全职；只可以星期六早上拍摄；每晚最多剪辑两小时。", "capacityNote": "如果工作量超载，系统会指出并建议缩减范围，而不是隐藏问题。", "loading": "正在建立符合你时间容量的进度表和审批缓冲……", "generate": "建立行动计划",
+      "totalDays": "总天数", "totalHours": "预计工作", "weeklyHours": "每周安排工时", "progress": "你的工作清单", "progressHint": "完成后可以勾选任务。保存设备草稿可保留这个版本和进度。", "deliverables": "交付内容", "calendar": "发布与审批日历", "resources": "需要准备的资源",
+      "options": { "2weeks": "2 周", "1month": "1 个月", "2months": "2 个月" }
+    },
+    "contract": {
+      "steps": ["合约来源", "你的优先事项", "有原文依据的审阅"],
+      "title": "洽谈之前，先看清楚每一项条款", "description": "读取 PDF、DOCX 或粘贴文字，取得逐条原文摘录、实际风险和品牌问题清单。",
+      "sample": "载入高风险示例", "uploadTitle": "上传你真正收到的合约", "uploadHint": "PDF、DOCX、TXT 或 MD · 最大 10 MB · 扫描 PDF 需要可选取文字", "chooseFile": "选择文件", "reading": "正在读取合约……",
+      "pasteLabel": "或者粘贴并检查合约文字", "pasteHint": "分析前可以修改提取文字。请先移除不想传送给 AI 供应商的个人资料。", "pastePlaceholder": "粘贴至少 100 个字符的实际合约……", "minimum": "最少 100 字符；最多分析 60,000 字符", "privacy": "合约文字和文件名会在 LumiAI 生成纪录中隐去，但文字仍会传送给所配置 AI 供应商作分析，请先移除敏感资料。",
+      "region": "合约地区或司法管辖区", "regionHint": "只作背景参考；工具不会提供特定司法区法律意见。", "regionPlaceholder": "例如：香港", "priority": "你最想保障什么？", "priorityHint": "系统仍会审阅整份合约，这项只改变重点。", "concerns": "你已经注意到的条款或疑虑", "concernsHint": "写下想系统对照原文检查的事项。", "concernsPlaceholder": "例如：我担心永久使用权和无限修改。",
+      "disclaimer": "这是 AI 辅助条款辨识工具，并非法律意见。请对照原文核实摘录；重要决定应咨询合资格专业人士。", "loading": "正在检查条款并寻找原文依据……", "generate": "审阅合约", "resultTitle": "合约审阅", "overallRisk": "整体条款关注程度", "risk": { "low": "表面条款关注程度较低", "medium": "有多项条款需要讨论", "high": "发现重大创作者风险" },
+      "clauses": "逐项条款分析", "all": "全部", "severity": { "high": "优先处理", "medium": "需要检查", "low": "较低优先" }, "excerpt": "原文摘录", "why": "对你有什么影响", "change": "建议修改", "negotiationPoint": "可以向品牌提出什么", "positives": "值得保留的条款", "missing": "缺少或未清楚的条款", "questions": "签署前应问品牌的问题", "draftReply": "起草洽谈回复",
+      "options": { "payment": "付款与取消", "usage": "使用与剪辑权", "exclusivity": "独家限制", "revisions": "修改与审批", "cancellation": "取消与终止补偿", "all": "全面平衡审阅" },
+      "errors": { "size": "文件超过 10 MB，请上传较小文件或粘贴相关文字。", "type": "暂不支持这个格式。请使用 PDF、DOCX、TXT 或 MD；旧版 DOC 请先另存为 DOCX。", "extract": "未能提取足够可选取文字，请尝试文字版 PDF／DOCX，或直接粘贴合约。" }
     }
   }
 }

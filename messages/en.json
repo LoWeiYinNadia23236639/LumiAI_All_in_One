@@ -1546,7 +1546,7 @@
       "subtitle": "Get rate suggestions, analyze contracts, estimate project timelines, draft professional messages, and plan your campaigns with AI-powered insights.",
       "tabs": {
         "rates": "Rate Calculator",
-        "quote": "Job Quote",
+        "quote": "Pricing & Quote",
         "messages": "Message Assistant",
         "planner": "Project Planner",
         "contract": "Contract Scanner"
@@ -1728,8 +1728,7 @@
           "Tone matching"
         ],
         [
-          "Rate Calculator",
-          "Job Quote Assistant",
+          "Pricing & Quote",
           "Message Assistant",
           "Project Planner",
           "Contract Scanner"
@@ -1737,7 +1736,7 @@
       ],
       "moreTools": "+{count} more",
       "tryNow": "Try it now",
-      "fiveInOne": "5 TOOLS IN 1",
+      "fiveInOne": "4 TOOLS IN 1",
       "storyboard": {
         "badge": "Visual Content Planning",
         "title": "Plan Like a Pro with Storyboard AI",
@@ -1793,8 +1792,8 @@
         "cta": "Open Market Advisor",
         "features": [
           {
-            "title": "Job Quote Assistant",
-            "description": "Describe your project and get instant time estimates, pricing recommendations, and deliverable breakdowns. Know exactly what to charge and how long it will take."
+            "title": "Pricing & Quote",
+            "description": "Combine creator evidence, project scope, usage rights and exclusivity in one estimate. Get a defensible price range, workload breakdown and negotiation options without entering the same details twice."
           },
           {
             "title": "Message Assistant",
@@ -1803,10 +1802,6 @@
           {
             "title": "Project Planner",
             "description": "Create detailed project plans with phase breakdowns, task timelines, critical milestones, and resource requirements. Stay organized from kickoff to delivery."
-          },
-          {
-            "title": "Rate Calculator",
-            "description": "Get personalized rate recommendations based on your niche, follower count, engagement rate, and current market trends. Know your worth."
           },
           {
             "title": "Contract Scanner",
@@ -2247,6 +2242,88 @@
       "pending": "Pending",
       "paid": "Paid",
       "confirmed": "Confirmed"
+    }
+  },
+  "advisorNext": {
+    "common": {
+      "example": "Try a realistic example",
+      "continue": "Continue",
+      "back": "Back",
+      "optional": "optional",
+      "retry": "Retry",
+      "generateFailed": "Generation failed. Your inputs are still here — please retry.",
+      "download": "Download .txt",
+      "saveDraft": "Save on this device",
+      "saved": "Draft saved on this device",
+      "editDetails": "Edit details"
+    },
+    "page": {
+      "title": "From opportunity to confident action",
+      "subtitle": "Four connected tools that help nano creators price their work, protect their scope, communicate clearly and deliver without overload.",
+      "flow": { "price": "Price", "scope": "Scope", "communicate": "Communicate", "deliver": "Deliver", "protect": "Protect" }
+    },
+    "rate": {
+      "steps": ["Creator evidence", "Work and rights", "Rate plan"],
+      "title": "Build a defensible rate, not a follower-count guess",
+      "description": "Use real profile evidence and separate organic content from paid usage and exclusivity.",
+      "niche": "Your content niche", "nicheHint": "Be specific enough that a brand understands your positioning.", "nichePlaceholder": "e.g. Affordable skincare for Hong Kong office workers",
+      "platform": "Primary platform", "followers": "Current followers", "followersHint": "Enter your actual number, not a range.", "engagement": "Average engagement rate", "engagementHint": "Use a recent, personally verifiable average from 0–100%.",
+      "region": "Creator / brand market", "regionHint": "Rates and purchasing power differ by market.", "regionPlaceholder": "e.g. Hong Kong", "currency": "Currency",
+      "deliverable": "Deliverable being priced", "averageReach": "Average reach", "averageReachHint": "Use the average of several recent comparable posts, not your best post.",
+      "usage": "Brand usage rights", "usageHint": "Organic usage means reposting on the brand's own channels; paid advertising needs separate consideration.", "exclusivity": "Category exclusivity", "exclusivityHint": "Exclusivity limits other paid opportunities and should not be treated as free.",
+      "proof": "Evidence the brand can verify", "proofHint": "Add relevant past work, audience facts or average reach. Do not invent results.", "proofPlaceholder": "e.g. Three previous skincare collaborations; audience and reach figures from platform analytics.",
+      "privacyNote": "Use platform analytics where possible. This estimate is only as useful as the evidence you provide.", "loading": "Weighing reach, scope, usage and exclusivity…", "generate": "Build my rate plan",
+      "resultTitle": "Planning estimate", "disclaimer": "This is an AI planning estimate, not live market data or a guaranteed market rate. Confirm the final scope and use your own judgement before quoting.", "drivers": "What is shaping the estimate", "assumptions": "Assumptions to check", "nextActions": "Your next actions", "improveEstimate": "Evidence that would improve this estimate", "useInQuote": "Use this in a full job quote",
+      "options": { "feed-post": "Static feed post", "short-video": "Short-form video", "story-set": "Story set", "long-video": "Long-form video", "organic": "Organic reposting only", "30-days": "30-day paid usage", "90-days": "90-day paid usage", "12-months": "12-month paid usage", "none": "No exclusivity", "180-days": "180-day exclusivity" }
+    },
+    "quote": {
+      "steps": ["Creator evidence", "Project scope", "Rights and workload", "Quote and negotiation"],
+      "profileNotice": "Your evidence and the project brief now feed into one estimate — no need to enter the same details twice.",
+      "rateDrivers": "What is shaping your price",
+      "improveEstimate": "Evidence that would improve this estimate",
+      "onePassNotice": "Creator evidence, project scope and rights were considered together in this quote.",
+      "title": "Turn a vague brief into a clear quote", "description": "Price the actual work, surface hidden costs and prepare trade-offs before the brand negotiates.",
+      "brand": "Brand or client", "brandPlaceholder": "Optional at this stage", "platform": "Primary platform", "deliverables": "Required deliverables", "deliverablesHint": "Select everything included in the current request.",
+      "brief": "What has the brand actually asked for?", "briefHint": "Include format, length, creative requirements, filming location and who edits. Minimum 20 characters.", "briefPlaceholder": "Paste or describe the actual request. Keep confirmed facts separate from assumptions.",
+      "region": "Project market", "regionPlaceholder": "e.g. Hong Kong", "currency": "Currency", "deadline": "Final deadline", "deadlineHint": "Leave blank if not confirmed; do not guess in the brief.", "revisions": "Included revision rounds", "revisionsHint": "Set a limit so unlimited changes do not silently expand the job.",
+      "usage": "Brand usage rights", "usageHint": "Paid advertising, whitelisting and editing rights should be explicitly scoped.", "exclusivity": "Category exclusivity", "exclusivityHint": "Consider the duration and how broad the restricted category is.", "complexity": "Production complexity",
+      "productionCost": "Expected out-of-pocket costs", "productionCostHint": "Props, transport, rental, editing help or other direct costs in the selected currency.", "hourlyFloor": "Your minimum hourly value", "hourlyFloorHint": "Optional floor to prevent a quote that does not cover your time.", "rightsNote": "A low creation fee does not automatically include paid usage, perpetual rights or broad exclusivity. Confirm each item separately.",
+      "loading": "Calculating scope, workload and negotiation options…", "generate": "Generate quote plan", "resultTitle": "Job quote plan", "recommended": "AI planning range", "estimatedHours": "Estimated total work", "yourPrice": "Your editable quote", "disclaimer": "Planning estimate only — not live market data. Adjust your price and verify every term before sending it to the brand.",
+      "scopeSummary": "Scope summary", "workBreakdown": "Where your time goes", "deliverableBreakdown": "Deliverable price breakdown", "terms": "Terms to confirm before agreeing", "negotiation": "If the budget is challenged", "assumptions": "Assumptions behind this estimate", "draftMessage": "Turn this into a brand message", "messageInstruction": "Use the editable quote as a proposal, not as a claim about market averages. Ask the brand to confirm scope and rights.",
+      "options": { "feed-post": "Static feed post", "short-video": "Short-form video", "story-set": "Story set", "long-video": "Long-form video", "organic": "Organic reposting only", "30-days": "30-day paid usage", "90-days": "90-day paid usage", "12-months": "12-month paid usage", "none": "No exclusivity", "180-days": "180-day exclusivity", "low": "Simple — one location, minimal editing", "medium": "Moderate — concept and structured editing", "high": "Complex — multiple setups or advanced production" }
+    },
+    "message": {
+      "steps": ["Situation and goal", "Evidence and voice", "Edit and send"],
+      "title": "Say the difficult thing clearly and professionally", "description": "Draft outreach, follow-ups and negotiation replies without inventing proof or giving away your position.",
+      "scenario": "What are you trying to do?", "scenarioHint": "The situation changes the structure and amount of detail.", "channel": "Channel", "client": "Recipient or brand", "clientPlaceholder": "Use a name only if you know it", "goal": "Your desired outcome", "goalHint": "A clear goal prevents a polite but ineffective message.", "goalPlaceholder": "e.g. Keep the collaboration while separating paid usage from the creation fee",
+      "brief": "What happened so far?", "briefHint": "Include the latest offer or message and what has already been agreed.", "briefPlaceholder": "Describe the actual conversation, offer or situation.", "tone": "Tone", "cta": "One clear next step", "ctaHint": "Ask for one decision, answer or action.", "ctaPlaceholder": "e.g. Ask which usage period their budget can cover",
+      "points": "Facts and points that must be included", "pointsHint": "Prices, dates, deliverables, boundaries and anything that must not be lost.", "pointsPlaceholder": "List confirmed facts, not what you hope the AI will invent.", "proof": "Verifiable evidence", "proofHint": "Only include analytics or past results you can support.", "proofPlaceholder": "e.g. Average reach from the last 10 Reels; relevant previous work.", "boundaries": "Boundaries and things to avoid", "boundariesHint": "Prevent the draft from making concessions or claims you did not approve.", "boundariesPlaceholder": "e.g. Do not agree to perpetual usage or invent campaign results.",
+      "voiceSample": "A short sample of your writing", "voiceHint": "The AI uses observable tone only. This sample is redacted from generation history.", "voicePlaceholder": "Paste 2–4 sentences that sound like you.", "voicePrivacy": "Your voice sample is used for this request but is not saved in AI generation history. Local drafts also omit it.", "loading": "Drafting around your goal, evidence and boundaries…", "generate": "Generate editable draft",
+      "reviewNotice": "Nothing is sent automatically. Edit the actual subject and body, then verify names, figures and terms before sending.", "draft": "Editable draft", "subject": "Subject", "body": "Message body", "characters": "characters", "refineTitle": "Refine only what needs changing", "refineDescription": "Quick actions keep your facts and position intact. You can undo the last AI refinement.",
+      "refine": { "shorter": "Make shorter", "firmer": "More boundaried", "warmer": "Warmer" }, "refineInstructions": { "shorter": "Make this meaningfully shorter while preserving all prices, dates, boundaries and the single call to action.", "firmer": "Make the boundaries clearer and more confident without becoming rude or adding new demands.", "warmer": "Make the message warmer and more collaborative without weakening the creator's position." }, "undo": "Undo refinement",
+      "beforeSending": "AI review notes", "checklist": "Your final human check", "checks": { "numbers": "Check every price, date and metric against the original conversation.", "names": "Check the recipient, brand and deliverable names.", "terms": "Confirm you are comfortable with every commitment and concession." },
+      "options": { "dm": "Open a conversation", "proposal": "Proposal", "followup": "Follow up", "decline": "Decline", "negotiation": "Negotiate", "warm-professional": "Warm and professional", "friendly": "Friendly", "firm": "Firm and boundaried", "concise": "Concise" }
+    },
+    "planner": {
+      "steps": ["Campaign outcomes", "Capacity and approvals", "Action plan"],
+      "title": "Plan around your real life, not an ideal week", "description": "Turn campaign work into realistic tasks, approval buffers and a calendar you can actually use.",
+      "campaign": "Campaign or project name", "campaignPlaceholder": "e.g. Morning skincare routine launch", "startDate": "Start date", "startDateHint": "Tasks use days relative to this date.", "duration": "Campaign duration", "contentCount": "Number of content pieces", "contentCountHint": "Count every deliverable, including repurposed versions.",
+      "platforms": "Target platforms", "goals": "What must this plan accomplish?", "goalsHint": "Describe deliverables and coordination needs; avoid relying on guaranteed views or sales.", "goalsPlaceholder": "e.g. Produce four agreed assets and leave time for factual brand review before publication.",
+      "hoursPerWeek": "Your available hours per week", "hoursPerWeekHint": "Use realistic creator time after work, study and caring responsibilities.", "filmingDays": "Filming days available per week", "filmingDaysHint": "This limits batching and locations.", "revisionRounds": "Included revision rounds", "approvalDays": "Expected brand approval time (days)", "approvalDaysHint": "Waiting time still affects the schedule even when you are not actively working.",
+      "constraints": "Real-life constraints", "constraintsHint": "Add work, study, filming, location or energy constraints.", "constraintsPlaceholder": "e.g. Full-time weekdays; filming only on Saturday mornings; maximum two editing hours per evening.", "capacityNote": "The planner will flag overload and suggest a scope adjustment instead of hiding it.", "loading": "Building a capacity-aware schedule and approval buffers…", "generate": "Create my action plan",
+      "totalDays": "Total days", "totalHours": "Estimated work", "weeklyHours": "Planned weekly load", "progress": "Your working checklist", "progressHint": "Tick tasks as you work. Save a device draft to keep this version and its progress.", "deliverables": "Deliverables", "calendar": "Publish and review calendar", "resources": "Resources to prepare",
+      "options": { "2weeks": "2 weeks", "1month": "1 month", "2months": "2 months" }
+    },
+    "contract": {
+      "steps": ["Contract source", "Your priorities", "Evidence-based review"],
+      "title": "Understand the clauses before you negotiate", "description": "Read PDF, DOCX or pasted text and get clause-level excerpts, practical risks and questions for the brand.",
+      "sample": "Load a risky sample", "uploadTitle": "Upload the contract you actually received", "uploadHint": "PDF, DOCX, TXT or MD · max 10 MB · scanned PDFs need selectable text", "chooseFile": "Choose file", "reading": "Reading contract…",
+      "pasteLabel": "Or paste and review the contract text", "pasteHint": "You can edit the extracted text before analysis. Remove personal information you do not want to send to the AI provider.", "pastePlaceholder": "Paste at least 100 characters of the actual contract…", "minimum": "Minimum 100 characters; maximum 60,000 analyzed", "privacy": "Contract text and filename are redacted from LumiAI generation history. The text is still sent to the configured AI provider for analysis, so remove sensitive information first.",
+      "region": "Contract region or jurisdiction", "regionHint": "Used as context only; the tool does not provide jurisdiction-specific legal advice.", "regionPlaceholder": "e.g. Hong Kong", "priority": "What do you most want to protect?", "priorityHint": "The full contract is still reviewed; this changes emphasis.", "concerns": "Clauses or concerns you already have", "concernsHint": "Mention anything you want the review to check against the original text.", "concernsPlaceholder": "e.g. I am concerned about perpetual usage and unlimited revisions.",
+      "disclaimer": "This is an AI-assisted issue-spotting tool, not legal advice. Verify excerpts against the original and consult a qualified professional for consequential decisions.", "loading": "Checking clauses and locating supporting excerpts…", "generate": "Review contract", "resultTitle": "Contract review", "overallRisk": "Overall issue level", "risk": { "low": "Lower apparent issue level", "medium": "Several terms need discussion", "high": "Significant creator risks identified" },
+      "clauses": "Clause-by-clause findings", "all": "All", "severity": { "high": "High priority", "medium": "Review", "low": "Lower priority" }, "excerpt": "Original excerpt", "why": "Why it matters to you", "change": "Suggested change", "negotiationPoint": "What to ask the brand", "positives": "Terms worth preserving", "missing": "Missing or unclear terms to confirm", "questions": "Questions to send before signing", "draftReply": "Draft a negotiation reply",
+      "options": { "payment": "Payment and cancellation", "usage": "Usage and editing rights", "exclusivity": "Exclusivity", "revisions": "Revisions and approvals", "cancellation": "Cancellation and kill fee", "all": "Balanced review" },
+      "errors": { "size": "This file is over 10 MB. Please upload a smaller file or paste the relevant text.", "type": "This format is not supported. Use PDF, DOCX, TXT or MD. For legacy DOC, save it as DOCX first.", "extract": "We could not extract enough selectable text. Try a text-based PDF/DOCX or paste the contract directly." }
     }
   }
 }

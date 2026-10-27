@@ -1,6 +1,6 @@
 import { getSupabaseClient } from "@/lib/supabase/client";
 
-export type AiToolType = "storyboard" | "caption" | "quote" | "message" | "planner" | "rate";
+export type AiToolType = "storyboard" | "caption" | "quote" | "message" | "planner" | "rate" | "contract";
 
 export class AiAuthError extends Error {}
 

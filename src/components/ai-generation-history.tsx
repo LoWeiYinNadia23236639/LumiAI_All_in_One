@@ -24,12 +24,13 @@ export function AiGenerationHistory({ types, refreshKey }: { types: string[]; re
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  const typeKey = types.join(",");
   useEffect(() => {
     let cancelled = false;
     getSupabaseClient()
       .from("generations")
       .select("id, type, prompt, result, created_at")
-      .in("type", types)
+      .in("type", typeKey.split(","))
       .order("created_at", { ascending: false })
       .limit(10)
       .then(({ data }) => {
@@ -40,7 +41,7 @@ export function AiGenerationHistory({ types, refreshKey }: { types: string[]; re
     return () => {
       cancelled = true;
     };
-  }, [types, refreshKey]);
+  }, [typeKey, refreshKey]);
 
   return (
     <div className="bg-paper rounded-lg border p-6">
@@ -57,7 +58,7 @@ export function AiGenerationHistory({ types, refreshKey }: { types: string[]; re
             let summary = item.prompt;
             try {
               const parsed = JSON.parse(item.prompt);
-              summary = parsed.prompt ?? parsed.campaignName ?? parsed.brandName ?? parsed.clientName ?? item.prompt;
+              summary = parsed.prompt || parsed.campaignName || parsed.brandName || parsed.clientName || parsed.niche || parsed.goal || parsed.brief || item.type;
             } catch {}
             return (
               <div key={item.id} className="bg-gray-50 rounded-xl overflow-hidden">

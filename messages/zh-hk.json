@@ -1546,7 +1546,7 @@
       "subtitle": "用 AI 洞見幫你建議收費、分析合約、預計項目時間、起草專業訊息，同埋策劃你嘅 campaign。",
       "tabs": {
         "rates": "收費計算器",
-        "quote": "工作報價",
+        "quote": "收費與報價",
         "messages": "訊息助手",
         "planner": "項目規劃師",
         "contract": "合約掃描器"
@@ -1728,8 +1728,7 @@
           "語氣配合"
         ],
         [
-          "收費計算器",
-          "報價助手",
+          "收費與報價",
           "訊息助手",
           "項目規劃師",
           "合約掃描器"
@@ -1737,7 +1736,7 @@
       ],
       "moreTools": "仲有 {count} 個",
       "tryNow": "立即試用",
-      "fiveInOne": "5 合 1 工具",
+      "fiveInOne": "4 合 1 工具",
       "storyboard": {
         "badge": "視覺內容規劃",
         "title": "用 Storyboard AI 好似專業人士咁規劃",
@@ -1793,8 +1792,8 @@
         "cta": "開啟市場顧問",
         "features": [
           {
-            "title": "報價助手",
-            "description": "描述你嘅項目，即刻獲得時間預估、定價建議同交付項目明細。清楚知道自己應該收幾多、要做幾耐。"
+            "title": "收費與報價",
+            "description": "將創作者憑據、合作範圍、使用權同獨家限制整合成一次估價，獲得有依據嘅價格範圍、工時拆分同洽談方案，唔需要重複輸入資料。"
           },
           {
             "title": "訊息助手",
@@ -1803,10 +1802,6 @@
           {
             "title": "項目規劃師",
             "description": "建立包含階段細分、任務時間表、關鍵里程碑同資源需求嘅詳細項目計劃。由啟動到交付都井井有條。"
-          },
-          {
-            "title": "收費計算器",
-            "description": "根據你嘅領域、追蹤人數、互動率同最新市場趨勢，獲取個人化收費建議。了解自己嘅價值。"
           },
           {
             "title": "合約掃描器",
@@ -2247,6 +2242,88 @@
       "pending": "待付款",
       "paid": "已付款",
       "confirmed": "已確認"
+    }
+  },
+  "advisorNext": {
+    "common": {
+      "example": "試用真實情境範例",
+      "continue": "繼續",
+      "back": "返回",
+      "optional": "可選",
+      "retry": "重試",
+      "generateFailed": "生成失敗。你輸入嘅資料仍然保留，請再試一次。",
+      "download": "下載 .txt",
+      "saveDraft": "保存喺呢部裝置",
+      "saved": "草稿已保存喺呢部裝置",
+      "editDetails": "修改資料"
+    },
+    "page": {
+      "title": "由合作機會，走到更有把握嘅行動",
+      "subtitle": "四個互相銜接嘅工具，幫 nano creator 定價、保障工作範圍、清晰溝通，同時避免工作量超支。",
+      "flow": { "price": "定價", "scope": "範圍", "communicate": "溝通", "deliver": "交付", "protect": "保障" }
+    },
+    "rate": {
+      "steps": ["創作者憑據", "工作與權利", "收費方案"],
+      "title": "建立有依據嘅收費，唔再只靠粉絲數估價",
+      "description": "用真實帳號數據做基礎，將自然內容、付費使用權同獨家限制分開考慮。",
+      "niche": "你嘅內容定位", "nicheHint": "具體到品牌一睇就明你嘅受眾同定位。", "nichePlaceholder": "例如：香港上班族嘅平價護膚分享",
+      "platform": "主要平台", "followers": "目前粉絲數", "followersHint": "輸入實際數字，唔好只填範圍。", "engagement": "平均互動率", "engagementHint": "使用近期可自行核實嘅平均值，填 0–100%。",
+      "region": "創作者／品牌市場", "regionHint": "唔同市場嘅收費同購買力都有差異。", "regionPlaceholder": "例如：香港", "currency": "貨幣",
+      "deliverable": "要估價嘅交付內容", "averageReach": "平均觸及", "averageReachHint": "用近期同類貼文嘅平均值，唔好只用表現最好嗰篇。",
+      "usage": "品牌使用權", "usageHint": "自然轉載係品牌自己頻道分享；付費廣告使用需要另外考慮。", "exclusivity": "品類獨家限制", "exclusivityHint": "獨家限制會減少其他收費合作機會，唔應該免費送出。",
+      "proof": "品牌可以核實嘅憑據", "proofHint": "加入相關過往作品、受眾資料或平均觸及，唔好編造成果。", "proofPlaceholder": "例如：三次護膚合作；受眾及觸及數字來自平台後台。",
+      "privacyNote": "盡量使用平台後台數據。估價有幾有用，取決於你提供嘅憑據。", "loading": "正在衡量觸及、工作範圍、使用權同獨家限制……", "generate": "建立收費方案",
+      "resultTitle": "規劃估價", "disclaimer": "呢個係 AI 規劃估價，唔係即時市場數據或保證市價。報價前請確認最終工作範圍，並用自己判斷作決定。", "drivers": "影響估價嘅因素", "assumptions": "需要核對嘅假設", "nextActions": "你嘅下一步", "improveEstimate": "可以點樣令估價更準確", "useInQuote": "用呢個估價建立完整報價",
+      "options": { "feed-post": "靜態貼文", "short-video": "短片", "story-set": "Story 組合", "long-video": "長影片", "organic": "只限自然轉載", "30-days": "30 日付費使用", "90-days": "90 日付費使用", "12-months": "12 個月付費使用", "none": "沒有獨家限制", "180-days": "180 日獨家限制" }
+    },
+    "quote": {
+      "steps": ["創作者憑據", "合作範圍", "權利與工作量", "報價與洽談"],
+      "profileNotice": "你嘅帳號憑據同合作 brief 會一併用於今次估價，唔需要重複輸入相同資料。",
+      "rateDrivers": "影響你報價嘅因素",
+      "improveEstimate": "可以點樣令估價更準確",
+      "onePassNotice": "呢份報價已同時考慮創作者憑據、合作範圍同權利。",
+      "title": "將模糊 brief 變成清晰報價", "description": "計算實際工作、揭出隱藏成本，並喺品牌講價前準備好替代方案。",
+      "brand": "品牌或客戶", "brandPlaceholder": "呢一步可以留空", "platform": "主要平台", "deliverables": "所需交付內容", "deliverablesHint": "選擇現時要求入面嘅所有項目。",
+      "brief": "品牌實際要求咗咩？", "briefHint": "包括格式、長度、創意要求、拍攝地點同邊個負責剪接，最少 20 個字元。", "briefPlaceholder": "貼上或描述實際要求，將已確認事實同假設分開。",
+      "region": "合作市場", "regionPlaceholder": "例如：香港", "currency": "貨幣", "deadline": "最終死線", "deadlineHint": "未確認可以留空，唔好喺 brief 入面估。", "revisions": "包含修改輪數", "revisionsHint": "設定上限，避免無限修改靜靜擴大工作量。",
+      "usage": "品牌使用權", "usageHint": "付費廣告、whitelisting 同二次剪輯權應該逐項列明。", "exclusivity": "品類獨家限制", "exclusivityHint": "考慮限制期長短，以及受限品類有幾廣。", "complexity": "製作複雜度",
+      "productionCost": "預計自付成本", "productionCostHint": "道具、交通、租借、剪接支援等直接成本，使用所選貨幣。", "hourlyFloor": "你嘅最低時薪價值", "hourlyFloorHint": "可選下限，避免報價連你嘅時間都覆蓋唔到。", "rightsNote": "創作費較低，唔代表自動包含付費使用、永久權利或廣泛獨家限制，每項都應分開確認。",
+      "loading": "正在計算範圍、工作量同洽談方案……", "generate": "生成報價方案", "resultTitle": "合作報價方案", "recommended": "AI 規劃範圍", "estimatedHours": "預計總工時", "yourPrice": "你可以修改嘅報價", "disclaimer": "只屬規劃估價，並非即時市場數據。發送前請調整你嘅價格，同時核實每項條款。",
+      "scopeSummary": "工作範圍摘要", "workBreakdown": "時間會用喺邊", "deliverableBreakdown": "交付項目價格拆分", "terms": "答應前要確認嘅條款", "negotiation": "如果品牌話預算唔夠", "assumptions": "估價背後嘅假設", "draftMessage": "轉成品牌訊息", "messageInstruction": "將可編輯報價作為建議，唔好聲稱係市場平均價；要求品牌確認範圍同權利。",
+      "options": { "feed-post": "靜態貼文", "short-video": "短片", "story-set": "Story 組合", "long-video": "長影片", "organic": "只限自然轉載", "30-days": "30 日付費使用", "90-days": "90 日付費使用", "12-months": "12 個月付費使用", "none": "沒有獨家限制", "180-days": "180 日獨家限制", "low": "簡單——單一地點、基本剪接", "medium": "中等——需要構思及結構化剪接", "high": "複雜——多個場景或進階製作" }
+    },
+    "message": {
+      "steps": ["情境與目標", "憑據與語氣", "修改與發送"],
+      "title": "清楚又專業咁講出難開口嘅事", "description": "起草開發、跟進同洽談訊息，唔會虛構憑據，亦唔會擅自替你讓步。",
+      "scenario": "你想處理咩情境？", "scenarioHint": "唔同情境需要唔同結構同詳細程度。", "channel": "渠道", "client": "收件人或品牌", "clientPlaceholder": "只喺確定時先填名字", "goal": "你想達成嘅結果", "goalHint": "目標清晰，先唔會寫出客氣但冇作用嘅訊息。", "goalPlaceholder": "例如：保留合作，但將付費使用權同創作費分開",
+      "brief": "目前對話發展到邊？", "briefHint": "包括最新提議或訊息，以及已經同意嘅內容。", "briefPlaceholder": "描述實際對話、提議或情境。", "tone": "語氣", "cta": "一個清晰下一步", "ctaHint": "只要求對方作一個決定、回答或行動。", "ctaPlaceholder": "例如：問對方預算可以涵蓋邊個使用期",
+      "points": "必須包含嘅事實與重點", "pointsHint": "價格、日期、交付、底線，以及任何唔可以遺漏嘅內容。", "pointsPlaceholder": "列出已確認事實，唔好等 AI 替你補完。", "proof": "可核實憑據", "proofHint": "只填你可以提出證明嘅數據或過往成果。", "proofPlaceholder": "例如：最近 10 條 Reel 嘅平均觸及；相關過往作品。", "boundaries": "底線與避免事項", "boundariesHint": "避免草稿作出你未批准嘅承諾、讓步或聲稱。", "boundariesPlaceholder": "例如：唔好接受永久使用權，亦唔好編造成果。",
+      "voiceSample": "你嘅短寫作樣本", "voiceHint": "AI 只學習可觀察語氣，樣本會喺生成紀錄隱去。", "voicePlaceholder": "貼上 2–4 句似你平時寫法嘅文字。", "voicePrivacy": "語氣樣本只用於本次生成，唔會保存喺 AI 生成紀錄；本機草稿亦會省略。", "loading": "正在根據目標、憑據同底線起草……", "generate": "生成可編輯草稿",
+      "reviewNotice": "系統唔會自動發送。請修改實際主旨同內容，發送前核對名字、數字同條款。", "draft": "可編輯草稿", "subject": "主旨", "body": "訊息內容", "characters": "字元", "refineTitle": "只修改需要改嘅部分", "refineDescription": "快捷操作會保留事實同立場，你可以還原上一次 AI 精修。",
+      "refine": { "shorter": "縮短訊息", "firmer": "立場更清晰", "warmer": "語氣更溫和" }, "refineInstructions": { "shorter": "將訊息明顯縮短，但保留所有價格、日期、底線同單一行動呼籲。", "firmer": "令底線更清晰、更有信心，但唔好無禮，亦唔好新增要求。", "warmer": "令語氣更溫和、更合作，但唔好削弱創作者立場。" }, "undo": "還原精修",
+      "beforeSending": "AI 檢查提示", "checklist": "你嘅最後人工檢查", "checks": { "numbers": "對照原始對話，檢查每個價格、日期同數據。", "names": "檢查收件人、品牌同交付項目名稱。", "terms": "確認你願意接受訊息入面每項承諾同讓步。" },
+      "options": { "dm": "開啟對話", "proposal": "合作提案", "followup": "跟進", "decline": "婉拒", "negotiation": "洽談", "warm-professional": "溫和專業", "friendly": "親切", "firm": "堅定有界線", "concise": "精簡" }
+    },
+    "planner": {
+      "steps": ["合作目標", "時間與審批", "行動計劃"],
+      "title": "按你真實生活規劃，而唔係理想中嘅一週", "description": "將合作工作拆成現實任務、審批緩衝同真正用得到嘅日曆。",
+      "campaign": "活動或項目名稱", "campaignPlaceholder": "例如：早晨護膚流程發佈", "startDate": "開始日期", "startDateHint": "任務會用呢個日期計算相對日數。", "duration": "活動時長", "contentCount": "內容件數", "contentCountHint": "包括重用版本在內嘅所有交付內容。",
+      "platforms": "目標平台", "goals": "計劃需要完成咩？", "goalsHint": "描述交付同協調需要，唔好依賴保證觀看或銷售。", "goalsPlaceholder": "例如：完成四項已協議素材，並預留品牌事實審核時間。",
+      "hoursPerWeek": "你每週可用時數", "hoursPerWeekHint": "扣除工作、學業同照顧責任後，填寫現實可用時間。", "filmingDays": "每週可拍攝日數", "filmingDaysHint": "會影響批量拍攝同地點安排。", "revisionRounds": "包含修改輪數", "approvalDays": "預計品牌審批時間（日）", "approvalDaysHint": "等待審批雖然唔使工作，但一樣會影響時間表。",
+      "constraints": "現實生活限制", "constraintsHint": "加入工作、學業、拍攝、地點或精力限制。", "constraintsPlaceholder": "例如：平日全職；只可以星期六朝早拍攝；每晚最多剪接兩小時。", "capacityNote": "如果工作量超支，系統會指出並建議縮減範圍，而唔係隱藏問題。", "loading": "正在建立符合你時間容量嘅進度表同審批緩衝……", "generate": "建立行動計劃",
+      "totalDays": "總日數", "totalHours": "預計工作", "weeklyHours": "每週安排工時", "progress": "你嘅工作清單", "progressHint": "完成後可以剔選任務。保存裝置草稿可保留呢個版本同進度。", "deliverables": "交付內容", "calendar": "發佈與審批日曆", "resources": "需要準備嘅資源",
+      "options": { "2weeks": "2 星期", "1month": "1 個月", "2months": "2 個月" }
+    },
+    "contract": {
+      "steps": ["合約來源", "你嘅優先事項", "有原文依據嘅審閱"],
+      "title": "洽談之前，先睇清楚每一項條款", "description": "讀取 PDF、DOCX 或貼上文字，取得逐條原文節錄、實際風險同品牌問題清單。",
+      "sample": "載入高風險範例", "uploadTitle": "上載你真正收到嘅合約", "uploadHint": "PDF、DOCX、TXT 或 MD · 最大 10 MB · 掃描 PDF 需要可選取文字", "chooseFile": "選擇檔案", "reading": "正在讀取合約……",
+      "pasteLabel": "或者貼上並檢查合約文字", "pasteHint": "分析前可以修改擷取文字。請先移除唔想傳送畀 AI 供應商嘅個人資料。", "pastePlaceholder": "貼上至少 100 個字元嘅實際合約……", "minimum": "最少 100 字元；最多分析 60,000 字元", "privacy": "合約文字同檔名會喺 LumiAI 生成紀錄隱去，但文字仍會傳送畀所配置 AI 供應商作分析，請先移除敏感資料。",
+      "region": "合約地區或司法管轄區", "regionHint": "只作背景參考；工具唔會提供特定司法區法律意見。", "regionPlaceholder": "例如：香港", "priority": "你最想保障咩？", "priorityHint": "系統仍會審閱整份合約，呢項只改變重點。", "concerns": "你已經留意到嘅條款或疑慮", "concernsHint": "寫低想系統對照原文檢查嘅事項。", "concernsPlaceholder": "例如：我擔心永久使用權同無限修改。",
+      "disclaimer": "呢個係 AI 輔助條款辨識工具，並非法律意見。請對照原文核實節錄；重要決定應諮詢合資格專業人士。", "loading": "正在檢查條款並尋找原文依據……", "generate": "審閱合約", "resultTitle": "合約審閱", "overallRisk": "整體條款關注程度", "risk": { "low": "表面條款關注程度較低", "medium": "有多項條款需要討論", "high": "發現重大創作者風險" },
+      "clauses": "逐項條款分析", "all": "全部", "severity": { "high": "優先處理", "medium": "需要檢查", "low": "較低優先" }, "excerpt": "原文節錄", "why": "對你有咩影響", "change": "建議修改", "negotiationPoint": "可以向品牌提出咩", "positives": "值得保留嘅條款", "missing": "缺少或未清楚嘅條款", "questions": "簽署前應問品牌嘅問題", "draftReply": "起草洽談回覆",
+      "options": { "payment": "付款與取消", "usage": "使用與剪輯權", "exclusivity": "獨家限制", "revisions": "修改與審批", "cancellation": "取消與終止補償", "all": "全面平衡審閱" },
+      "errors": { "size": "檔案超過 10 MB，請上載較細檔案或貼上相關文字。", "type": "暫時唔支援呢個格式。請使用 PDF、DOCX、TXT 或 MD；舊版 DOC 請先另存為 DOCX。", "extract": "未能擷取足夠可選取文字，請嘗試文字版 PDF／DOCX，或直接貼上合約。" }
     }
   }
 }
