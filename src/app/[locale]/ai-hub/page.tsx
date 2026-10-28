@@ -127,7 +127,7 @@ export default function AIHubPage() {
   ];
 
   return (
-    <AuthGuard>
+    <AuthGuard allowGuests>
     <main className="min-h-screen bg-cream pt-24 pb-16 overflow-x-clip">
       <div className="max-w-6xl mx-auto px-4">
         {/* Header */}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI, Type } from "@google/genai";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { AI_GUEST_ACCESS_ENABLED } from "@/lib/ai/access";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -318,30 +319,34 @@ async function callModel(
 }
 
 export async function POST(req: NextRequest) {
-  // --- Auth: caller must supply their Supabase access token (client-side session) ---
+  // Signed-in users keep their private history; guests can use the temporary demo.
   const authHeader = req.headers.get("authorization") ?? "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!token) {
+  if (!token && !AI_GUEST_ACCESS_ENABLED) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  });
-  const { data: userData, error: userError } = await authClient.auth.getUser(token);
-  if (userError || !userData.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  let userId: string | null = null;
+  let userClient: SupabaseClient | null = null;
+  if (token) {
+    const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { autoRefreshToken: false, persistSession: false },
+    });
+    const { data: userData, error: userError } = await authClient.auth.getUser(token);
+    if (userError || !userData.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    userId = userData.user.id;
+    // Client scoped to this user so the generations insert passes RLS.
+    userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { autoRefreshToken: false, persistSession: false },
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    });
   }
 
   if (!GEMINI_API_KEY) {
     return NextResponse.json({ error: "GEMINI_API_KEY is not configured" }, { status: 500 });
   }
-
-  // Client scoped to this user so the generations insert passes RLS (user_id = auth.uid()).
-  const userClient: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { autoRefreshToken: false, persistSession: false },
-    global: { headers: { Authorization: `Bearer ${token}` } },
-  });
 
   let body: { type?: ToolType; input?: Record<string, unknown> };
   try {
@@ -367,23 +372,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Private source material is used for the request but redacted from generation history.
-  const loggedInput: Record<string, unknown> = { ...input };
-  if (type === "caption" && Array.isArray(input.voiceSamples) && input.voiceSamples.length) loggedInput.voiceSamples = "[redacted voice samples]";
-  if (type === "message" && input.voiceSample) loggedInput.voiceSample = "[redacted voice sample]";
-  if (type === "contract") {
-    loggedInput.contractText = "[redacted contract text]";
-    loggedInput.fileName = "[redacted filename]";
-  }
-  // Record the generation (non-fatal if the insert fails).
-  const { error: insertError } = await userClient.from("generations").insert({
-    user_id: userData.user.id,
-    type,
-    prompt: JSON.stringify(loggedInput),
-    result: JSON.stringify(result),
-  });
-  if (insertError) {
-    console.error("[ai] failed to save generation:", insertError.message);
+  if (userClient && userId) {
+    // Private source material is used for the request but redacted from history.
+    const loggedInput: Record<string, unknown> = { ...input };
+    if (type === "caption" && Array.isArray(input.voiceSamples) && input.voiceSamples.length) loggedInput.voiceSamples = "[redacted voice samples]";
+    if (type === "message" && input.voiceSample) loggedInput.voiceSample = "[redacted voice sample]";
+    if (type === "contract") {
+      loggedInput.contractText = "[redacted contract text]";
+      loggedInput.fileName = "[redacted filename]";
+    }
+    // Record only signed-in generations (non-fatal if the insert fails).
+    const { error: insertError } = await userClient.from("generations").insert({
+      user_id: userId,
+      type,
+      prompt: JSON.stringify(loggedInput),
+      result: JSON.stringify(result),
+    });
+    if (insertError) {
+      console.error("[ai] failed to save generation:", insertError.message);
+    }
   }
 
   return NextResponse.json({ result });

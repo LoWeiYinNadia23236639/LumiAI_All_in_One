@@ -259,7 +259,7 @@ export default function CaptionAIPage() {
 
   const stepHead = (title: string, description: string) => <div className="mb-7"><h1 className="text-2xl md:text-4xl text-ink mb-3">{title}</h1><p className="text-ink-soft max-w-3xl leading-relaxed">{description}</p></div>;
 
-  return <AuthGuard>
+  return <AuthGuard allowGuests>
     <main className="min-h-screen bg-cream pt-20 pb-16 overflow-x-clip">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between gap-4 py-4">

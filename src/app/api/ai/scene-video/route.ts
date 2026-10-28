@@ -179,14 +179,16 @@ export async function POST(req: NextRequest) {
     data: { publicUrl },
   } = admin.storage.from(STORYBOARD_BUCKET).getPublicUrl(path);
 
-  // Record (non-fatal). RLS: inserted as the calling user.
-  const { error: insertError } = await auth.userClient.from("generations").insert({
-    user_id: user.id,
-    type: "storyboard-scene-video",
-    prompt: buildMotionPrompt(body as never).slice(0, 500),
-    result: JSON.stringify({ url: publicUrl, model: VIDEO_MODEL }),
-  });
-  if (insertError) console.error("[scene-video] record failed:", insertError.message);
+  // Record only signed-in activity; guest demos do not enter private history.
+  if (!user.isGuest) {
+    const { error: insertError } = await auth.userClient.from("generations").insert({
+      user_id: user.id,
+      type: "storyboard-scene-video",
+      prompt: buildMotionPrompt(body as never).slice(0, 500),
+      result: JSON.stringify({ url: publicUrl, model: VIDEO_MODEL }),
+    });
+    if (insertError) console.error("[scene-video] record failed:", insertError.message);
+  }
 
   return NextResponse.json({ url: publicUrl });
 }

@@ -262,14 +262,16 @@ export async function POST(req: NextRequest) {
       data: { publicUrl },
     } = admin.storage.from(STORYBOARD_BUCKET).getPublicUrl(storagePath);
 
-    // 4. Record (non-fatal)
-    const { error: insertError } = await auth.userClient.from("generations").insert({
-      user_id: user.id,
-      type: "storyboard-video",
-      prompt: JSON.stringify({ mode: clipMode ? "clips" : "images", inputs }),
-      result: JSON.stringify({ url: publicUrl }),
-    });
-    if (insertError) console.error("[storyboard-video] record failed:", insertError.message);
+    // 4. Record only signed-in activity; guest demos do not enter private history.
+    if (!user.isGuest) {
+      const { error: insertError } = await auth.userClient.from("generations").insert({
+        user_id: user.id,
+        type: "storyboard-video",
+        prompt: JSON.stringify({ mode: clipMode ? "clips" : "images", inputs }),
+        result: JSON.stringify({ url: publicUrl }),
+      });
+      if (insertError) console.error("[storyboard-video] record failed:", insertError.message);
+    }
 
     return NextResponse.json({ url: publicUrl });
   } catch (err) {

@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "@/lib/supabase/client";
+import { AI_GUEST_ACCESS_ENABLED } from "@/lib/ai/access";
 
 export type AiToolType = "storyboard" | "caption" | "quote" | "message" | "planner" | "rate" | "contract";
 
@@ -15,14 +16,13 @@ export async function callGenerate<T = unknown>(
   const supabase = getSupabaseClient();
   const { data } = await supabase.auth.getSession();
   const token = data.session?.access_token;
-  if (!token) throw new AiAuthError("Not signed in");
+  if (!token && !AI_GUEST_ACCESS_ENABLED) throw new AiAuthError("Not signed in");
 
+  const headers: Record<string, string> = { "Content-Type": "application/json" };
+  if (token) headers.Authorization = `Bearer ${token}`;
   const res = await fetch("/api/ai/generate", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
+    headers,
     body: JSON.stringify({ type, input }),
   });
 

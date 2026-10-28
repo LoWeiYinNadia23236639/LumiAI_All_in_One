@@ -1,38 +1,42 @@
 import { NextRequest } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { randomUUID } from "crypto";
+import { AI_GUEST_ACCESS_ENABLED } from "@/lib/ai/access";
 
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 export const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 export type AuthResult =
-  | { ok: true; userId: string; token: string; userClient: SupabaseClient }
+  | { ok: true; userId: string; token: string; userClient: SupabaseClient; isGuest: boolean }
   | { ok: false };
 
-/** Validates the caller's Supabase access token (client-side session). */
+/** Validates a session token, or creates an isolated anonymous demo request. */
 export function authenticateRequest(req: NextRequest): AuthResult {
   const authHeader = req.headers.get("authorization") ?? "";
   const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : null;
-  if (!token) return { ok: false };
+  const isGuest = !token && AI_GUEST_ACCESS_ENABLED;
+  if (!token && !isGuest) return { ok: false };
 
   const userClient: SupabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { autoRefreshToken: false, persistSession: false },
-    global: { headers: { Authorization: `Bearer ${token}` } },
+    global: { headers: token ? { Authorization: `Bearer ${token}` } : {} },
   });
 
-  return { ok: true, userId: "", token, userClient };
+  return { ok: true, userId: "", token: token ?? "", userClient, isGuest };
 }
 
 /** Verify the token against Supabase Auth (await this after authenticateRequest). */
 export async function verifyToken(
   auth: Extract<AuthResult, { ok: true }>
-): Promise<{ id: string; email?: string } | null> {
+): Promise<{ id: string; email?: string; isGuest: boolean } | null> {
+  if (auth.isGuest) return { id: `guest-${randomUUID()}`, isGuest: true };
   const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
   const { data, error } = await authClient.auth.getUser(auth.token);
   if (error || !data.user) return null;
-  return { id: data.user.id, email: data.user.email };
+  return { id: data.user.id, email: data.user.email, isGuest: false };
 }
 
 export const STORYBOARD_BUCKET = "storyboard-media";

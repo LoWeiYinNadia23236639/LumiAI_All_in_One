@@ -7,19 +7,23 @@ import { Lock } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { useTranslations, useLocale } from "next-intl";
+import { AI_GUEST_ACCESS_ENABLED } from "@/lib/ai/access";
 
-export function AuthGuard({ children }: { children: React.ReactNode }) {
+export function AuthGuard({ children, allowGuests = false }: { children: React.ReactNode; allowGuests?: boolean }) {
   const router = useRouter();
   const locale = useLocale();
   const t = useTranslations("auth");
   const { user, isLoading } = useAuth();
+  const guestAllowed = allowGuests && AI_GUEST_ACCESS_ENABLED;
 
   useEffect(() => {
-    if (!isLoading && !user) {
+    if (!guestAllowed && !isLoading && !user) {
       const currentPath = typeof window !== "undefined" ? window.location.pathname + window.location.search : "";
       router.push(`/${locale}/login${currentPath ? `?redirect=${encodeURIComponent(currentPath)}` : ""}`);
     }
-  }, [user, isLoading, router, locale]);
+  }, [guestAllowed, user, isLoading, router, locale]);
+
+  if (guestAllowed) return <>{children}</>;
 
   if (isLoading) {
     return (

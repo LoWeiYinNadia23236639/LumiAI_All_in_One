@@ -18,6 +18,7 @@ import { AiGenerationHistory } from "@/components/ai-generation-history";
 import { AiLoadingText } from "@/components/ai-loading-text";
 import { useToast } from "@/components/ui/toast";
 import { callGenerate, AiAuthError } from "@/lib/ai/client";
+import { AI_GUEST_ACCESS_ENABLED } from "@/lib/ai/access";
 import { useTranslations, useLocale } from "next-intl";
 
 interface Scene {
@@ -164,8 +165,10 @@ export default function StoryboardAIPage() {
     const supabase = (await import("@/lib/supabase/client")).getSupabaseClient();
     const { data } = await supabase.auth.getSession();
     const token = data.session?.access_token;
-    if (!token) throw new AiAuthError("Not signed in");
-    const res = await fetch(api, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) });
+    if (!token && !AI_GUEST_ACCESS_ENABLED) throw new AiAuthError("Not signed in");
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (token) headers.Authorization = `Bearer ${token}`;
+    const res = await fetch(api, { method: "POST", headers, body: JSON.stringify(payload) });
     if (res.status === 401) throw new AiAuthError("Session expired");
     const body = await res.json();
     if (!res.ok) throw new Error(body.detail || body.error || "Request failed");
@@ -186,9 +189,11 @@ export default function StoryboardAIPage() {
       const supabase = (await import("@/lib/supabase/client")).getSupabaseClient();
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
-      if (!token) throw new AiAuthError("Not signed in");
+      if (!token && !AI_GUEST_ACCESS_ENABLED) throw new AiAuthError("Not signed in");
       const form = new FormData(); form.append("photo", file);
-      const response = await fetch("/api/ai/identity-reference", { method: "POST", headers: { Authorization: `Bearer ${token}` }, body: form });
+      const headers: Record<string, string> = {};
+      if (token) headers.Authorization = `Bearer ${token}`;
+      const response = await fetch("/api/ai/identity-reference", { method: "POST", headers, body: form });
       if (response.status === 401) throw new AiAuthError("Session expired");
       const body = await response.json();
       if (!response.ok) throw new Error(body.error || "Upload failed");
@@ -324,7 +329,7 @@ export default function StoryboardAIPage() {
   const stepHead = (title: string, description: string) => <div className="mb-7"><h2 className="text-2xl md:text-3xl text-ink mb-2">{title}</h2><p className="text-ink-soft max-w-2xl leading-relaxed">{description}</p></div>;
   const footer = (back: WorkflowStep, next: WorkflowStep, nextLabel: string) => <div className="flex items-center justify-between gap-3 mt-8 pt-5 border-t border-line"><Button variant="ghost" onClick={() => goToStep(back)}><ArrowLeft className="w-4 h-4" />{wf("previous")}</Button><Button onClick={() => goToStep(next)}>{nextLabel}<ArrowRight className="w-4 h-4" /></Button></div>;
 
-  return <AuthGuard>
+  return <AuthGuard allowGuests>
     <main className="min-h-screen bg-cream pt-20 pb-16 overflow-x-clip">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between gap-4 py-4">
