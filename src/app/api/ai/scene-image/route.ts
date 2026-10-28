@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   authenticateRequest,
   verifyToken,
+  enforceGuestRateLimit,
   geminiErrorKind,
   SUPABASE_URL,
   GEMINI_API_KEY,
@@ -145,6 +146,10 @@ export async function POST(req: NextRequest) {
   }
   if (!body.description || !body.shot_angle || !body.lighting) {
     return NextResponse.json({ error: "Missing scene fields" }, { status: 400 });
+  }
+  if (user.isGuest) {
+    const guestLimit = enforceGuestRateLimit(req, "image");
+    if (guestLimit) return guestLimit;
   }
   const aspect = ASPECTS.includes(body.aspect as (typeof ASPECTS)[number])
     ? (body.aspect as (typeof ASPECTS)[number])

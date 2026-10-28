@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   authenticateRequest,
   verifyToken,
+  enforceGuestRateLimit,
   geminiErrorKind,
   SUPABASE_URL,
   GEMINI_API_KEY,
@@ -86,6 +87,14 @@ export async function POST(req: NextRequest) {
   }
   if (!body.description || !body.shot_angle || !body.image_url) {
     return NextResponse.json({ error: "Missing scene fields" }, { status: 400 });
+  }
+  if (user.isGuest) {
+    const allowedPrefix = `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/public/${STORYBOARD_BUCKET}/`;
+    if (!body.image_url.startsWith(allowedPrefix)) {
+      return NextResponse.json({ error: "Guest videos require a LumiAI storyboard image" }, { status: 400 });
+    }
+    const guestLimit = enforceGuestRateLimit(req, "aiVideo");
+    if (guestLimit) return guestLimit;
   }
 
   // Fetch the storyboard frame (public bucket URL).

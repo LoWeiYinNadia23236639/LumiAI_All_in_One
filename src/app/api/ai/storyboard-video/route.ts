@@ -8,6 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   authenticateRequest,
   verifyToken,
+  enforceGuestRateLimit,
   SUPABASE_URL,
   STORYBOARD_BUCKET,
   ensureStoryboardBucket,
@@ -103,6 +104,14 @@ export async function POST(req: NextRequest) {
   ).filter((u): u is string => Boolean(u));
   if (inputs.length < 2 || inputs.length > 10) {
     return NextResponse.json({ error: "Provide between 2 and 10 media URLs" }, { status: 400 });
+  }
+  if (user.isGuest) {
+    const allowedPrefix = `${SUPABASE_URL.replace(/\/$/, "")}/storage/v1/object/public/${STORYBOARD_BUCKET}/`;
+    if (inputs.some((url) => !url.startsWith(allowedPrefix))) {
+      return NextResponse.json({ error: "Guest videos require LumiAI storyboard media" }, { status: 400 });
+    }
+    const guestLimit = enforceGuestRateLimit(req, "animatic");
+    if (guestLimit) return guestLimit;
   }
   const dims = OUTPUT_DIMS[body.aspect ?? ""] ?? OUTPUT_DIMS["16:9"];
   const secondsPerScene = Math.min(6, Math.max(1, Number(body.seconds_per_scene) || 2.5));

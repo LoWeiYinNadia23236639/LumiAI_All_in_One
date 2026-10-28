@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI, Type } from "@google/genai";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { AI_GUEST_ACCESS_ENABLED } from "@/lib/ai/access";
+import { enforceGuestRateLimit } from "@/lib/ai/server";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -357,6 +358,10 @@ export async function POST(req: NextRequest) {
   const { type, input } = body;
   if (!type || !(type in SCHEMAS) || !input) {
     return NextResponse.json({ error: "Missing or invalid type/input" }, { status: 400 });
+  }
+  if (!token) {
+    const guestLimit = enforceGuestRateLimit(req, "text");
+    if (guestLimit) return guestLimit;
   }
 
   const { system, user: promptText } = buildPrompt(type, input);

@@ -1,7 +1,7 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
-import { AI_GUEST_ACCESS_ENABLED } from "@/lib/ai/access";
+import { AI_GUEST_ACCESS_ENABLED, GUEST_RATE_LIMITS, type GuestRateScope } from "@/lib/ai/access";
 
 export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 export const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -37,6 +37,50 @@ export async function verifyToken(
   const { data, error } = await authClient.auth.getUser(auth.token);
   if (error || !data.user) return null;
   return { id: data.user.id, email: data.user.email, isGuest: false };
+}
+
+const GUEST_WINDOW_MS = 24 * 60 * 60 * 1000;
+type GuestRateEntry = { count: number; resetAt: number };
+const guestRateGlobal = globalThis as typeof globalThis & { __lumiGuestRates?: Map<string, GuestRateEntry> };
+const guestRates = guestRateGlobal.__lumiGuestRates ?? new Map<string, GuestRateEntry>();
+guestRateGlobal.__lumiGuestRates = guestRates;
+
+/**
+ * Best-effort abuse protection for the temporary public demo. The counters
+ * live in the server instance and do not affect signed-in users.
+ */
+export function enforceGuestRateLimit(req: NextRequest, scope: GuestRateScope): NextResponse | null {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+    || req.headers.get("x-real-ip")
+    || "unknown";
+  const key = `${scope}:${ip}`;
+  const now = Date.now();
+  const limit = GUEST_RATE_LIMITS[scope];
+  let entry = guestRates.get(key);
+
+  if (!entry || entry.resetAt <= now) {
+    entry = { count: 0, resetAt: now + GUEST_WINDOW_MS };
+    guestRates.set(key, entry);
+  }
+  if (entry.count >= limit) {
+    const retryAfter = Math.max(1, Math.ceil((entry.resetAt - now) / 1000));
+    return NextResponse.json(
+      {
+        error: "Guest trial limit reached",
+        detail: "You have reached this tool's 24-hour guest trial limit. Sign in to continue or try again after the limit resets.",
+      },
+      { status: 429, headers: { "Retry-After": String(retryAfter) } }
+    );
+  }
+  entry.count += 1;
+
+  // Prevent expired client entries from accumulating during long-lived instances.
+  if (guestRates.size > 1000) {
+    for (const [storedKey, storedEntry] of guestRates) {
+      if (storedEntry.resetAt <= now) guestRates.delete(storedKey);
+    }
+  }
+  return null;
 }
 
 export const STORYBOARD_BUCKET = "storyboard-media";

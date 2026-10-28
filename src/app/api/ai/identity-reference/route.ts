@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   authenticateRequest,
   verifyToken,
+  enforceGuestRateLimit,
   SUPABASE_URL,
   STORYBOARD_BUCKET,
   ensureStoryboardBucket,
@@ -36,6 +37,10 @@ export async function POST(req: NextRequest) {
   if (!extension) return NextResponse.json({ error: "Use a JPG, PNG or WebP image" }, { status: 415 });
   if (photo.size <= 0 || photo.size > MAX_PHOTO_BYTES) {
     return NextResponse.json({ error: "Photo must be smaller than 8 MB" }, { status: 413 });
+  }
+  if (user.isGuest) {
+    const guestLimit = enforceGuestRateLimit(req, "identity");
+    if (guestLimit) return guestLimit;
   }
 
   const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {

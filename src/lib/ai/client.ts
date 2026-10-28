@@ -31,9 +31,10 @@ export async function callGenerate<T = unknown>(
     let detail = "";
     try {
       const errBody = await res.json();
-      detail = errBody.detail ? ` (${errBody.detail})` : "";
+      detail = errBody.detail || errBody.error || "";
     } catch {}
-    throw new Error(`Generation failed${detail}`);
+    if (res.status === 429) throw new Error(detail || "Guest trial limit reached. Please try again later.");
+    throw new Error(`Generation failed${detail ? ` (${detail})` : ""}`);
   }
 
   const body = await res.json();
